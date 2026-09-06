@@ -23,3 +23,10 @@ Tarayıcıya sadece publishable/anon key konur. `service_role` veya secret key'i
 
 ## Not
 2027 YKS'nin resmi sınav tarihi/kılavuzu yayımlandığında Ayarlar'daki provisional tarihi güncelle. Akademik konu ağacı başlangıçta genel TYT + AYT EA çalışma planı olarak tutulmuştur.
+
+
+## V8 Coach Premium
+- Weakness Radar now exposes a live 'NEDEN ZAYIF?' explanation.
+- Priority uses coverage, confidence, overdue reviews, stale topics, question accuracy and mock trend.
+- One-click action can add the top weakness to tomorrow's plan.
+- 'Yarının planını oluştur' builds a ranked study plan from the current signals.
