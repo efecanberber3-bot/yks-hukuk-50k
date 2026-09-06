@@ -1,40 +1,17 @@
-# Hukuk 50K OS — Premium V4 Cloud
+# HUKUK 50K OS — Premium V5
 
-Kişisel YKS EA → Hukuk hedefi için premium performans/alışkanlık/finans takip paneli.
+Personal YKS 2027 EA / Hukuk performance operating system.
 
-## V4 yenilikleri
-- Supabase Auth (e-posta + şifre)
-- Çoklu cihaz bulut senkronizasyonu
-- RLS ile kullanıcı bazlı veri izolasyonu
-- Yerel çalışma devam eder; bulut bağlantısı isteğe bağlıdır
-- Ayarlar ekranından Supabase Project URL + Publishable/Anon Key yapılandırması
-- Otomatik, debounced bulut kaydı
-- Manuel senkronizasyon / çıkış
-- V3'teki günlük plan, konu motoru, deneme, performans, disiplin, finans ve PWA özellikleri korunur
+## V5 highlights
+- Adaptive assistant engine: daily priorities are generated from overdue reviews, topic confidence, topic status and recent workload.
+- One-click plan optimization adds assistant-generated study blocks to the current day.
+- Spaced-review queue using 7/14-day review timing from topic completion/review.
+- Weakness radar prioritization for TYT + AYT EA, with AYT Mathematics weighted as a strategic priority.
+- Focus Room, daily tasks, habits, deneme logging, performance analytics, discipline, finance and JSON backup.
+- Supabase Auth + RLS cloud sync supported through `cloud.js`.
 
-## 1) Supabase projesini aç
-Supabase Dashboard'dan bir proje oluştur.
+## Deploy
+Upload the folder contents to the GitHub Pages repository. Use `index.html` as the entry point.
 
-## 2) Veritabanını hazırla
-Supabase → SQL Editor → `supabase-schema.sql` dosyasının tamamını çalıştır.
-
-## 3) Data API erişimi
-`public.user_state` tablosunun API'den erişilebilir olduğundan emin ol. RLS açıktır ve yalnızca authenticated kullanıcı kendi `user_id` satırına erişebilir.
-
-## 4) Uygulamayı yapılandır
-GitHub Pages sitesinde `Ayarlar → Bulut Senkronizasyonu` bölümüne:
-- Project URL
-- Publishable/Anon Key
-
-gir ve bağlantıyı kaydet.
-
-**service_role / secret key tarayıcıya veya GitHub'a koyma.**
-
-## 5) Auth
-Supabase Authentication → Providers altında Email aktif olsun. E-posta doğrulama açıksa kayıt sonrası doğrulama e-postası gelir.
-
-## GitHub Pages
-`main` branch + `/root` (veya repository ayarındaki seçili kök klasör) ile yayınla.
-
-## Veri modeli
-Tüm uygulama durumu tek bir `jsonb` kaydında, kullanıcı başına bir satır olarak saklanır. İleride görev/konu/deneme tablolarına normalleştirmek mümkündür; V4'te öncelik güvenli ve kolay yedeklenebilir kişisel cloud state modelidir.
+## Supabase
+Run `supabase-schema.sql` once in Supabase SQL Editor. In Settings > API, use the project URL and Publishable/anon key. Never place a `service_role` / secret key in this app.
