@@ -1,29 +1,25 @@
-# Hukuk 50K OS — YKS 2027 EA
+# Hukuk 50K OS — V3
 
-7 Eylül 2026 başlangıçlı kişisel YKS 2027 çalışma takip paneli. Hedef: Eşit Ağırlık Hukuk, ilk 50.000 (çalışma bandı 30K).
+Premium, GitHub Pages uyumlu, tarayıcı içinde çalışan kişisel YKS EA performans sistemi.
 
-## V2 özellikleri
-- Dashboard: günlük görev %, ders dakikası, streak, son TYT neti
-- Bugün: saat blokları, görevler, alışkanlık skoru
-- TYT + AYT EA konu yol haritası ve durum seçimi
-- Deneme merkezi: TYT/AYT EA netleri ve ders kırılımı
-- Analiz: TYT net trendi, son 7 gün çalışma grafiği, haftalık uyum
-- Disiplin: 14 günlük uyum takvimi
-- Para merkezi: 15.000 TL sabit ana gelir + ek gelir/gider
-- Hedef ayarları: günlük çalışma dakikası, paragraf, problem
+## Özellikler
+- Kontrol merkezi + kural tabanlı kişisel asistan
+- Günlük görev/alışkanlık sistemi
+- Focus Room / Pomodoro tipi odak sayacı
+- TYT + AYT EA konu motoru
+- Konu durumları ve güven seviyesi
+- Deneme kayıtları ve trend grafikleri
+- 30 günlük disiplin ısı haritası
+- Çalışma yükü ve performans analizi
+- 15.000 TL sabit gelir + ek gelir/gider takibi
 - JSON yedekleme / geri yükleme
-- Açık/koyu tema
-- PWA + offline cache
-- GitHub Pages uyumlu
-
-## Kullanım
-`index.html` dosyasını aç veya GitHub Pages ile yayınla.
+- Mobil uyum ve PWA/offline cache
 
 ## GitHub Pages
-1. Yeni repo aç.
-2. Bu klasördeki tüm dosyaları repo köküne yükle.
-3. Settings → Pages → Deploy from a branch → `main` / `/ (root)`.
-4. Site oluştuğunda Chrome'dan “Ana ekrana ekle” ile uygulama gibi kullanabilirsin.
+Repository → Settings → Pages → Deploy from branch → `main` / `/root`.
 
-## Veri mimarisi
-V2 varsayılan olarak tarayıcı `localStorage` kullanır. Bu sürüm tek kullanıcı ve hızlı prototipleme içindir. Telefon + bilgisayar ortak veri için sonraki aşamada Supabase Auth + Postgres eklenebilir.
+## Veri
+V3 şu an localStorage kullanır. Çoklu cihaz senkronizasyonu için sonraki aşama: Supabase Auth + Database.
+
+## YKS referansı
+Panelin akademik yapısı 2026-YKS'nin test yapısını başlangıç referansı olarak kullanır. 2027-YKS kılavuzu yayımlandığında sınav parametreleri ve geri sayım güncellenecektir.

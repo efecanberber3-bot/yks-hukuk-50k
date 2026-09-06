@@ -1,68 +1,141 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#09101f"><meta name="description" content="YKS 2027 Hukuk İlk 50K kişisel çalışma kontrol paneli"><title>Hukuk 50K OS • YKS 2027</title>
-<link rel="manifest" href="manifest.json"><link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080b12">
+  <meta name="description" content="Hukuk 50K OS — YKS 2027 EA kişisel performans ve çalışma yönetim paneli">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <title>Hukuk 50K OS — Personal Performance System</title>
 </head>
 <body>
-<div class="app-shell">
-<aside class="sidebar">
-  <div class="brand"><div class="brand-mark">50K</div><div><h1>Hukuk 50K OS</h1><span>YKS 2027 • EA</span></div></div>
-  <nav>
-    <button class="nav-item active" data-section="dashboard">⌂ <span>Dashboard</span></button>
-    <button class="nav-item" data-section="today">✓ <span>Bugün</span></button>
-    <button class="nav-item" data-section="subjects">▤ <span>Konu Yol Haritası</span></button>
-    <button class="nav-item" data-section="mock">◉ <span>Denemeler</span></button>
-    <button class="nav-item" data-section="analytics">↗ <span>Analiz</span></button>
-    <button class="nav-item" data-section="habits">◌ <span>Disiplin</span></button>
-    <button class="nav-item" data-section="money">₺ <span>Para</span></button>
-    <button class="nav-item" data-section="settings">⚙ <span>Ayarlar</span></button>
-  </nav>
-  <div class="sidebar-bottom">
-    <div class="target-card"><span>Ana hedef</span><strong>Hukuk • İlk 50.000</strong><small>Çalışma hedefi: 30K bandı</small></div>
-    <div class="mini-sync"><span class="status-dot"></span><span>Yerel kayıt aktif</span></div>
-  </div>
-</aside>
-<main class="main">
-<header class="topbar"><div><p class="eyebrow">7 Eylül 2026 başlangıç • YKS 2027</p><h2 id="pageTitle">Kontrol Merkezi</h2></div><div class="top-actions"><div id="clock" class="clock"></div><button id="themeBtn" class="icon-btn" title="Tema">☾</button><button id="exportBtn" class="secondary-btn">Yedekle</button></div></header>
+<div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+<div id="toast" class="toast" role="status"></div>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-symbol"><span>50</span><b>K</b></div>
+      <div><div class="brand-name">HUKUK 50K</div><div class="brand-sub">PERSONAL OS / EA</div></div>
+    </div>
+    <div class="profile-card">
+      <div class="avatar">E</div>
+      <div><strong>Efecan</strong><span>Hedef • Hukuk</span></div>
+      <span class="live-dot"></span>
+    </div>
+    <nav class="nav" aria-label="Ana menü">
+      <div class="nav-label">WORKSPACE</div>
+      <button class="nav-item active" data-view="dashboard"><span class="ico">⌂</span>Kontrol Merkezi</button>
+      <button class="nav-item" data-view="today"><span class="ico">✓</span>Bugünün Sistemi</button>
+      <button class="nav-item" data-view="focus"><span class="ico">◉</span>Focus Room</button>
+      <div class="nav-label">ACADEMIC</div>
+      <button class="nav-item" data-view="roadmap"><span class="ico">◫</span>Konu Motoru</button>
+      <button class="nav-item" data-view="mock"><span class="ico">◒</span>Deneme Merkezi</button>
+      <button class="nav-item" data-view="analytics"><span class="ico">↗</span>Performans</button>
+      <div class="nav-label">LIFE OS</div>
+      <button class="nav-item" data-view="discipline"><span class="ico">✦</span>Disiplin</button>
+      <button class="nav-item" data-view="finance"><span class="ico">₺</span>Para Motoru</button>
+      <button class="nav-item" data-view="settings"><span class="ico">⚙</span>Ayarlar</button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="target-mini"><span>MISSION</span><strong>Hukuk • ≤ 30K</strong><small>Minimum hedef: 50K</small></div>
+      <div class="sync-line"><span class="status-dot"></span>Local sync aktif</div>
+    </div>
+  </aside>
 
-<section id="dashboard" class="section active">
- <div class="hero-grid">
-  <article class="hero-card"><div><span class="muted">Bugünkü görev ilerlemesi</span><div class="hero-number"><span id="dailyPercent">0</span><small>%</small></div><p id="dailySummary">Sistemi başlatıyoruz.</p><div class="progress-line"><i id="dailyLine"></i></div></div><div class="progress-ring" id="progressRing"><div id="ringValue">0%</div></div></article>
-  <article class="metric-card"><span>Net ders</span><strong><span id="studyMetric">0</span> dk</strong><small>Hedef <span id="studyGoal">270</span> dk</small></article>
-  <article class="metric-card"><span>Streak</span><strong><span id="streakMetric">0</span> gün</strong><small>≥ %70 günlük uyum</small></article>
-  <article class="metric-card"><span>Son TYT</span><strong id="lastTyt">—</strong><small id="tytDelta">Henüz veri yok</small></article>
- </div>
- <div class="dashboard-grid">
-   <article class="panel"><div class="panel-head"><div><span class="muted">Şimdi ne yapmalısın?</span><h3>Bugünün sistemi</h3></div><button id="goToday" class="small-btn">Bugüne git →</button></div><div id="dashTasks" class="task-list"></div></article>
-   <article class="panel"><div class="panel-head"><div><span class="muted">Son 7 gün</span><h3>Çalışma ritmi</h3></div></div><div id="weeklyBars" class="weekly-bars"></div><div class="legend-row"><span><i class="dot study"></i>Ders</span><span><i class="dot task"></i>Görev</span></div></article>
- </div>
- <div class="three-grid">
-  <article class="panel"><div class="panel-head"><div><span class="muted">Hedef</span><h3>YKS yolculuğu</h3></div></div><div id="goalCard"></div></article>
-  <article class="panel"><div class="panel-head"><div><span class="muted">Son denemeler</span><h3>Performans</h3></div></div><div id="recentMocks"></div></article>
-  <article class="panel"><div class="panel-head"><div><span class="muted">Bugünün skor kartı</span><h3>Disiplin</h3></div></div><div id="dashHabits"></div></article>
- </div>
-</section>
+  <main class="main">
+    <header class="topbar">
+      <div class="top-left"><button id="mobileMenu" class="icon-btn mobile-only">☰</button><div><div id="contextLabel" class="eyebrow">7 EYLÜL 2026 • BAŞLANGIÇ</div><h1 id="pageTitle">Kontrol Merkezi</h1></div></div>
+      <div class="top-right"><div class="global-search"><span>⌕</span><input id="globalSearch" placeholder="Hızlı ara / komut yaz…" autocomplete="off"><kbd>⌘ K</kbd></div><button id="themeBtn" class="icon-btn" title="Tema">☼</button><button id="exportTop" class="ghost-btn">Yedekle</button></div>
+    </header>
 
-<section id="today" class="section"><div class="section-head"><div><span class="muted" id="todayDateText"></span><h3>Bugünkü Plan</h3></div><div class="section-actions"><button id="addTaskBtn" class="small-btn">+ Görev</button><button id="completeAllBtn" class="secondary-btn">Günü kapat</button></div></div>
- <div class="today-layout"><div class="panel"><div class="panel-head"><div><span class="muted">Görev listesi</span><h3>Yapılacaklar</h3></div><span id="taskCount" class="pill"></span></div><div id="taskList" class="task-list"></div></div><div class="panel"><div class="panel-head"><div><span class="muted">08:30–14:30</span><h3>Çalışma blokları</h3></div></div><div id="todayBlocks" class="block-list"></div></div></div>
- <div class="panel habit-panel"><div class="panel-head"><div><span class="muted">Gün sonu</span><h3>Alışkanlık skoru</h3></div><span id="habitScore" class="score-badge">0/5</span></div><div id="habitChecklist" class="habit-checklist"></div></div>
-</section>
+    <section class="view active" id="dashboard">
+      <div class="hero-head"><div><span class="section-kicker">TODAY / COMMAND CENTER</span><h2>Bugün sistem ne söylüyor?</h2><p>Hedefin hukuk. Görevin kusursuz olmak değil, <b>istikrarlı ilerlemek.</b></p></div><div class="hero-date"><div id="heroDay">Pzt</div><strong id="heroDate">07</strong><span>2026</span></div></div>
+      <div class="hero-metrics">
+        <article class="hero-metric highlight"><span>Günlük sistem skoru</span><strong id="scoreBig">0</strong><small>/ 100 • görev + alışkanlık + uyum</small><div class="score-bar"><i id="scoreBar"></i></div></article>
+        <article class="hero-metric"><span>Net çalışma</span><strong><b id="studyBig">0</b> <em>dk</em></strong><small>Hedef <b id="studyGoalSmall">270</b> dk</small></article>
+        <article class="hero-metric"><span>Streak</span><strong><b id="streakBig">0</b> <em>gün</em></strong><small>70+ skor ile devam</small></article>
+        <article class="hero-metric"><span>Sınava geri sayım</span><strong id="countdownBig">—</strong><small>2027 tarihi açıklandığında güncellenecek</small></article>
+      </div>
 
-<section id="subjects" class="section"><div class="section-head"><div><span class="muted">TYT + AYT Eşit Ağırlık</span><h3>Konu Yol Haritası</h3></div><div class="filters"><select id="subjectFilter"><option value="all">Tümü</option><option value="TYT">TYT</option><option value="AYT">AYT</option></select><select id="statusFilter"><option value="all">Tüm durumlar</option><option value="not_started">Başlamadı</option><option value="learning">Çalışılıyor</option><option value="done">Bitti</option></select></div></div><div class="overall-progress panel"><div><span class="muted">Toplam konu ilerlemesi</span><strong id="subjectPct">0%</strong></div><div class="big-bar"><i id="subjectBar"></i></div></div><div id="subjectGrid" class="subject-grid"></div></section>
+      <div class="grid-2 main-grid-gap">
+        <article class="card assistant-card">
+          <div class="card-head"><div><span class="section-kicker">AI STYLE / RULE-BASED COACH</span><h3>Kişisel Asistan</h3></div><span class="badge success">LIVE</span></div>
+          <div class="assistant-message"><div class="assistant-orb">✦</div><div><strong id="assistantHeadline">Sistem başlatılıyor…</strong><p id="assistantText">Verilerini okuyup bugünün en yüksek getirili adımlarını hazırlıyorum.</p></div></div>
+          <div id="assistantActions" class="assistant-actions"></div>
+        </article>
+        <article class="card focus-card">
+          <div class="card-head"><div><span class="section-kicker">TODAY / PRIORITY</span><h3>Şimdi</h3></div><button class="small-btn" data-route="today">Tüm plan →</button></div>
+          <div id="priorityTask" class="priority-task"></div>
+          <div class="mini-stat-row"><div><span>Bugün kalan</span><strong id="remainingTasks">0</strong></div><div><span>Soru hedefi</span><strong id="questionProgress">0 / 350</strong></div><div><span>Bugün</span><strong id="todayCompletion">0%</strong></div></div>
+        </article>
+      </div>
 
-<section id="mock" class="section"><div class="section-head"><div><span class="muted">Netlerini delil olarak kullan</span><h3>Deneme Merkezi</h3></div><button id="addMockBtn" class="small-btn">+ Deneme</button></div><div class="mock-summary" id="mockSummary"></div><div class="panel"><div id="mockList" class="mock-list"></div></div></section>
+      <div class="grid-3 main-grid-gap">
+        <article class="card chart-card"><div class="card-head"><div><span class="section-kicker">7 DAYS</span><h3>Çalışma ritmi</h3></div><span class="muted" id="weeklyStudyLabel">0 dk</span></div><div id="weeklyChart" class="bar-chart"></div></article>
+        <article class="card"><div class="card-head"><div><span class="section-kicker">TARGET</span><h3>Hedef rotası</h3></div><span class="badge purple">LAW / EA</span></div><div class="target-visual"><div class="rank-ring"><div><strong>≤30K</strong><span>stretch goal</span></div></div><div class="target-copy"><strong>Hukuk</strong><p>Minimum hedef <b>50K</b>. Sistemin güvenli marjı için 30K bandını kovalıyoruz.</p><div class="thin-progress"><i id="subjectProgress"></i></div><small>Konu ilerlemesi <b id="subjectProgressText">0%</b></small></div></div></article>
+        <article class="card"><div class="card-head"><div><span class="section-kicker">RECENT</span><h3>Son performans</h3></div><button class="text-btn" data-route="mock">Denemeler →</button></div><div id="recentPerformance" class="stack-list"></div></article>
+      </div>
 
-<section id="analytics" class="section"><div class="section-head"><div><span class="muted">Veriye bak, duyguyla değil</span><h3>Performans Analizi</h3></div><button id="clearAnalyticsBtn" class="secondary-btn">Grafikleri yenile</button></div><div class="analytics-grid"><article class="panel"><div class="panel-head"><div><span class="muted">Deneme trendi</span><h3>TYT Net</h3></div></div><div id="tytChart" class="chart"></div></article><article class="panel"><div class="panel-head"><div><span class="muted">Ders dağılımı</span><h3>Son 7 gün</h3></div></div><div id="studyChart" class="chart-bars"></div></article></div><div class="three-grid"><article class="panel"><span class="muted">En zayıf konu</span><h3 id="weakTopic">—</h3><p id="weakTopicHint" class="muted">Daha fazla konu verisi gerekli.</p></article><article class="panel"><span class="muted">En güçlü ders</span><h3 id="strongSubject">—</h3><p id="strongSubjectHint" class="muted">Çalışma süresi kaydı arttıkça netleşir.</p></article><article class="panel"><span class="muted">Haftalık uyum</span><h3 id="weeklyCompliance">0%</h3><p id="weeklyComplianceHint" class="muted">Görev tamamlama oranı.</p></article></div></section>
+      <div class="grid-2 main-grid-gap">
+        <article class="card"><div class="card-head"><div><span class="section-kicker">WEAKNESS RADAR</span><h3>Zayıf halka</h3></div><span class="badge danger">ÖNCELİK</span></div><div id="weaknessRadar"></div></article>
+        <article class="card"><div class="card-head"><div><span class="section-kicker">DISCIPLINE</span><h3>Bugün kendine verdiğin sözler</h3></div><span id="disciplineMiniScore" class="score-chip">0/5</span></div><div id="disciplineMini"></div></article>
+      </div>
+    </section>
 
-<section id="habits" class="section"><div class="section-head"><div><span class="muted">Sistemi taşıyan temel</span><h3>Disiplin Merkezi</h3></div></div><div class="habit-history panel"><div class="panel-head"><div><span class="muted">Son 14 gün</span><h3>Uyum takvimi</h3></div></div><div id="habitCalendar" class="habit-calendar"></div></div><div class="three-grid" id="habitStats"></div></section>
+    <section class="view" id="today">
+      <div class="page-intro"><div><span class="section-kicker">DAILY OPERATING SYSTEM</span><h2>Bugünün Sistemi</h2><p>16.00–23.00 iş blokunu koruyarak sabahı YKS'nin en verimli bölümüne ayırıyoruz.</p></div><div class="page-actions"><button id="regeneratePlan" class="secondary-btn">↻ Planı optimize et</button><button id="finishDay" class="primary-btn">Günü kapat</button></div></div>
+      <div class="day-layout"><div class="card"><div class="card-head"><div><span class="section-kicker">TASK BOARD</span><h3>Görevler</h3></div><div class="inline-actions"><span id="taskCountBadge" class="badge"></span><button id="addTask" class="small-btn">+ Görev</button></div></div><div id="taskList" class="task-board"></div></div><div class="card schedule-card"><div class="card-head"><div><span class="section-kicker">08.30 → 15.30</span><h3>Çalışma akışı</h3></div></div><div id="scheduleList" class="schedule-list"></div><div class="work-note"><strong>16.00–23.00</strong><span>Spor salonu işi • uygun zamanda antrenman • ikinci iş yok</span></div></div></div>
+      <div class="grid-2 main-grid-gap"><article class="card"><div class="card-head"><div><span class="section-kicker">HABITS</span><h3>Gün sonu skor kartı</h3></div><span id="habitScoreBadge" class="score-chip">0/5</span></div><div id="habitList" class="habit-grid"></div></article><article class="card"><div class="card-head"><div><span class="section-kicker">NOTES</span><h3>Günün notu</h3></div><button id="saveDayNote" class="small-btn">Kaydet</button></div><textarea id="dayNote" class="note-area" placeholder="Bugün ne iyi gitti? Nerede dağıldın? Yarın için tek cümlelik not…"></textarea></article></div>
+    </section>
 
-<section id="money" class="section"><div class="section-head"><div><span class="muted">Sınavı finanse eden yan motor</span><h3>Para Merkezi</h3></div><button id="addMoneyBtnTop" class="small-btn">+ İşlem</button></div><div class="money-grid"><article class="money-card"><span>Ana gelir</span><strong>₺15.000</strong><small>Spor salonu</small></article><article class="money-card"><span>Ek gelir</span><strong id="extraIncome">₺0</strong><small>Bu ay</small></article><article class="money-card"><span>Gider</span><strong id="expenseTotal">₺0</strong><small>Bu ay</small></article><article class="money-card"><span>Toplam nakit akışı</span><strong id="netMoney">₺15.000</strong><small>Takip edilen</small></article></div><div class="two-grid"><div class="panel form-panel"><div class="panel-head"><h3>İşlem ekle</h3></div><div class="form-row"><input id="moneyDesc" placeholder="Örn: Web sitesi müşteri #1"><select id="moneyType"><option value="income">Gelir</option><option value="expense">Gider</option></select><input id="moneyAmount" type="number" min="0" placeholder="Tutar"><button id="addMoneyBtn" class="small-btn">Kaydet</button></div></div><div class="panel"><div class="panel-head"><h3>Son hareketler</h3></div><div id="moneyList" class="money-list"></div></div></div></section>
+    <section class="view" id="focus">
+      <div class="page-intro"><div><span class="section-kicker">FOCUS ROOM</span><h2>Tek iş. Tek hedef.</h2><p>Telefonu bırak, kronometreyi başlat, blok bitene kadar başka hiçbir şeye dokunma.</p></div><div class="page-actions"><button id="focusTaskSelect" class="secondary-btn">Görev seç</button></div></div>
+      <div class="focus-room"><div class="focus-ring"><div><span id="timerMode">FOCUS</span><strong id="timerDisplay">25:00</strong><small id="focusTargetLabel">Bir görev seç</small></div></div><div class="focus-controls"><button id="timerStart" class="primary-btn large">Başlat</button><button id="timerPause" class="secondary-btn large">Duraklat</button><button id="timerReset" class="ghost-btn large">Sıfırla</button></div><div id="focusSelected" class="focus-selected">Henüz görev seçmedin.</div></div>
+      <div class="grid-3 main-grid-gap"><article class="card focus-tip"><span class="tip-icon">01</span><h3>Hazırla</h3><p>Telefonu başka odaya bırak. Su, kalem, soru bankası. Sekmeleri kapat.</p></article><article class="card focus-tip"><span class="tip-icon">02</span><h3>Çalış</h3><p>Tek görev. Bildirim yok. Mola gelmeden görev değiştirmek yok.</p></article><article class="card focus-tip"><span class="tip-icon">03</span><h3>Kapat</h3><p>Blok bitince süreyi kaydet, yanlışları işaretle ve bir sonraki bloğa geç.</p></article></div>
+    </section>
 
-<section id="settings" class="section"><div class="section-head"><div><span class="muted">Kişisel ayarlar</span><h3>Sistem Ayarları</h3></div></div><div class="settings-grid"><article class="panel"><h3>Çalışma hedefleri</h3><label>Günlük ders hedefi (dk)<input id="studyGoalInput" type="number" min="60" max="900"></label><label>Günlük minimum paragraf<input id="paragraphGoalInput" type="number" min="0" max="100"></label><label>Günlük minimum problem<input id="problemGoalInput" type="number" min="0" max="100"></label><button id="saveSettingsBtn" class="small-btn">Ayarları kaydet</button></article><article class="panel"><h3>Veri yönetimi</h3><p class="muted">Tarayıcı değiştirirsen verilerin otomatik gelmez. Düzenli yedek al.</p><div class="stack"><button id="exportBtn2" class="secondary-btn">JSON yedeği indir</button><label class="import-btn">JSON yedeği yükle<input id="importFile" type="file" accept="application/json" hidden></label><button id="resetBtn" class="danger-btn">Tüm verileri sil</button></div></article></div></section>
-</main></div>
+    <section class="view" id="roadmap">
+      <div class="page-intro"><div><span class="section-kicker">ACADEMIC ENGINE</span><h2>Konu Motoru</h2><p>Konuyu “bitti” saymak yerine çalışma, soru, tekrar ve güven seviyesini izliyoruz.</p></div><div class="page-actions"><select id="roadmapArea"><option value="ALL">Tümü</option><option value="TYT">TYT</option><option value="AYT">AYT</option></select><select id="roadmapStatus"><option value="ALL">Tüm durumlar</option><option value="not_started">Başlamadı</option><option value="learning">Çalışılıyor</option><option value="practice">Soru aşaması</option><option value="review">Tekrar</option><option value="done">Tamamlandı</option></select></div></div>
+      <div class="card roadmap-summary"><div><span>Toplam konu</span><strong id="topicTotal">0</strong></div><div><span>Tamamlanan</span><strong id="topicDone">0</strong></div><div><span>Aktif konular</span><strong id="topicActive">0</strong></div><div class="summary-progress"><span>Genel ilerleme</span><div class="thin-progress"><i id="roadmapProgress"></i></div><strong id="roadmapProgressText">0%</strong></div></div>
+      <div id="roadmapGrid" class="roadmap-grid"></div>
+    </section>
 
-<dialog id="taskDialog"><form method="dialog" id="taskForm" class="dialog-form"><button class="dialog-close" value="cancel">×</button><h3>Yeni görev</h3><input id="taskTitle" required maxlength="100" placeholder="Örn: 30 paragraf + yanlış analizi"><select id="taskCategory"><option>TYT</option><option>AYT</option><option>Tekrar</option><option>EB Digital</option><option>Spor</option><option>Disiplin</option></select><input id="taskMinutes" type="number" min="0" max="600" placeholder="Tahmini dakika (opsiyonel)"><button class="small-btn" value="default">Görevi ekle</button></form></dialog>
-<dialog id="mockDialog"><form method="dialog" id="mockForm" class="dialog-form"><button class="dialog-close" value="cancel">×</button><h3>Deneme kaydı</h3><select id="mockType"><option>TYT</option><option>AYT EA</option></select><input id="mockNet" type="number" min="0" max="160" step="0.25" required placeholder="Toplam net"><div class="subject-inputs"><input id="mockTurkce" type="number" min="0" max="40" step="0.25" placeholder="Türkçe"><input id="mockMath" type="number" min="0" max="40" step="0.25" placeholder="Matematik"><input id="mockSocial" type="number" min="0" max="20" step="0.25" placeholder="Sosyal"><input id="mockScience" type="number" min="0" max="20" step="0.25" placeholder="Fen"></div><textarea id="mockNote" maxlength="240" placeholder="Yanlışın ana nedeni / kısa not"></textarea><button class="small-btn" value="default">Kaydet</button></form></dialog>
-<script src="app.js"></script><script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}</script>
-</body></html>
+    <section class="view" id="mock">
+      <div class="page-intro"><div><span class="section-kicker">EVIDENCE, NOT EMOTION</span><h2>Deneme Merkezi</h2><p>Her deneme yalnızca bir puan değil; sonraki haftanın kararını üretir.</p></div><div class="page-actions"><button id="addMock" class="primary-btn">+ Deneme gir</button></div></div>
+      <div id="mockKpis" class="kpi-row"></div><div class="card"><div class="card-head"><div><span class="section-kicker">HISTORY</span><h3>Deneme geçmişi</h3></div><select id="mockFilter"><option value="ALL">Tümü</option><option value="TYT">TYT</option><option value="AYT">AYT EA</option></select></div><div id="mockTable" class="mock-table"></div></div>
+    </section>
+
+    <section class="view" id="analytics">
+      <div class="page-intro"><div><span class="section-kicker">PERFORMANCE INTELLIGENCE</span><h2>Performans</h2><p>Veri tek başına anlamlı değil. Trend + hata tipi + tekrar süresi birlikte okunur.</p></div></div>
+      <div id="analyticsKpis" class="kpi-row"></div>
+      <div class="grid-2 main-grid-gap"><article class="card"><div class="card-head"><div><span class="section-kicker">TREND</span><h3>Net grafiği</h3></div></div><div id="netChart" class="line-chart"></div></article><article class="card"><div class="card-head"><div><span class="section-kicker">LOAD</span><h3>Son 14 gün çalışma yükü</h3></div></div><div id="loadChart" class="bar-chart tall"></div></article></div>
+      <div class="grid-3 main-grid-gap"><article class="card"><span class="section-kicker">WEAKNESS</span><h3 id="analysisWeak">—</h3><p id="analysisWeakText" class="muted">Veri biriktikçe açılacak.</p></article><article class="card"><span class="section-kicker">RELIABILITY</span><h3 id="analysisReliability">—</h3><p id="analysisReliabilityText" class="muted">Son 7 gün görev uyumu.</p></article><article class="card"><span class="section-kicker">CONSISTENCY</span><h3 id="analysisConsistency">—</h3><p id="analysisConsistencyText" class="muted">Son 30 gün aktif günler.</p></article></div>
+    </section>
+
+    <section class="view" id="discipline">
+      <div class="page-intro"><div><span class="section-kicker">LIFE OS / DISCIPLINE</span><h2>Disiplin Merkezi</h2><p>Kendine verdiğin küçük sözleri tutmak, büyük hedefin ön koşulu.</p></div></div>
+      <div class="card discipline-heat"><div class="card-head"><div><span class="section-kicker">LAST 30 DAYS</span><h3>Uyum ısı haritası</h3></div><span class="muted">%70 altı alarm</span></div><div id="disciplineHeatmap" class="heatmap"></div><div class="heat-legend"><span><i class="h0"></i>0</span><span><i class="h1"></i>40</span><span><i class="h2"></i>70</span><span><i class="h3"></i>85</span><span><i class="h4"></i>100</span></div></div>
+      <div class="grid-3 main-grid-gap" id="disciplineCards"></div>
+    </section>
+
+    <section class="view" id="finance">
+      <div class="page-intro"><div><span class="section-kicker">LIFE OS / MONEY ENGINE</span><h2>Para Motoru</h2><p>15.000 TL sabit geliri koru; sınavı aksatmayacak ek gelir üret; gereksiz saat satma.</p></div><div class="page-actions"><button id="addIncomeQuick" class="secondary-btn">+ Gelir</button><button id="addExpenseQuick" class="ghost-btn">+ Gider</button></div></div>
+      <div id="financeKpis" class="kpi-row"></div><div class="grid-2 main-grid-gap"><article class="card"><div class="card-head"><div><span class="section-kicker">CASHFLOW</span><h3>Bu ay</h3></div></div><div id="cashflowBars" class="finance-chart"></div></article><article class="card"><div class="card-head"><div><span class="section-kicker">TRANSACTIONS</span><h3>Hareketler</h3></div></div><div id="moneyList" class="money-list"></div></article></div>
+    </section>
+
+    <section class="view" id="settings">
+      <div class="page-intro"><div><span class="section-kicker">CONTROL PLANE</span><h2>Ayarlar</h2><p>Hedefleri değiştir, verini yedekle, sistemi kişiselleştir.</p></div></div>
+      <div class="grid-2 main-grid-gap"><article class="card settings-card"><div class="card-head"><div><span class="section-kicker">TARGETS</span><h3>Hedefler</h3></div></div><label>Günlük ders hedefi (dk)<input id="setStudy" type="number" min="120" max="720"></label><label>Günlük soru hedefi<input id="setQuestions" type="number" min="50" max="1000"></label><label>Paragraf minimumu<input id="setParagraph" type="number" min="0" max="100"></label><label>Problem minimumu<input id="setProblem" type="number" min="0" max="100"></label><button id="saveSettings" class="primary-btn">Kaydet</button></article><article class="card settings-card"><div class="card-head"><div><span class="section-kicker">DATA</span><h3>Veri yönetimi</h3></div></div><p class="muted">Tarayıcı depolaması kullanılıyor. Düzenli JSON yedeği al; ileride Supabase senkronizasyonuna geçebiliriz.</p><div class="settings-actions"><button id="exportSettings" class="secondary-btn">JSON yedeği indir</button><label class="file-btn">JSON yedeği yükle<input id="importSettings" type="file" accept="application/json" hidden></label><button id="resetSettings" class="danger-btn">Tüm verileri sil</button></div><div class="system-note"><strong>2027 YKS notu</strong><span>2027 sınav takvimi/2027 kılavuzu yayımlandığında sınav tarihi ve sınav parametreleri buradan güncellenecek. Panelin mevcut akademik altyapısı 2026-YKS yapısını başlangıç referansı olarak kullanır.</span></div></article></div>
+    </section>
+  </main>
+</div>
+
+<dialog id="taskDialog" class="modal"><form method="dialog" id="taskForm" class="modal-form"><button class="modal-x" value="cancel">×</button><span class="section-kicker">QUICK ADD</span><h3>Yeni görev</h3><input id="taskTitle" required placeholder="Görev adı"><div class="form-grid"><select id="taskCategory"><option>TYT</option><option>AYT</option><option>Tekrar</option><option>EB Digital</option><option>Spor</option><option>Life</option></select><input id="taskMinutes" type="number" min="0" placeholder="Dakika"></div><div class="form-actions"><button class="ghost-btn" value="cancel">İptal</button><button class="primary-btn" value="default">Ekle</button></div></form></dialog>
+<dialog id="mockDialog" class="modal"><form method="dialog" id="mockForm" class="modal-form"><button class="modal-x" value="cancel">×</button><span class="section-kicker">PERFORMANCE LOG</span><h3>Deneme kaydı</h3><div class="form-grid"><select id="mockType"><option>TYT</option><option>AYT EA</option></select><input id="mockDate" type="date"></div><div class="form-grid"><input id="mockTurkce" type="number" step="0.25" placeholder="Türkçe/Edebiyat net"><input id="mockMath" type="number" step="0.25" placeholder="Matematik net"></div><div class="form-grid"><input id="mockSocial" type="number" step="0.25" placeholder="Sosyal / T-1+C-1"><input id="mockScience" type="number" step="0.25" placeholder="Fen (TYT ise)"></div><input id="mockNet" type="number" step="0.25" required placeholder="Toplam net"><input id="mockDuration" type="number" min="0" placeholder="Süre (dk)"><input id="mockNote" placeholder="Kısa analiz / kritik hata"><div class="form-actions"><button class="ghost-btn" value="cancel">İptal</button><button class="primary-btn" value="default">Kaydet</button></div></form></dialog>
+<dialog id="moneyDialog" class="modal"><form method="dialog" id="moneyForm" class="modal-form"><button class="modal-x" value="cancel">×</button><span class="section-kicker">CASHFLOW</span><h3>Para hareketi</h3><select id="moneyType"><option value="income">Gelir</option><option value="expense">Gider</option></select><input id="moneyDesc" required placeholder="Açıklama"><input id="moneyAmount" type="number" min="0" required placeholder="Tutar"><div class="form-actions"><button class="ghost-btn" value="cancel">İptal</button><button class="primary-btn" value="default">Kaydet</button></div></form></dialog>
+<dialog id="commandDialog" class="modal"><form method="dialog" class="modal-form command-form"><button class="modal-x" value="cancel">×</button><span class="section-kicker">COMMAND PALETTE</span><h3>Ne yapmak istiyorsun?</h3><input id="commandInput" placeholder="ör. “deneme ekle”, “bugüne git”, “focus başlat”"><div id="commandResults" class="command-results"></div></form></dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
