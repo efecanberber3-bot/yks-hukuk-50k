@@ -1,25 +1,40 @@
-# Hukuk 50K OS — V3
+# Hukuk 50K OS — Premium V4 Cloud
 
-Premium, GitHub Pages uyumlu, tarayıcı içinde çalışan kişisel YKS EA performans sistemi.
+Kişisel YKS EA → Hukuk hedefi için premium performans/alışkanlık/finans takip paneli.
 
-## Özellikler
-- Kontrol merkezi + kural tabanlı kişisel asistan
-- Günlük görev/alışkanlık sistemi
-- Focus Room / Pomodoro tipi odak sayacı
-- TYT + AYT EA konu motoru
-- Konu durumları ve güven seviyesi
-- Deneme kayıtları ve trend grafikleri
-- 30 günlük disiplin ısı haritası
-- Çalışma yükü ve performans analizi
-- 15.000 TL sabit gelir + ek gelir/gider takibi
-- JSON yedekleme / geri yükleme
-- Mobil uyum ve PWA/offline cache
+## V4 yenilikleri
+- Supabase Auth (e-posta + şifre)
+- Çoklu cihaz bulut senkronizasyonu
+- RLS ile kullanıcı bazlı veri izolasyonu
+- Yerel çalışma devam eder; bulut bağlantısı isteğe bağlıdır
+- Ayarlar ekranından Supabase Project URL + Publishable/Anon Key yapılandırması
+- Otomatik, debounced bulut kaydı
+- Manuel senkronizasyon / çıkış
+- V3'teki günlük plan, konu motoru, deneme, performans, disiplin, finans ve PWA özellikleri korunur
+
+## 1) Supabase projesini aç
+Supabase Dashboard'dan bir proje oluştur.
+
+## 2) Veritabanını hazırla
+Supabase → SQL Editor → `supabase-schema.sql` dosyasının tamamını çalıştır.
+
+## 3) Data API erişimi
+`public.user_state` tablosunun API'den erişilebilir olduğundan emin ol. RLS açıktır ve yalnızca authenticated kullanıcı kendi `user_id` satırına erişebilir.
+
+## 4) Uygulamayı yapılandır
+GitHub Pages sitesinde `Ayarlar → Bulut Senkronizasyonu` bölümüne:
+- Project URL
+- Publishable/Anon Key
+
+gir ve bağlantıyı kaydet.
+
+**service_role / secret key tarayıcıya veya GitHub'a koyma.**
+
+## 5) Auth
+Supabase Authentication → Providers altında Email aktif olsun. E-posta doğrulama açıksa kayıt sonrası doğrulama e-postası gelir.
 
 ## GitHub Pages
-Repository → Settings → Pages → Deploy from branch → `main` / `/root`.
+`main` branch + `/root` (veya repository ayarındaki seçili kök klasör) ile yayınla.
 
-## Veri
-V3 şu an localStorage kullanır. Çoklu cihaz senkronizasyonu için sonraki aşama: Supabase Auth + Database.
-
-## YKS referansı
-Panelin akademik yapısı 2026-YKS'nin test yapısını başlangıç referansı olarak kullanır. 2027-YKS kılavuzu yayımlandığında sınav parametreleri ve geri sayım güncellenecektir.
+## Veri modeli
+Tüm uygulama durumu tek bir `jsonb` kaydında, kullanıcı başına bir satır olarak saklanır. İleride görev/konu/deneme tablolarına normalleştirmek mümkündür; V4'te öncelik güvenli ve kolay yedeklenebilir kişisel cloud state modelidir.

@@ -136,6 +136,9 @@
 <dialog id="moneyDialog" class="modal"><form method="dialog" id="moneyForm" class="modal-form"><button class="modal-x" value="cancel">×</button><span class="section-kicker">CASHFLOW</span><h3>Para hareketi</h3><select id="moneyType"><option value="income">Gelir</option><option value="expense">Gider</option></select><input id="moneyDesc" required placeholder="Açıklama"><input id="moneyAmount" type="number" min="0" required placeholder="Tutar"><div class="form-actions"><button class="ghost-btn" value="cancel">İptal</button><button class="primary-btn" value="default">Kaydet</button></div></form></dialog>
 <dialog id="commandDialog" class="modal"><form method="dialog" class="modal-form command-form"><button class="modal-x" value="cancel">×</button><span class="section-kicker">COMMAND PALETTE</span><h3>Ne yapmak istiyorsun?</h3><input id="commandInput" placeholder="ör. “deneme ekle”, “bugüne git”, “focus başlat”"><div id="commandResults" class="command-results"></div></form></dialog>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cloud-config.js"></script>
 <script src="app.js"></script>
+<script src="cloud.js"></script>
 </body>
 </html>
