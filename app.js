@@ -44,9 +44,17 @@ function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[
 function load(){try{const raw=localStorage.getItem(KEY);if(raw)return migrate(JSON.parse(raw));for(const k of LEGACY_KEYS){const raw2=localStorage.getItem(k);if(raw2)return migrate(JSON.parse(raw2));}}catch{}return clone(defaultState)}
 function normalize(x){return migrate(x)}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));document.dispatchEvent(new CustomEvent('hukuk50k:changed'))}
+function makeBaseTasks(){return baseTasks().map(t=>({...t,id:uid('task'),done:false,source:'base'}))}
 function ensureDay(k=today()){
- if(!state.days[k])state.days[k]={tasks:baseTasks().map(t=>({...t,id:uid('task'),done:false,source:'base'})),habits:Object.fromEntries(habitDefs.map(x=>[x[0],false])),studyMinutes:0,questions:0,note:'',phoneMinutes:0,closed:false};
- const d=state.days[k];d.habits??={};d.tasks??=[];d.studyMinutes??=0;d.questions??=0;d.note??='';d.phoneMinutes??=0;d.closed??=false;return d;
+ if(!state.days[k])state.days[k]={tasks:makeBaseTasks(),habits:Object.fromEntries(habitDefs.map(x=>[x[0],false])),studyMinutes:0,questions:0,note:'',phoneMinutes:0,closed:false};
+ const d=state.days[k];d.habits??={};d.tasks??=[];d.studyMinutes??=0;d.questions??=0;d.note??='';d.phoneMinutes??=0;d.closed??=false;
+ const hasRealTasks=d.tasks.length>0;
+ if(!hasRealTasks && !d.closed) d.tasks=makeBaseTasks();
+ else if(hasRealTasks && d.tasks.length<baseTasks().length){
+   const titles=new Set(d.tasks.map(t=>t.title));
+   baseTasks().forEach(t=>{if(!titles.has(t.title))d.tasks.push({...t,id:uid('task'),done:false,source:'base'})});
+ }
+ return d;
 }
 function taskPct(d){return d.tasks.length?Math.round(d.tasks.filter(t=>t.done).length/d.tasks.length*100):0}
 function studyMinutes(d){return d.tasks.filter(t=>t.done&&['study','review'].includes(t.kind)).reduce((a,t)=>a+(Number(t.minutes)||0),0)+Number(d.studyMinutes||0)}
@@ -221,7 +229,23 @@ function ensureQuickInput(){
 }
 function renderRoadmap(){
  const area=$('#roadmapArea').value,status=$('#roadmapStatus').value;let total=0,done=0,active=0;
- $('#roadmapGrid').innerHTML=allSubjects().filter(([name])=>area==='ALL'||areaOf(name)===area).map(([name,topics])=>{const mapped=topics.map((topic,i)=>({topic,i,data:stateTopic(name,i)})).filter(x=>status==='ALL'||x.data.status===status);const localDone=topics.filter((_,i)=>stateTopic(name,i).status==='done').length;const localActive=topics.filter((_,i)=>['learning','practice','review'].includes(stateTopic(name,i).status)).length;total+=topics.length;done+=localDone;active+=localActive;return `<article class="subject-panel"><div class="subject-top"><div><span class="section-kicker">${areaOf(name)}</span><h3>${name}</h3></div><div class="count">${localDone}/${topics.length} tamam</div></div><div class="subject-progress"><i style="width:${Math.round(localDone/topics.length*100)}%"></i></div>${mapped.map(x=>{const c=clamp(Number(x.data.confidence||0),0,5);const s=x.data.status;return `<div class="topic-row"><div><strong>${esc(x.topic)}</strong><small>${topicStatusLabel(s)}${x.data.next?' • tekrar '+fmtDate(x.data.next):''}${isDue(x.data)?' • GECİKMİŞ':''}</small></div><select data-topic="${encodeURIComponent(name)}|${x.i}"><option value="not_started" ${s==='not_started'?'selected':''}>Başlamadı</option><option value="learning" ${s==='learning'?'selected':''}>Çalışılıyor</option><option value="practice" ${s==='practice'?'selected':''}>Soru aşaması</option><option value="review" ${s==='review'?'selected':''}>Tekrar</option><option value="done" ${s==='done'?'selected':''}>Tamamlandı</option></select><div class="confidence" title="Güven ${c}/5">${[1,2,3,4,5].map(i=>`<i class="conf-dot ${i<=c?'on':''}" data-confidence="${encodeURIComponent(name)}|${x.i}|${i}"></i>`).join('')}</div></div>`}).join('')}</article>`}).join('')||'<div class="empty">Filtreye uygun konu bulunamadı.</div>';
+ const subjects=allSubjects().filter(([name])=>area==='ALL'||areaOf(name)===area);
+ $('#roadmapGrid').innerHTML=subjects.map(([name,topics])=>{
+   const mapped=topics.map((topic,i)=>({topic,i,data:stateTopic(name,i)})).filter(x=>status==='ALL'||x.data.status===status);
+   const localDone=topics.filter((_,i)=>stateTopic(name,i).status==='done').length;
+   const localActive=topics.filter((_,i)=>['learning','practice','review'].includes(stateTopic(name,i).status)).length;
+   total+=topics.length;done+=localDone;active+=localActive;
+   const shown=mapped.length?mapped.map(x=>{
+      const d=x.data,c=clamp(Number(d.confidence||0),0,5),s=d.status,answered=(Number(d.attempts)||0),acc=answered?Math.round(((Number(d.correct)||0)/answered)*100):null;
+      return `<div class="topic-card ${isDue(d)?'overdue':''}">
+        <div class="topic-main"><div class="topic-title-row"><strong>${esc(x.topic)}</strong><span class="topic-status status-${s}">${topicStatusLabel(s)}</span></div>
+        <div class="topic-metrics"><span>Son çalışma ${d.last?fmtDate(d.last):'Yok'}</span><span>${d.next?'Tekrar '+fmtDate(d.next):'Tekrar planlanmadı'}</span><span>${answered} soru${acc!==null?` • %${acc}`:''}</span></div></div>
+        <select data-topic="${encodeURIComponent(name)}|${x.i}"><option value="not_started" ${s==='not_started'?'selected':''}>Başlamadı</option><option value="learning" ${s==='learning'?'selected':''}>Çalışılıyor</option><option value="practice" ${s==='practice'?'selected':''}>Soru aşaması</option><option value="review" ${s==='review'?'selected':''}>Tekrar</option><option value="done" ${s==='done'?'selected':''}>Tamamlandı</option></select>
+        <div class="confidence" aria-label="Güven ${c}/5"><span class="conf-label">Güven</span>${[1,2,3,4,5].map(i=>`<button type="button" class="conf-dot ${i<=c?'on':''}" data-confidence="${encodeURIComponent(name)}|${x.i}|${i}" aria-label="Güven ${i}"></button>`).join('')}</div>
+      </div>`;
+   }).join(''):`<div class="empty">Bu filtrede konu yok.</div>`;
+   return `<article class="subject-panel"><div class="subject-top"><div><span class="section-kicker">${areaOf(name)}</span><h3>${name}</h3><p class="subject-caption">Konu → çalışma → soru → tekrar → güven</p></div><div class="count">${localDone}/${topics.length} tamam</div></div><div class="subject-progress"><i style="width:${Math.round(localDone/topics.length*100)}%"></i></div><div class="topic-list">${shown}</div></article>`;
+ }).join('')||'<div class="empty">Konu listesi bulunamadı.</div>';
  const p=topicStats();$('#topicTotal').textContent=p.total;$('#topicDone').textContent=p.done;$('#topicActive').textContent=p.active;$('#roadmapProgress').style.width=p.pct+'%';$('#roadmapProgressText').textContent=p.pct+'%';
 }
 function topicStatusLabel(s){return ({not_started:'Başlamadı',learning:'Çalışılıyor',practice:'Soru aşaması',review:'Tekrar',done:'Tamamlandı'})[s]||'Başlamadı'}
@@ -249,7 +273,7 @@ function valOrNull(v){return v===''?null:Number(v)}
 function addMoney(typeOverride){$('#moneyType').value=typeOverride||'income';$('#moneyDialog').showModal()}
 function saveMoney(){const desc=$('#moneyDesc').value.trim(),amt=Number($('#moneyAmount').value),type=$('#moneyType').value;if(!desc||!amt)return;state.money.push({id:uid('money'),type,desc,amount:amt,date:today()});save();$('#moneyDialog').close();$('#moneyForm').reset();renderAll();toast(type==='income'?'Gelir kaydedildi.':'Gider kaydedildi.')}
 function saveNote(){const d=ensureDay();d.note=$('#dayNote').value.trim();save();toast('Gün notu kaydedildi.')}
-function finishDay(){const d=ensureDay(),open=d.tasks.filter(t=>!t.done);if(open.length){toast(`${open.length} açık görev var. Sistem günü kapatmıyor.`);return}d.closed=true;d.habits.study=true;save();renderAll();toast('Gün kapatıldı. Sistem bunu başarı gününe işledi.')}
+function finishDay(){const d=ensureDay(),open=d.tasks.filter(t=>!t.done);if(open.length){toast(`${open.length} açık görev var. Sistem günü kapatmıyor.`);return}d.closed=true;save();renderAll();toast('Gün kapatıldı. Sistem gerçek veriyi korudu.')}
 function optimizePlan(){const d=ensureDay(),p=adaptivePlan();const keep=d.tasks.filter(t=>t.done||(!t.ai&&!/^Tekrar •/.test(t.title)&&!/^AI •/.test(t.title)));const existing=new Set(keep.filter(t=>!t.done).map(t=>t.title));p.plan.forEach(x=>{if(!existing.has(x.title))keep.push({id:uid('task'),title:x.title,category:x.category,minutes:x.minutes,kind:'study',done:false,reason:x.reason,ai:true,source:'assistant'})});d.tasks=keep;state.assistant.lastPlanDate=today();state.assistant.lastPlanSignature=p.plan.map(x=>x.title).join('|');save();renderAll();toast(`Plan optimize edildi • ${p.plan.length} akıllı blok`)}
 function setTopic(name,i,status){state.subjects[name]??={};const prev=stateTopic(name,i);let next=prev.next;let confidence=prev.confidence||0;if(status==='done'){next=addDays(today(),confidence>=4?14:confidence===3?10:7)}else if(status==='review'){next=addDays(today(),7)}state.subjects[name][i]={...prev,status,last:today(),next,confidence};save()}
 function setConfidence(name,i,c){state.subjects[name]??={};const prev=stateTopic(name,i);let next=prev.next;if(prev.status==='done')next=addDays(today(),c>=4?21:c===3?14:7);state.subjects[name][i]={...prev,confidence:c,last:today(),next};save()}
