@@ -288,6 +288,7 @@ function stopTimer(){focus.running=false;clearInterval(focus.handle);focus.handl
 function resetTimer(){stopTimer();setFocusTimer(25)}
 function commandResults(q){const commands=[['Bugünün sistemini aç','today'],['Focus Room','focus'],['Konu motoru','roadmap'],['Deneme merkezi','mock'],['Performans','analytics'],['Disiplin','discipline'],['Para motoru','finance'],['Ayarlar','settings']];const f=commands.filter(x=>x[0].toLowerCase().includes(q.toLowerCase()));$('#commandResults').innerHTML=f.map(x=>`<button class="command-item" data-route="${x[1]}"><strong>${x[0]}</strong><span>↵ aç</span></button>`).join('')||'<div class="empty">Komut bulunamadı.</div>'}
 // Events
+const bind=(id,event,handler)=>{const el=$('#'+id);if(el)el.addEventListener(event,handler)};
 $$('.nav-item').forEach(b=>b.addEventListener('click',()=>{navigate(b.dataset.view);$('#sidebar')?.classList.remove('open')}));
 document.addEventListener('click',e=>{
  const route=e.target.closest('[data-route]');if(route){navigate(route.dataset.route);const dlg=$('#commandDialog');if(dlg?.open)dlg.close();return}
@@ -298,18 +299,25 @@ document.addEventListener('click',e=>{
  const coachPlan=e.target.closest('[data-coach-plan]');if(coachPlan){const name=decodeURIComponent(coachPlan.dataset.coachPlan);const d=ensureDay(addDays(today(),1));const w=weaknessDetails().find(x=>x.name===name)||weaknessDetails()[0];if(w){const rec=recommendedAction(w);d.tasks.push({id:uid('task'),title:`${w.name} • ${rec.topic}`,category:w.area,minutes:rec.mins,kind:'study',done:false,ai:true,source:'coach-v8',reason:w.keySignals[0]});save();toast(`${w.label}: yarının planına eklendi.`);return}}
  const radar=e.target.closest('[data-radar]');if(radar){navigate('roadmap');$('#roadmapArea').value=areaOf(decodeURIComponent(radar.dataset.radar));$('#roadmapStatus').value='ALL';renderRoadmap();return}
 });
-$('#addTask').onclick=()=>$('#taskDialog').showModal();$('#taskForm').onsubmit=e=>{e.preventDefault();addTask()};
-$('#addMock').onclick=()=>{$('#mockDate').value=today();$('#mockDialog').showModal()};$('#mockForm').onsubmit=e=>{e.preventDefault();addMock()};
-$('#addIncomeQuick').onclick=()=>addMoney('income');$('#addExpenseQuick').onclick=()=>addMoney('expense');$('#moneyForm').onsubmit=e=>{e.preventDefault();saveMoney()};
-$('#finishDay').onclick=finishDay;$('#regeneratePlan').onclick=optimizePlan;$('#planTomorrow').onclick=addTomorrowPlan;$('#saveDayNote').onclick=saveNote;$('#roadmapArea').onchange=renderRoadmap;$('#roadmapStatus').onchange=renderRoadmap;$('#mockFilter').onchange=renderMock;
+bind('addTask','click',()=>$('#taskDialog')?.showModal());bind('taskForm','submit',e=>{e.preventDefault();addTask()});
+bind('addMock','click',()=>{$('#mockDate').value=today();$('#mockDialog')?.showModal()});bind('mockForm','submit',e=>{e.preventDefault();addMock()});
+bind('addIncomeQuick','click',()=>addMoney('income'));bind('addExpenseQuick','click',()=>addMoney('expense'));bind('moneyForm','submit',e=>{e.preventDefault();saveMoney()});
+// Safe event binding: optional controls can be absent without killing the entire app.
+bind('finishDay','click',finishDay);
+bind('regeneratePlan','click',optimizePlan);
+bind('planTomorrow','click',addTomorrowPlan); // optional legacy button
+bind('saveDayNote','click',saveNote);
+bind('roadmapArea','change',renderRoadmap);
+bind('roadmapStatus','change',renderRoadmap);
+bind('mockFilter','change',renderMock);
 document.addEventListener('change',e=>{const s=e.target.closest('[data-topic]');if(s){const [name,i]=decodeURIComponent(s.dataset.topic).split('|');setTopic(name,Number(i),s.value);renderRoadmap();renderDashboard()}});
-$('#saveSettings').onclick=()=>{state.settings.studyGoal=clamp(Number($('#setStudy').value)||270,120,720);state.settings.questionGoal=clamp(Number($('#setQuestions').value)||350,50,1200);state.settings.paragraphGoal=clamp(Number($('#setParagraph').value)||20,0,100);state.settings.problemGoal=clamp(Number($('#setProblem').value)||15,0,100);save();renderAll();toast('Günlük hedefler güncellendi.')};
-$('#exportTop').onclick=exportData;$('#exportSettings').onclick=exportData;$('#importSettings').onchange=e=>{const f=e.target.files?.[0];if(f)importData(f)};$('#resetSettings').onclick=()=>{if(confirm('Tüm takip verileri silinecek. Emin misin?')){state=clone(defaultState);save();renderAll();toast('Veriler sıfırlandı.')}};
-$('#themeBtn').onclick=()=>{state.theme=state.theme==='dark'?'light':'dark';save();applyTheme()};$('#mobileMenu').onclick=()=>$('#sidebar').classList.toggle('open');
+bind('saveSettings','click',()=>{state.settings.studyGoal=clamp(Number($('#setStudy').value)||270,120,720);state.settings.questionGoal=clamp(Number($('#setQuestions').value)||350,50,1200);state.settings.paragraphGoal=clamp(Number($('#setParagraph').value)||20,0,100);state.settings.problemGoal=clamp(Number($('#setProblem').value)||15,0,100);save();renderAll();toast('Günlük hedefler güncellendi.')});
+bind('exportTop','click',exportData);bind('exportSettings','click',exportData);bind('importSettings','change',e=>{const f=e.target.files?.[0];if(f)importData(f)});bind('resetSettings','click',()=>{if(confirm('Tüm takip verileri silinecek. Emin misin?')){state=clone(defaultState);save();renderAll();toast('Veriler sıfırlandı.')}});
+bind('themeBtn','click',()=>{state.theme=state.theme==='dark'?'light':'dark';save();applyTheme()});bind('mobileMenu','click',()=>$('#sidebar')?.classList.toggle('open'));
 function renderFocusTaskPicker(){const d=ensureDay(),open=d.tasks.filter(t=>!t.done&&['study','review'].includes(t.kind));const box=$('#focusTaskList');if(!box)return;if(!open.length){box.innerHTML='<div class=\"empty\">Bugün seçilebilir açık akademik görev yok. Önce Bugünün Sistemi bölümünden bir görev ekle.</div>';return}box.innerHTML=open.map(t=>`<button type=\"button\" class=\"focus-task-option ${focus.taskId===t.id?'selected':''}\" data-focus-task=\"${t.id}\"><div><strong>${esc(t.title)}</strong><span>${esc(t.category)} • ${t.minutes||25} dk${t.ai?' • ✦ Asistan':''}</span></div><b>${focus.taskId===t.id?'✓':'→'}</b></button>`).join('')}
-$('#focusTaskSelect').onclick=()=>{renderFocusTaskPicker();$('#focusTaskDialog').showModal()};
-$('#focusTaskList').onclick=e=>{const btn=e.target.closest('[data-focus-task]');if(!btn)return;const d=ensureDay(),t=d.tasks.find(x=>x.id===btn.dataset.focusTask);if(!t)return;focus.taskId=t.id;$('#focusTargetLabel').textContent=t.title;$('#focusSelected').textContent=`Seçildi • ${t.minutes||25} dk • ${t.category}`;setFocusTimer(Math.min(50,Math.max(25,Math.round((t.minutes||25)/5)*5)));$('#focusTaskDialog').close();renderFocusTaskPicker()};
-$('#timerStart').onclick=startTimer;$('#timerPause').onclick=stopTimer;$('#timerReset').onclick=resetTimer;
-$('#globalSearch').onfocus=()=>{$('#commandDialog').showModal();$('#commandInput').focus();commandResults('')};$('#globalSearch').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('#commandDialog').showModal();$('#commandInput').focus();commandResults('')}};$('#commandInput').oninput=e=>commandResults(e.target.value);document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('#commandDialog').showModal();$('#commandInput').focus();commandResults('')}});$('#commandDialog').addEventListener('close',()=>{$('#globalSearch').value=''});
+bind('focusTaskSelect','click',()=>{renderFocusTaskPicker();const dlg=$('#focusTaskDialog');if(dlg&&!dlg.open){try{dlg.showModal()}catch{dlg.setAttribute('open','')}}});
+bind('focusTaskList','click',e=>{const btn=e.target.closest('[data-focus-task]');if(!btn)return;const d=ensureDay(),t=d.tasks.find(x=>x.id===btn.dataset.focusTask);if(!t)return;focus.taskId=t.id;$('#focusTargetLabel').textContent=t.title;$('#focusSelected').textContent=`Seçildi • ${t.minutes||25} dk • ${t.category}`;setFocusTimer(Math.min(50,Math.max(25,Math.round((t.minutes||25)/5)*5)));$('#focusTaskDialog')?.close();renderFocusTaskPicker()});
+bind('timerStart','click',startTimer);bind('timerPause','click',stopTimer);bind('timerReset','click',resetTimer);
+bind('globalSearch','focus',()=>{$('#commandDialog')?.showModal();$('#commandInput')?.focus();commandResults('')});bind('globalSearch','keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#commandDialog')?.showModal();$('#commandInput')?.focus();commandResults('')}});bind('commandInput','input',e=>commandResults(e.target.value));document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('#commandDialog')?.showModal();$('#commandInput')?.focus();commandResults('')}});bind('commandDialog','close',()=>{const x=$('#globalSearch');if(x)x.value=''});
 setFocusTimer(25);ensureDay();renderAll();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
