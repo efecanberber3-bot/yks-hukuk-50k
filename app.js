@@ -77,15 +77,29 @@ function weaknessDetails(){
  const arr=[];
  allSubjects().forEach(([name,topics])=>{
   const stats=topics.map((topic,i)=>stateTopic(name,i));
-  const done=stats.filter(x=>x.status==='done').length,active=stats.filter(x=>x.status!=='not_started').length;
+  const done=stats.filter(x=>x.status==='done').length;
+  const active=stats.filter(x=>x.status!=='not_started').length;
   const avg=stats.reduce((a,x)=>a+(Number(x.confidence)||0),0)/(stats.length||1);
   const overdue=stats.filter(isDue).length;
-  const completion=done/stats.length, activity=active/stats.length, confidence=avg/5;
-  const trendPenalty=name.startsWith('TYT')&&recentMockTrend('TYT')<0?Math.abs(recentMockTrend('TYT'))*1.5:name.startsWith('AYT')&&recentMockTrend('AYT EA')<0?Math.abs(recentMockTrend('AYT EA'))*1.3:0;
-  const raw=completion*.45+activity*.2+confidence*.2+Math.min(1,overdue/Math.max(1,stats.length))*0.15;
-  const health=clamp(Math.round(raw*100-trendPenalty),0,100);
-  const urgency=clamp(Math.round((100-health)*.75+priorityWeight[name]*15),0,100);
-  arr.push({label:name,name,area:areaOf(name),health,urgency,done,active,total:stats.length,avg,overdue});
+  const attempts=stats.reduce((a,x)=>a+(Number(x.attempts)||0),0);
+  const correct=stats.reduce((a,x)=>a+(Number(x.correct)||0),0);
+  const wrong=stats.reduce((a,x)=>a+(Number(x.wrong)||0),0);
+  const answered=correct+wrong;
+  const accuracy=answered?correct/answered:0;
+  const completion=done/(stats.length||1);
+  const activity=active/(stats.length||1);
+  const confidence=avg/5;
+  const accuracyScore=answered?accuracy:0.55;
+  const trend=(name.startsWith('TYT')?recentMockTrend('TYT'):recentMockTrend('AYT EA'));
+  const trendPenalty=Math.max(0,-trend)*1.8;
+  const stale=stats.filter(x=>x.last&&daysBetween(x.last,today())>=14&&x.status!=='done').length;
+  const overdueRatio=overdue/(stats.length||1);
+
+  // Health: 0 = kırmızı risk, 100 = güçlü alan.
+  const healthBase=completion*.40+activity*.12+confidence*.20+accuracyScore*.18+(1-overdueRatio)*.06;
+  const health=clamp(Math.round(healthBase*100-trendPenalty-stale*1.5),0,100);
+  const urgency=clamp(Math.round((100-health)*.82+priorityWeight[name]*14+overdueRatio*22),0,100);
+  arr.push({label:name,name,area:areaOf(name),health,urgency,done,active,total:stats.length,avg,overdue,accuracy,attempts,correct,wrong,stale});
  });
  return arr.sort((a,b)=>b.urgency-a.urgency);
 }
@@ -135,7 +149,7 @@ function renderDashboard(){
  const open=d.tasks.filter(t=>!t.done);$('#remainingTasks').textContent=open.length;$('#questionProgress').textContent=`${d.questions||0} / ${state.settings.questionGoal}`;$('#todayCompletion').textContent=taskPct(d)+'%';$('#priorityTask').innerHTML=open[0]?`<div class="priority-label">NEXT BEST ACTION</div><strong>${esc(open[0].title)}</strong><span>${open[0].minutes||0} dk • ${esc(open[0].category)}</span>`:`<div class="priority-label">SYSTEM COMPLETE</div><strong>Tüm görevler kapalı.</strong><span>Günü kapat ve notunu yaz.</span>`;
  const ds=lastStudyDays(7);$('#weeklyStudyLabel').textContent=`${ds.reduce((a,x)=>a+x.mins,0)} dk`;$('#weeklyChart').innerHTML=ds.map(x=>`<div class="bar-col"><div class="bar-track"><i style="height:${clamp(Math.round(x.mins/Math.max(state.settings.studyGoal,...ds.map(q=>q.mins),1)*100),2,100)}%"></i></div><span>${new Intl.DateTimeFormat('tr-TR',{weekday:'short'}).format(new Date(x.k+'T12:00:00'))}</span><small>${x.mins}</small></div>`).join('');
  const mocks=latestMocks().slice(-4).reverse();$('#recentPerformance').innerHTML=mocks.length?mocks.map(m=>`<div class="stack-row"><div><span class="badge ${m.type==='TYT'?'success':'purple'}">${m.type}</span><strong>${m.net.toFixed(2)} net</strong></div><small>${fmtDate(m.date)}</small></div>`).join(''):'<div class="empty">İlk denemeni girdikten sonra burada trend görünecek.</div>';
- const ws=weaknessDetails().slice(0,3);$('#weaknessRadar').innerHTML=ws.map((w,i)=>`<div class="radar-row"><div><span class="radar-num">0${i+1}</span><strong>${esc(w.label)}</strong><small>${w.overdue?`${w.overdue} tekrar gecikmiş • `:''}${w.done}/${w.total} konu tamam</small></div><div class="radar-meter"><i style="width:${w.urgency}%"></i></div><b>${w.urgency}</b></div>`).join('');
+ const ws=weaknessDetails().slice(0,3);$('#weaknessRadar').innerHTML=ws.length?ws.map((w,i)=>{const acc=w.accuracy&&w.attempts?` • soru başarısı %${Math.round(w.accuracy*100)}`:'';const detail=w.overdue?`${w.overdue} gecikmiş tekrar • `:w.stale?`${w.stale} bayat konu • `:'';return `<button class="radar-row radar-click" data-radar="${encodeURIComponent(w.name)}" title="${esc(w.name)}: sağlık ${w.health}/100, öncelik ${w.urgency}/100"><div><span class="radar-num">0${i+1}</span><strong>${esc(w.label)}</strong><small>${detail}${w.done}/${w.total} konu tamam${acc}</small></div><div><div class="radar-bar"><i style="width:${w.urgency}%"></i></div><small class="radar-meta">Risk ${w.urgency} • Sağlık ${w.health}</small></div><b>${w.urgency}</b></button>`}).join(''):'<div class="empty">Radar için konu verisi oluştuğunda burada öncelik sırası görünecek.</div>';
  renderDisciplineMini();
 }
 function renderDisciplineMini(){const d=ensureDay(),s=habitScore(d);$('#disciplineMiniScore').textContent=`${s}/5`;$('#disciplineMini').innerHTML=habitDefs.map(([k,n,sub])=>`<div class="discipline-line"><button class="tiny-check ${d.habits[k]?'on':''}" data-habit="${k}">${d.habits[k]?'✓':''}</button><span>${n}<small>${sub}</small></span><small>${d.habits[k]?'Tamam':'Bekliyor'}</small></div>`).join('')}
@@ -201,6 +215,7 @@ document.addEventListener('click',e=>{
  const hb=e.target.closest('[data-habit]');if(hb){const d=ensureDay();d.habits[hb.dataset.habit]=!d.habits[hb.dataset.habit];save();renderAll();return}
  const del=e.target.closest('[data-delmock]');if(del){state.mocks=state.mocks.filter(m=>m.id!==del.dataset.delmock);save();renderAll();toast('Deneme silindi.');return}
  const conf=e.target.closest('[data-confidence]');if(conf){const [name,i,c]=decodeURIComponent(conf.dataset.confidence).split('|');setConfidence(name,Number(i),Number(c));renderRoadmap();renderDashboard();toast(`Güven seviyesi ${c}/5.`);return}
+ const radar=e.target.closest('[data-radar]');if(radar){navigate('roadmap');$('#roadmapArea').value=areaOf(decodeURIComponent(radar.dataset.radar));$('#roadmapStatus').value='ALL';renderRoadmap();return}
 });
 $('#addTask').onclick=()=>$('#taskDialog').showModal();$('#taskForm').onsubmit=e=>{e.preventDefault();addTask()};
 $('#addMock').onclick=()=>{$('#mockDate').value=today();$('#mockDialog').showModal()};$('#mockForm').onsubmit=e=>{e.preventDefault();addMock()};
