@@ -1,5 +1,5 @@
-const KEY='hukuk50k-os-v37';
-const LEGACY_KEYS=['hukuk50k-os-v36','hukuk50k-os-v35','hukuk50k-os-v34','hukuk50k-os-v33','hukuk50k-os-v32','hukuk50k-os-v31','hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
+const KEY='hukuk50k-os-v38';
+const LEGACY_KEYS=['hukuk50k-os-v37','hukuk50k-os-v36','hukuk50k-os-v35','hukuk50k-os-v34','hukuk50k-os-v33','hukuk50k-os-v32','hukuk50k-os-v31','hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
 const START='2026-09-07';
 const DEFAULT_EXAM='2027-06-20';
 const LAW_STRETCH_RANK=30000, LAW_MIN_RANK=50000, BASE_SALARY=15000;
@@ -38,9 +38,9 @@ const baseTasks=()=>[
  {title:'EB Digital Studio • müşteri / portföy',category:'EB Digital',minutes:60,kind:'work'},
  {title:'Antrenman',category:'Spor',minutes:60,kind:'life'}
 ];
-const defaultState={version:37,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
+const defaultState={version:38,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=37;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=38;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -239,23 +239,28 @@ function applyEnergyToDay(d){
  if(realStudyMinutes(d)>=state.settings.studyGoal) d.habits.study=true;
 }
 function adaptivePlan(){
- const d=ensureDay(); applyEnergyToDay(d); const energy=energySnapshot(); const target=Math.min(Number(state.settings.studyGoal)||270, Math.max(120, energy.capacity));
- const used= d.tasks.filter(t=>t.done&&['study','review'].includes(t.kind)).reduce((a,t)=>a+(Number(t.minutes)||0),0);
- const remaining=Math.max(0,target-used);
+ const d=ensureDay(); applyEnergyToDay(d); const e=energySnapshot(); const cal=targetCalendarData();
+ const target=Math.min(Number(state.settings.studyGoal)||270, Math.max(120, e.capacity));
+ const used=d.tasks.filter(t=>t.done&&['study','review'].includes(t.kind)).reduce((a,t)=>a+(Number(t.minutes)||0),0);
+ let remaining=Math.max(0,target-used);
  const dueTopics=weakTopicDetails().filter(x=>x.next&&x.next<=today()).slice(0,2);
- const weak=weakTopicDetails().filter(x=>!dueTopics.includes(x)).slice(0,4);
+ const weak=weakTopicDetails().filter(x=>!dueTopics.includes(x)).slice(0,6);
  const plan=[];
- dueTopics.forEach(x=>plan.push({title:`Tekrar • ${x.topic}`,category:'Tekrar',minutes:30,reason:'Gecikmiş tekrar',topic:x.topic}));
- let rem=Math.max(0,remaining-dueTopics.length*30);
- const add=(title,category,minutes,reason,topic='')=>{if(rem<=0)return;const m=Math.min(minutes,rem);if(m>=20){plan.push({title:`AI • ${title}`,category,minutes:m,reason,topic});rem-=m}};
- weak.filter(x=>x.name==='AYT Matematik').slice(0,1).forEach(x=>add(`${x.topic} • AYT Matematik`,'AYT',60,'Yüksek öncelik / EA',x.topic));
+ dueTopics.forEach(x=>{ if(remaining>=20){ const m=Math.min(30,remaining); plan.push({title:`Tekrar • ${x.topic}`,category:'Tekrar',minutes:m,reason:'Gecikmiş tekrar',topic:x.topic}); remaining-=m; }});
+ const behind=Object.values(cal.areas).some(a=>a.status==='HIZ GEREKİYOR');
+ const add=(title,category,minutes,reason,topic='')=>{if(remaining<=0)return;const m=Math.min(minutes,remaining);if(m>=20){plan.push({title:`AI • ${title}`,category,minutes:m,reason,topic});remaining-=m}};
+ if(behind){
+   weak.filter(x=>x.area==='AYT' && ['AYT Matematik','AYT Edebiyat'].includes(x.name)).slice(0,2).forEach(x=>add(`${x.topic} • ${x.name}`,'AYT',x.name==='AYT Matematik'?60:45,'Hedef takviminde tempo açığı',x.topic));
+ }
+ weak.filter(x=>x.name==='AYT Matematik').slice(0,1).forEach(x=>add(`${x.topic} • AYT Matematik`,'AYT',behind?45:60,'Yüksek öncelik / EA',x.topic));
  weak.filter(x=>x.name==='TYT Matematik').slice(0,1).forEach(x=>add(`${x.topic} • TYT Matematik`,'TYT',50,'TYT temel güçlendirme',x.topic));
  weak.filter(x=>x.name==='AYT Edebiyat').slice(0,1).forEach(x=>add(`${x.topic} • Edebiyat`,'AYT',45,'Hatırlama + aktif tekrar',x.topic));
  weak.filter(x=>x.area==='AYT'&&!['AYT Matematik','AYT Edebiyat'].includes(x.name)).slice(0,1).forEach(x=>add(`${x.topic} • ${x.name.replace('AYT ','')}`,'AYT',35,'AYT yan alan dengesi',x.topic));
- if(rem>0)add('Paragraf + hata analizi','TYT',30,'Günlük taban');
+ if(remaining>0)add('Paragraf + hata analizi','TYT',30,'Günlük taban');
  const recent7=lastStudyDays(7).reduce((a,x)=>a+x.mins,0);
- return {plan,remaining,used,recent7,reviews:dueTopics,weak,capacity:target,energy};
+ return {plan,remaining,used,recent7,reviews:dueTopics,weak,capacity:target,energy:e,calendar:cal,behind};
 }
+
 function subjectReason(w){
  const reasons=[];
  if(w.done===0) reasons.push(`Henüz ${w.total} konunun hiçbiri tamamlanmadı.`);
@@ -343,6 +348,30 @@ function targetCalendarData(){
  const overallPct=total?Math.round(totalDone/total*100):0;
  return {exam,daysLeft,weeksLeft,bufferWeeks,contentWeeks,areas,total,totalDone,totalRemain,overallPct};
 }
+
+function executionIntelligence(){
+ const r=targetCalendarData();
+ const e=energySnapshot();
+ const d=ensureDay();
+ const completedToday=studyMinutes(d);
+ const remainingCapacity=Math.max(0,e.capacity-completedToday);
+ const contentDays=Math.max(1,r.contentWeeks*7);
+ const baselineMinutesPerTopic=45;
+ const dailyTopicMinutes=r.totalRemain?Math.ceil((r.totalRemain*baselineMinutesPerTopic/contentDays)/10)*10:0;
+ const requiredToday=Math.min(Math.max(0,dailyTopicMinutes),Math.max(0,remainingCapacity));
+ const velocityNeed=Math.max(r.areas.TYT.requiredWeekly,r.areas.AYT.requiredWeekly);
+ const lagAreas=Object.entries(r.areas).filter(([_,a])=>a.status==='HIZ GEREKİYOR').map(([a])=>a);
+ const behind=lagAreas.length>0 || (r.totalRemain>0 && r.overallPct<25 && r.weeksLeft<30);
+ let status='ON TRACK',tone='success',headline='Rota kontrol altında',message='Bugünkü kapasite ile hedef takvimini destekleyecek kadar çalışma alanın var.';
+ if(e.capacityScore<55){status='LOW CAPACITY';tone='danger';headline='Bugün kapasiteyi zorlamıyoruz';message=`Yaşam verilerin ${e.capacityScore}/100. Önce gecikmiş tekrarlar ve en yüksek getirili bloklar.`;}
+ else if(behind){status='CATCH-UP';tone='purple';headline='Yetişme temposu gerekiyor';message=`Kalan ${r.totalRemain} konuyu ${r.contentWeeks} içerik haftasında kapatmak için yeni konu hızını yükseltmeliyiz.`;}
+ else if(r.totalRemain===0){status='CONTENT COMPLETE';tone='success';headline='İçerik yükü tamam';message='Artık tekrar, deneme ve hata kapatma temposuna geçebiliriz.';}
+ const targetMinutes=Math.max(120,Math.min(state.settings.studyGoal,e.capacity));
+ const todayGap=Math.max(0,targetMinutes-completedToday);
+ const topicBlocks=r.totalRemain?Math.max(0,Math.ceil(r.totalRemain/Math.max(1,r.contentWeeks))):0;
+ return {r,e,d,completedToday,remainingCapacity,dailyTopicMinutes,requiredToday,velocityNeed,behind,status,tone,headline,message,targetMinutes,todayGap,topicBlocks};
+}
+
 function renderTargetCalendar(){
  const r=targetCalendarData();
  const h=$('#targetCalendarHero');if(h) h.innerHTML=`<div class="tc-hero-main"><span class="section-kicker">ROAD TO LAW / ${r.exam}</span><h3>Hedefe yetişme merkezi</h3><p>Mevcut konu hızını ölçüyor, sınava kadar içerik için gereken haftalık tempoyla karşılaştırıyoruz.</p><div class="tc-hero-row"><div><strong>${r.overallPct}%</strong><span>genel konu ilerlemesi</span></div><div><strong>${r.daysLeft}</strong><span>gün kaldı</span></div><div><strong>${r.contentWeeks}</strong><span>içerik haftası</span></div><div><strong>${r.bufferWeeks}</strong><span>tekrar/tampon hafta</span></div></div></div><div class="tc-hero-ring"><div><strong>${r.totalRemain}</strong><span>kalan konu</span></div></div>`;
@@ -350,6 +379,14 @@ function renderTargetCalendar(){
  const grid=$('#targetSubjectGrid'); if(grid) grid.innerHTML=allSubjects().map(([name,topics])=>{const a=r.areas[areaOf(name)];const done=topics.filter((_,i)=>stateTopic(name,i).status==='done').length, remain=topics.length-done, last4=topics.filter((_,i)=>{const d=stateTopic(name,i);return d.status==='done'&&d.last&&daysBetween(d.last,today())<=28}).length, need=remain?Math.ceil(remain/r.contentWeeks*10)/10:0, current=Math.round(last4/4*10)/10, ratio=need?current/need:1, cls=ratio>=1?'good':ratio>=.65?'warn':'danger', eta=remain&&current>0?Math.ceil(remain/current):null;return `<article class="tc-subject"><div class="tc-subject-top"><div><span class="section-kicker">${areaOf(name)}</span><h3>${esc(name)}</h3></div><span class="tc-state ${cls}">${ratio>=1?'ÖNDE':ratio>=.65?'DENGELİ':'GERİDE'}</span></div><div class="tc-progress"><i style="width:${Math.round(done/topics.length*100)}%"></i></div><div class="tc-subject-stats"><span><b>${done}</b>/${topics.length} tamam</span><span><b>${remain}</b> kalan</span><span><b>${need}</b>/hf gerekli</span><span><b>${current}</b>/hf mevcut</span></div><small>${eta?`Mevcut hızla yaklaşık ${eta} haftada tamamlanır.`:remain?'Henüz yeterli hız verisi yok. Öncelik belirleyip yeni konu kapanışları üret.':'Konu yükü tamamlandı.'}</small></article>`}).join('');
  const timeline=$('#targetTimeline'); if(timeline){const weeks=Math.min(12,r.weeksLeft), remain=Math.max(0,r.totalRemain);timeline.innerHTML=Array.from({length:weeks},(_,idx)=>{const w=idx+1, planned=Math.ceil(remain/Math.max(1,r.contentWeeks)), cumulative=Math.min(remain,planned*w), pct=r.total?Math.round((r.totalDone+cumulative)/r.total*100):0; return `<div class="tc-week"><div><span>HAFTA ${w}</span><strong>${Math.max(0,planned)}</strong><small>yeni konu</small></div><div class="tc-mini"><i style="width:${pct}%"></i></div><b>${pct}%</b></div>`}).join('')||'<div class="empty">Takvim için konu verisi bekleniyor.</div>';}
  const coach=$('#targetCoach'); if(coach){const lag=Object.entries(r.areas).filter(([_,a])=>a.status==='HIZ GEREKİYOR').map(([area])=>area);const lead=Object.entries(r.areas).filter(([_,a])=>a.status==='ÖNDE').map(([area])=>area);let headline='Rota dengede';let text=`Kalan ${r.totalRemain} konuyu içerik bloğunda kapatıp son ${r.bufferWeeks} haftayı tekrar + denemeye ayırıyoruz.`;let action='Haftalık yeni konu kapanışını koru.';if(lag.length){headline=`${lag.join(' + ')} hız istiyor`;text=`Bu alanlarda mevcut yeni konu kapanış hızı hedef için yetersiz görünüyor.`;action=`Koç önerisi: ${lag.join(' + ')} için haftalık ek çalışma bloğu ekle.`}else if(lead.length){headline=`${lead.join(' + ')} önde`;text='Avantajı koru; fazla zamanı gecikmiş tekrarlar ve deneme analizine kaydır.';action='Koç önerisi: önde olduğun alanı büyütmek yerine zayıf alanı dengele.'}coach.innerHTML=`<div class="tc-coach-icon">✦</div><div><span class="section-kicker">COACH DECISION</span><h3>${headline}</h3><p>${text}</p><strong>${action}</strong></div>`;}
+ const ex=executionIntelligence();
+ const exBox=$('#executionIntelligence');
+ if(exBox){
+   const gap=ex.dailyTopicMinutes>ex.e.capacity?Math.max(0,ex.dailyTopicMinutes-ex.e.capacity):0;
+   const toneClass=ex.tone==='danger'?'danger':ex.tone==='purple'?'purple':'success';
+   exBox.innerHTML=`<div class="exec-hero"><div><span class="section-kicker">ADAPTIVE EXECUTION ENGINE</span><h3>${ex.headline}</h3><p>${ex.message}</p></div><span class="badge ${toneClass}">${ex.status}</span></div><div class="exec-metrics"><div><span>Bugünkü kapasite</span><strong>${ex.e.capacity} dk</strong><small>${ex.e.capacityScore}/100 yaşam kapasitesi</small></div><div><span>Bugün tamamlanan</span><strong>${ex.completedToday} dk</strong><small>Netleşen çalışma</small></div><div><span>Kalan günlük kapasite</span><strong>${ex.remainingCapacity} dk</strong><small>Koçun bugün kullanabileceği alan</small></div><div><span>Gerekli konu temposu</span><strong>${ex.dailyTopicMinutes} dk/gün</strong><small>${ex.r.totalRemain} kalan konu</small></div></div><div class="exec-compare"><div><div class="exec-compare-head"><span>BUGÜNÜN HEDEFİ</span><b>${ex.targetMinutes} dk</b></div><div class="exec-bar"><i style="width:${Math.min(100,ex.targetMinutes?ex.completedToday/ex.targetMinutes*100:0)}%"></i></div></div><div class="exec-compare-note ${gap>0?'warn':''}">${gap>0?`Bugünkü doğal kapasiten ${gap} dk geride. Koç planı hacmi değil önceliği koruyacak.`:`Bugünkü kapasite, hedef yükünü karşılıyor.`}</div></div><div class="exec-actions"><button class="primary-btn" data-coach-generate="today">✦ Bugünün koç planını uygula</button><button class="secondary-btn" data-route="today">Bugünün Sistemini aç →</button></div>`;
+ }
+
 }
 function renderSimulation(){
   const r=targetSimulation();
