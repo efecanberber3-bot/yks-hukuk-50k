@@ -653,3 +653,11 @@ html[data-theme="light"] .quick-grid input[type="number"]:focus{background:color
 .daily-auto-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
 @media(max-width:900px){.daily-auto-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.daily-auto-head{flex-direction:column}.daily-auto-grid{grid-template-columns:1fr}.daily-auto-head h3{font-size:21px}.daily-auto-actions{display:grid;grid-template-columns:1fr}.daily-auto-actions button{width:100%}}
+
+/* V40 Coach briefing + evening closing */
+.briefing-card,.evening-close-card{position:relative;overflow:hidden}
+.briefing-card::before,.evening-close-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 15%,color-mix(in srgb,var(--accent) 16%,transparent),transparent 48%);pointer-events:none}
+.briefing-head,.evening-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;padding:4px 2px 18px}
+.briefing-head h3,.evening-head h3{margin:4px 0 7px;font-size:24px;letter-spacing:-.03em}.briefing-head p,.evening-head p{margin:0;color:var(--muted);max-width:700px;line-height:1.6}
+.briefing-grid,.evening-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.briefing-grid>div,.evening-grid>div{padding:14px;border:1px solid var(--line);background:var(--surface-2);border-radius:14px}.briefing-grid span,.evening-grid span{display:block;font-size:10px;letter-spacing:.12em;color:var(--muted);font-weight:800}.briefing-grid strong,.evening-grid strong{display:block;margin-top:8px;font-size:16px}.briefing-actions,.evening-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}.evening-note-label{display:block;margin-top:16px;font-size:11px;color:var(--muted);font-weight:800;letter-spacing:.08em;text-transform:uppercase}.evening-note-label .note-area{margin-top:8px;min-height:90px;width:100%}
+@media(max-width:840px){.briefing-grid,.evening-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.briefing-head,.evening-head{flex-direction:column}}

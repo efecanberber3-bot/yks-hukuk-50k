@@ -38,9 +38,9 @@ const baseTasks=()=>[
  {title:'EB Digital Studio • müşteri / portföy',category:'EB Digital',minutes:60,kind:'work'},
  {title:'Antrenman',category:'Spor',minutes:60,kind:'life'}
 ];
-const defaultState={version:39,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
+const defaultState={version:40,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=39;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=40;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';d.briefingDone??=false;d.briefingFocus??='';d.eveningReview??='';d.eveningClosedAt??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -412,6 +412,41 @@ function renderSimulation(){
     $('#simScenario').innerHTML=weeks.join('');
   }
 }
+function dayPhase(){const h=new Date().getHours();if(h<12)return 'MORNING';if(h<18)return 'DAY';return 'EVENING';}
+function briefingSnapshot(){
+ const d=ensureDay(); const e=energySnapshot(); const ranked=weaknessDetails(); const top=ranked[0];
+ const completed=realStudyMinutes(d); const target=Math.max(120,Math.min(state.settings.studyGoal,e.capacity));
+ const open=d.tasks.filter(t=>!t.done); const overdue=weakTopicDetails().filter(x=>x.next&&x.next<=today()).length;
+ const phase=dayPhase();
+ let title='Güne başla. Önce yönü belirleyelim.'; let message=''; let focus='';
+ if(phase==='MORNING'){
+  title=e.capacityScore<55?'Bugün kontrollü başlıyoruz.':e.capacityScore<72?'Bugün seçici çalışıyoruz.':'Bugün güçlü bir çalışma günü.';
+  message=`Kapasiten ${e.capacityScore}/100 • hedef çalışma ${target} dk. ${top?`${top.name} tarafında risk sinyali var.`:'Veri geldikçe öncelikler netleşecek.'}`;
+  focus=top?`İlk blok: ${top.name} • ${recommendedAction(top).mins} dk`:'İlk blok: TYT Matematik • 50 dk';
+ } else if(phase==='DAY'){
+  title=completed>=target?'Ana hedefin tamamlandı.':`Günün kalanını akıllı kullanalım.`;
+  message=`${completed} dk gerçek çalışma tamamlandı • ${Math.max(0,target-completed)} dk önerilen kapasite kaldı.`;
+  focus=open[0]?`Sıradaki iş: ${open[0].title} • ${open[0].minutes||25} dk`:'Açık görev görünmüyor.';
+ } else {
+  title=completed>=target?'Gün güçlü kapatılıyor.':'Akşam kapanış moduna geçiyoruz.';
+  message=`Bugün ${completed} dk çalıştın. ${overdue?`${overdue} gecikmiş tekrar var.`:'Gecikmiş tekrar sinyali yok.'}`;
+  focus=open.length?`${open.length} açık görev var • yarına aktar veya tamamla.`:'Açık görev yok • günü kapat.';
+ }
+ return {d,e,phase,title,message,focus,target,completed,open,overdue};
+}
+function renderCoachBriefing(){
+ const box=$('#coachBriefingCard'); if(!box)return; const x=briefingSnapshot();
+ const done=x.d.briefingDone;
+ box.innerHTML=`<div class="briefing-head"><div><span class="section-kicker">COACH BRIEFING • ${x.phase}</span><h3>${esc(x.title)}</h3><p>${esc(x.message)}</p></div><span class="badge ${x.e.capacityScore<55?'danger':x.e.capacityScore<72?'purple':'success'}">${x.e.capacityScore}/100</span></div><div class="briefing-grid"><div><span>ÖNERİLEN KAPASİTE</span><strong>${x.target} dk</strong></div><div><span>GERÇEKLEŞEN</span><strong>${x.completed} dk</strong></div><div><span>GECİKMİŞ TEKRAR</span><strong>${x.overdue}</strong></div><div><span>NEXT MOVE</span><strong>${esc(x.focus)}</strong></div></div><div class="briefing-actions"><button class="primary-btn" id="briefingAccept">${done?'Planı tekrar uygula':'Bugünün planını hazırla'}</button><button class="secondary-btn" data-route="today">Bugünün sistemine git →</button></div>`;
+ const b=$('#briefingAccept'); if(b)b.onclick=()=>{const r=generateCoachPlan(today(),'today');x.d.briefingDone=true;save();renderAll();toast(r.added?`${r.added} koç bloğu eklendi.`:'Plan zaten güncel.');};
+}
+function renderEveningClose(){
+ const box=$('#eveningCloseCard'); if(!box)return; const x=briefingSnapshot(); const d=x.d; const canClose=dayPhase()==='EVENING';
+ const status=d.eveningClosedAt?'CLOSED':canClose?'READY':'WAITING';
+ box.innerHTML=`<div class="evening-head"><div><span class="section-kicker">EVENING CLOSING</span><h3>${status==='CLOSED'?'Gün kapatıldı.':'Akşam Kapanışı'}</h3><p>${status==='WAITING'?'Akşam saatlerinde açılır.':status==='CLOSED'?'Bugünkü değerlendirme kaydedildi.':'Günü kapatmadan önce son kontrolünü yap.'}</p></div><span class="badge ${status==='CLOSED'?'success':status==='READY'?'purple':'muted'}">${status}</span></div><div class="evening-grid"><div><span>ÇALIŞMA</span><strong>${x.completed} dk</strong></div><div><span>TAMAMLANAN</span><strong>${d.tasks.filter(t=>t.done).length}/${d.tasks.length}</strong></div><div><span>AÇIK</span><strong>${x.open.length}</strong></div><div><span>ENERJİ</span><strong>${Number.isFinite(Number(d.energyLevel))?d.energyLevel+'/5':'—'}</strong></div></div><label class="evening-note-label">Bugünün tek cümlesi<textarea id="eveningReviewInput" class="note-area" placeholder="Bugün ne öğrendim, neyi yarına taşıyorum?">${esc(d.eveningReview||'')}</textarea></label><div class="evening-actions"><button class="secondary-btn" id="eveningSaveReview">Notu kaydet</button><button class="primary-btn" id="eveningCloseDay" ${status!=='READY'?'disabled':''}>Günü kapat</button></div>`;
+ const saveReview=$('#eveningSaveReview');if(saveReview)saveReview.onclick=()=>{d.eveningReview=$('#eveningReviewInput').value.trim();save();renderEveningClose();toast('Akşam notu kaydedildi.');};
+ const close=$('#eveningCloseDay');if(close)close.onclick=()=>{d.eveningReview=$('#eveningReviewInput').value.trim();d.eveningClosedAt=new Date().toISOString();save();renderAll();toast('Gün başarıyla kapatıldı.');};
+}
 function renderDashboard(){
  const d=ensureDay(),score=systemScore(d),stats=topicStats(),p=adaptivePlan(),read=readiness(),rd=readinessDisplay();
  $('#scoreBig').textContent=score;$('#scoreBar').style.width=score+'%';$('#studyBig').textContent=studyMinutes(d);$('#studyGoalSmall').textContent=state.settings.studyGoal;$('#streakBig').textContent=streak();$('#countdownBig').textContent=daysToExam();
@@ -462,6 +497,7 @@ function renderDailyAutomation(){
  if(carry) carry.onclick=()=>{const target=addDays(today(),1),td=ensureDay(target);let added=0;x.open.filter(t=>!t.done).slice(0,6).forEach(t=>{if(!td.tasks.some(y=>y.title===t.title&& !y.done)){td.tasks.push({...t,id:uid('task'),done:false,source:'carry-over',carriedFrom:today()});added++;}});save();renderAll();toast(added?`${added} açık görev yarına aktarıldı.`:'Yarına aktarılacak yeni görev yok.');};
  const close=$('#dailyClosePrompt');
  if(close) close.onclick=()=>{const open=x.open.filter(t=>!t.done).length;toast(open?`Kapanış için ${open} açık görev var. Açıkları aktarabilir veya tamamlayabilirsin.`:'Gün kapanış için hazır.');};
+ renderCoachBriefing();
 }
 function renderToday(){
  const d=ensureDay(),p=adaptivePlan();
@@ -596,7 +632,7 @@ function publishFriendProfile(){window.hukukCloud?.publishFriendProfile?.(shared
 function renderLifeEnergy(){
  const el=$('#lifeEnergySummary');if(!el)return;const e=energySnapshot();const action=$('#lifeActionTitle'),text=$('#lifeActionText');if(action&&text){action.textContent=e.capacityScore<55?'Bugün toparlanma öncelikli':e.capacityScore<72?'Bugün kontrollü ilerle':'Bugün tam kapasiteye yakın çalışabilirsin';text.textContent=e.capacityScore<55?'Kısa, kaliteli bloklar seç; gecikmiş tekrarları öne al ve gece uykusunu koru.':e.capacityScore<72?'En yüksek getirili 2–3 akademik bloğu tamamla; kalan işi yarına taşıyabilirsin.':'Hedef ders süreni koru, Focus Room ile ana blokları tamamla.';}const d=ensureDay();const rows=[['Uyku',Number.isFinite(Number(d.sleepHours))?`${Number(d.sleepHours).toFixed(1)} saat`:'Veri gir',e.sleepScore],['Enerji',Number.isFinite(Number(d.energyLevel))?`${d.energyLevel}/5`:'Veri gir',e.energyScore],['Telefon',Number.isFinite(Number(d.phoneMinutes))?`${d.phoneMinutes} dk`:'Veri gir',e.phoneScore],['Egzersiz',Number.isFinite(Number(d.exerciseMinutes))?`${d.exerciseMinutes} dk`:'Veri gir',e.exerciseScore]];el.innerHTML=`<div class="life-score-hero"><div><span class="section-kicker">CAPACITY INDEX</span><h3>${e.capacityScore}/100</h3><p>${e.message}</p></div><span class="badge ${e.tone}">${e.mode}</span></div><div class="life-score-list">${rows.map(r=>`<div class="life-score-row"><div><strong>${r[0]}</strong><span>${r[1]}</span></div><div class="life-mini-bar"><i style="width:${Math.round(r[2])}%"></i></div><b>${Math.round(r[2])}</b></div>`).join('')}</div><div class="life-plan"><span>BUGÜNÜN ÖNERİLEN DERS KAPASİTESİ</span><strong>${e.capacity} dk</strong><p>Hedefin ${state.settings.studyGoal} dk. Enerjin düşükse sistem hacmi azaltır; öncelikleri korur.</p></div>`;
 }
-function renderAll(){applyTheme();ensureDay();renderDashboard();renderToday();renderRoadmap();renderMock();renderMistakes();renderAnalytics();renderDiscipline();renderFinance();renderSettings();renderWeekly();renderFriends();renderSimulation();renderTargetCalendar();renderLifeEnergy();}
+function renderAll(){applyTheme();ensureDay();renderDashboard();renderToday();renderCoachBriefing();renderEveningClose();renderRoadmap();renderMock();renderMistakes();renderAnalytics();renderDiscipline();renderFinance();renderSettings();renderWeekly();renderFriends();renderSimulation();renderTargetCalendar();renderLifeEnergy();}
 function addTask(){const d=ensureDay(),title=$('#taskTitle').value.trim();if(!title)return;const cat=$('#taskCategory').value;d.tasks.push({id:uid('task'),title,category:cat,minutes:Number($('#taskMinutes').value)||0,kind:['TYT','AYT','Tekrar'].includes(cat)?'study':cat==='EB Digital'?'work':cat==='Spor'?'life':'life',done:false,source:'manual'});save();$('#taskDialog').close();$('#taskForm').reset();renderAll();toast('Görev eklendi.')}
 function addMock(){const type=$('#mockType').value,net=Number($('#mockNet').value);if(!net)return;state.mocks.push({id:uid('mock'),type,net,date:$('#mockDate').value||today(),note:$('#mockNote').value.trim(),duration:Number($('#mockDuration').value)||0,breakdown:{turkce:valOrNull($('#mockTurkce').value),math:valOrNull($('#mockMath').value),social:valOrNull($('#mockSocial').value),science:valOrNull($('#mockScience').value)}});save();$('#mockDialog').close();$('#mockForm').reset();$('#mockDate').value=today();renderAll();toast(`${type} denemesi kaydedildi.`)}
 function valOrNull(v){return v===''?null:Number(v)}
