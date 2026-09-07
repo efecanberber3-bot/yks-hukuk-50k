@@ -39,6 +39,7 @@
       <button class="nav-item" data-view="mock"><span class="ico">◒</span><span>Deneme Merkezi</span></button>
       <button class="nav-item" data-view="mistakes"><span class="ico">!</span><span>Hata Günlüğü</span></button>
       <button class="nav-item" data-view="analytics"><span class="ico">↗</span><span>Performans</span></button>
+      <button class="nav-item" data-view="weekly"><span class="ico">◷</span><span>Haftalık Koç</span></button>
       <div class="nav-label">LIFE OS</div>
       <button class="nav-item" data-view="discipline"><span class="ico">✦</span><span>Disiplin</span></button>
       <button class="nav-item" data-view="finance"><span class="ico">₺</span><span>Para Motoru</span></button>
@@ -134,6 +135,21 @@
       <div id="analyticsKpis" class="kpi-row"></div>
       <div class="grid-2 main-grid-gap"><article class="card"><div class="card-head"><div><span class="section-kicker">TREND</span><h3>Net grafiği</h3></div></div><div id="netChart" class="line-chart"></div></article><article class="card"><div class="card-head"><div><span class="section-kicker">LOAD</span><h3>Son 14 gün çalışma yükü</h3></div></div><div id="loadChart" class="bar-chart tall"></div></article></div>
       <div class="grid-3 main-grid-gap"><article class="card"><span class="section-kicker">WEAKNESS</span><h3 id="analysisWeak">—</h3><p id="analysisWeakText" class="muted">Veri biriktikçe açılacak.</p></article><article class="card"><span class="section-kicker">RELIABILITY</span><h3 id="analysisReliability">—</h3><p id="analysisReliabilityText" class="muted">Son 7 gün görev uyumu.</p></article><article class="card"><span class="section-kicker">CONSISTENCY</span><h3 id="analysisConsistency">—</h3><p id="analysisConsistencyText" class="muted">Son 30 gün aktif günler.</p></article></div>
+    </section>
+
+    <section class="view" id="weekly">
+      <div class="page-intro"><div><span class="section-kicker">WEEKLY COACHING REPORT</span><h2>Haftalık Koç Raporu</h2><p>Bu hafta ne yaptığını ölç, neyin işe yaradığını gör ve gelecek haftanın önceliklerini otomatik çıkar.</p></div><div class="page-actions"><button id="generateNextWeek" class="primary-btn">✦ Gelecek haftayı oluştur</button></div></div>
+      <div id="weeklyHero" class="weekly-hero"></div>
+      <div id="weeklyKpis" class="kpi-row weekly-kpis"></div>
+      <div class="grid-2 main-grid-gap">
+        <article class="card"><div class="card-head"><div><span class="section-kicker">WHAT WENT WELL</span><h3>İyi gidenler</h3></div><span class="badge success">✓</span></div><div id="weeklyWins" class="insight-list"></div></article>
+        <article class="card"><div class="card-head"><div><span class="section-kicker">WATCH NEXT</span><h3>Dikkat edilmesi gerekenler</h3></div><span class="badge danger">!</span></div><div id="weeklyRisks" class="insight-list"></div></article>
+      </div>
+      <div class="grid-2 main-grid-gap">
+        <article class="card"><div class="card-head"><div><span class="section-kicker">NEXT WEEK</span><h3>Gelecek haftanın 3 önceliği</h3></div><span class="badge purple">COACH</span></div><div id="weeklyPriorities" class="priority-list"></div></article>
+        <article class="card"><div class="card-head"><div><span class="section-kicker">WEEKLY TREND</span><h3>Son 4 hafta</h3></div><span class="muted" id="weeklyTrendLabel">—</span></div><div id="weeklyTrend" class="weekly-trend"></div></article>
+      </div>
+      <article class="card"><div class="card-head"><div><span class="section-kicker">COACH NOTE</span><h3>Koçun özeti</h3></div></div><div id="weeklyCoachNote" class="coach-note-large"></div></article>
     </section>
 
     <section class="view" id="discipline">
