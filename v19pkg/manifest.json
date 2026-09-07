@@ -1,0 +1,10 @@
+{
+  "name":"Hukuk 50K OS",
+  "short_name":"Hukuk 50K",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#070a10",
+  "theme_color":"#070a10",
+  "description":"YKS 2027 EA hukuk hedefi için kişisel çalışma ve performans işletim sistemi",
+  "icons":[]
+}
