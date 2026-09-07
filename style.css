@@ -528,3 +528,22 @@ body.focus-mode{overflow:hidden}
 
 @media(max-width:840px){.focus-mode .main{padding:14px 12px 18px}.focus-mode .focus-mode-shell{min-height:100vh}.focus-mode .focus-mode-topbar{padding:4px 2px 14px}.focus-mode .focus-brand-mark{width:34px;height:34px}.focus-room-immersive{min-height:calc(100vh - 145px)!important;padding:28px 14px!important;border-radius:24px!important}.focus-room-immersive .focus-ring{width:240px;height:240px}.focus-room-immersive #timerDisplay{font-size:58px}.focus-mode-meta{margin-bottom:10px}.focus-mode-meta p{display:none}.focus-task-line{grid-template-columns:1fr 120px;margin-top:20px}.focus-mode-footer{display:none}}
 @media(max-width:480px){.focus-exit-btn span{display:none}.focus-exit-btn{width:38px;height:38px;padding:0;justify-content:center;border-radius:12px}.focus-brand strong{font-size:10px}.focus-brand small{font-size:7px}.focus-room-immersive .focus-ring{width:210px;height:210px}.focus-room-immersive #timerDisplay{font-size:50px}.focus-task-line{grid-template-columns:1fr}.focus-duration-control{min-height:58px}.focus-room-immersive .focus-controls{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}.focus-room-immersive .focus-controls .ghost-btn{grid-column:1/-1}.focus-room-immersive .focus-controls button{width:100%}}
+
+/* V28 — themed quick data entry */
+.quick-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end}
+.quick-grid label{display:grid;gap:7px;color:var(--muted);font-size:9px;letter-spacing:.04em;font-weight:800;text-transform:uppercase}
+.quick-grid input[type="number"]{
+  appearance:textfield;-moz-appearance:textfield;
+  width:100%;min-height:46px;padding:0 13px;border:1px solid color-mix(in srgb,var(--accent) 22%,var(--line));
+  border-radius:13px;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 7%,var(--panel2)),color-mix(in srgb,var(--accent) 2%,var(--panel)));
+  color:var(--text);font-size:15px;font-weight:850;outline:none;transition:border-color .18s,box-shadow .18s,background .18s,transform .18s;
+}
+.quick-grid input[type="number"]::-webkit-outer-spin-button,
+.quick-grid input[type="number"]::-webkit-inner-spin-button{margin:0;-webkit-appearance:auto;opacity:.75;filter:sepia(1) saturate(2) hue-rotate(55deg)}
+.quick-grid input[type="number"]:hover{border-color:color-mix(in srgb,var(--accent) 38%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 10%,var(--panel2)),color-mix(in srgb,var(--accent) 3%,var(--panel)))}
+.quick-grid input[type="number"]:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent),0 0 24px color-mix(in srgb,var(--accent) 8%,transparent);background:color-mix(in srgb,var(--accent) 6%,var(--panel2));transform:translateY(-1px)}
+.quick-grid #saveDailyData{min-height:46px;white-space:nowrap}
+html[data-theme="light"] .quick-grid input[type="number"]{background:linear-gradient(180deg,#fff,color-mix(in srgb,var(--accent) 4%,#fff));color:var(--text)}
+html[data-theme="light"] .quick-grid input[type="number"]:focus{background:color-mix(in srgb,var(--accent) 5%,#fff)}
+@media(max-width:700px){.quick-grid{grid-template-columns:1fr 1fr}.quick-grid #saveDailyData{grid-column:1/-1;width:100%}}
+@media(max-width:420px){.quick-grid{grid-template-columns:1fr}.quick-grid #saveDailyData{grid-column:auto}}
