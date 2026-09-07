@@ -95,7 +95,22 @@ function applyTheme(){
  localStorage.setItem('hukuk50k-theme',state.theme);
  localStorage.setItem('hukuk50k-accent',state.accentTheme||'lime');
 }
-function navigate(view){$$('.view').forEach(v=>v.classList.toggle('active',v.id===view));$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===view));const titles={dashboard:'Kontrol Merkezi',today:'Bugünün Sistemi',focus:'Focus Room',roadmap:'Konu Motoru',mock:'Deneme Merkezi',analytics:'Performans',discipline:'Disiplin Merkezi',finance:'Para Motoru',mistakes:'Hata Günlüğü',settings:'Ayarlar'};$('#pageTitle').textContent=titles[view]||'Kontrol Merkezi';$('#contextLabel').textContent=view==='dashboard'?'HUKUK 50K • COMMAND CENTER':longDate(today()).toUpperCase()}
+const iconPaths={
+ dashboard:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-5h5v5"/>',
+ today:'<path d="m5 12 4 4 10-10"/><circle cx="12" cy="12" r="9"/>',
+ focus:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+ roadmap:'<path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H20v18H7.5A3.5 3.5 0 0 0 4 23V5.5Z"/><path d="M4 5.5V20M8 6h8M8 10h7M8 14h5"/>',
+ mock:'<path d="M5 20V9M12 20V4M19 20v-7"/><path d="M3 20h18"/>',
+ mistakes:'<path d="M12 3 21 19H3L12 3Z"/><path d="M12 9v4"/><path d="M12 16h.01"/>',
+ analytics:'<path d="M4 19V5M4 19h16"/><path d="m7 15 3-3 3 2 5-6"/>',
+ discipline:'<path d="m12 3 2.1 4.2 4.7.7-3.4 3.3.8 4.7-4.2-2.2-4.2 2.2.8-4.7-3.4-3.3 4.7-.7L12 3Z"/>',
+ finance:'<path d="M4 7h16v12H4z"/><path d="M4 10h16"/><path d="M8 15h3"/><path d="M15 14h.01"/>',
+ settings:'<path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="m19.4 15 .1 1.8-2 1.1-1.5-1a8 8 0 0 1-2.1 1l-.5 1.7h-2.8L10 17.9a8 8 0 0 1-2.1-1l-1.5 1-2-1.1.1-1.8a8 8 0 0 1-1.1-2l-1.6-.5v-2.8l1.6-.5a8 8 0 0 1 1.1-2L4.4 5l2-1.1 1.5 1a8 8 0 0 1 2.1-1l.5-1.7h2.8l.5 1.7a8 8 0 0 1 2.1 1l1.5-1 2 1.1-.1 1.8a8 8 0 0 1 1.1 2l1.6.5v2.8l-1.6.5a8 8 0 0 1-1.1 2Z"/>',
+};
+function renderNavIcons(){
+ $$('.nav-item[data-view]').forEach(btn=>{const ico=btn.querySelector('.ico');if(!ico)return;const key=btn.dataset.view;if(iconPaths[key])ico.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true">${iconPaths[key]}</svg>`;});
+}
+function navigate(view){$$('.view').forEach(v=>v.classList.toggle('active',v.id===view));$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===view));const titles={dashboard:'Kontrol Merkezi',today:'Bugünün Sistemi',focus:'Focus Room',roadmap:'Konu Motoru',mock:'Deneme Merkezi',analytics:'Performans',discipline:'Disiplin Merkezi',finance:'Para Motoru',mistakes:'Hata Günlüğü',settings:'Ayarlar'};$('#pageTitle').textContent=titles[view]||'Kontrol Merkezi';$('#contextLabel').textContent=view==='dashboard'?'HUKUK 50K • COMMAND CENTER':longDate(today()).toUpperCase();window.scrollTo({top:0,behavior:'smooth'});setTimeout(renderNavIcons,0)}
 function daysToExam(){return daysBetween(today(),state.settings.examDate)}
 function readiness(){
  const ty=latestMocks('TYT'), ay=latestMocks('AYT EA');
@@ -410,6 +425,7 @@ bind('mobileMenu','click',toggleSidebar);
 bind('sidebarBackdrop','click',closeSidebar);
 window.addEventListener('resize',()=>{if(window.innerWidth>840) sidebar?.classList.remove('open'); syncSidebarUi();});
 syncSidebarUi();
+renderNavIcons();
 initThemeControls();
 applyTheme();
 function renderFocusTaskPicker(){const d=ensureDay(),open=d.tasks.filter(t=>!t.done&&['study','review'].includes(t.kind));const box=$('#focusTaskList');if(!box)return;if(!open.length){box.innerHTML='<div class=\"empty\">Bugün seçilebilir açık akademik görev yok. Önce Bugünün Sistemi bölümünden bir görev ekle.</div>';return}box.innerHTML=open.map(t=>`<button type=\"button\" class=\"focus-task-option ${focus.taskId===t.id?'selected':''}\" data-focus-task=\"${t.id}\"><div><strong>${esc(t.title)}</strong><span>${esc(t.category)} • ${t.minutes||25} dk${t.ai?' • ✦ Asistan':''}</span></div><b>${focus.taskId===t.id?'✓':'→'}</b></button>`).join('')}
