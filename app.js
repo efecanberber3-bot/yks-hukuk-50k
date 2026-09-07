@@ -1,5 +1,5 @@
-const KEY='hukuk50k-os-v31';
-const LEGACY_KEYS=['hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
+const KEY='hukuk50k-os-v32';
+const LEGACY_KEYS=['hukuk50k-os-v31','hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
 const START='2026-09-07';
 const DEFAULT_EXAM='2027-06-20';
 const LAW_STRETCH_RANK=30000, LAW_MIN_RANK=50000, BASE_SALARY=15000;
@@ -38,9 +38,9 @@ const baseTasks=()=>[
  {title:'EB Digital Studio • müşteri / portföy',category:'EB Digital',minutes:60,kind:'work'},
  {title:'Antrenman',category:'Spor',minutes:60,kind:'life'}
 ];
-const defaultState={version:31,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
+const defaultState={version:32,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=31;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=32;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -105,13 +105,14 @@ const iconPaths={
  analytics:'<path d="M4 19V5M4 19h16"/><path d="m7 15 3-3 3 2 5-6"/>',
  discipline:'<path d="m12 3 2.1 4.2 4.7.7-3.4 3.3.8 4.7-4.2-2.2-4.2 2.2.8-4.7-3.4-3.3 4.7-.7L12 3Z"/>',
  finance:'<path d="M4 7h16v12H4z"/><path d="M4 10h16"/><path d="M8 15h3"/><path d="M15 14h.01"/>',
+ simulator:'<path d="M12 3l2.2 5.1L19 10.3l-4.8 2.2L12 18l-2.2-5.5L5 10.3l4.8-2.2L12 3Z"/><path d="M19 4v4M21 6h-4"/>',
  friends:'<path d="M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M2.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M16 14a5 5 0 0 1 5.5 6"/>',
  settings:'<path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="m19.4 15 .1 1.8-2 1.1-1.5-1a8 8 0 0 1-2.1 1l-.5 1.7h-2.8L10 17.9a8 8 0 0 1-2.1-1l-1.5 1-2-1.1.1-1.8a8 8 0 0 1-1.1-2l-1.6-.5v-2.8l1.6-.5a8 8 0 0 1 1.1-2L4.4 5l2-1.1 1.5 1a8 8 0 0 1 2.1-1l.5-1.7h2.8l.5 1.7a8 8 0 0 1 2.1 1l1.5-1 2 1.1-.1 1.8a8 8 0 0 1 1.1 2l1.6.5v2.8l-1.6.5a8 8 0 0 1-1.1 2Z"/>',
 };
 function renderNavIcons(){
  $$('.nav-item[data-view]').forEach(btn=>{const ico=btn.querySelector('.ico');if(!ico)return;const key=btn.dataset.view;if(iconPaths[key])ico.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true">${iconPaths[key]}</svg>`;});
 }
-function navigate(view){const active=$$('.view.active')[0]?.id;if(view==='focus'&&active&&active!=='focus')focus.previousView=active;document.body.classList.toggle('focus-mode',view==='focus');$$('.view').forEach(v=>v.classList.toggle('active',v.id===view));$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===view));const titles={dashboard:'Kontrol Merkezi',today:'Bugünün Sistemi',focus:'Focus Room',roadmap:'Konu Motoru',mock:'Deneme Merkezi',analytics:'Performans',discipline:'Disiplin Merkezi',finance:'Para Motoru',mistakes:'Hata Günlüğü',weekly:'Haftalık Koç',settings:'Ayarlar'};$('#pageTitle').textContent=titles[view]||'Kontrol Merkezi';$('#contextLabel').textContent=view==='dashboard'?'HUKUK 50K • COMMAND CENTER':longDate(today()).toUpperCase();window.scrollTo({top:0,behavior:'smooth'});setTimeout(renderNavIcons,0);if(view==='focus'){renderFocusTaskPicker();updateFocusStatus()} }
+function navigate(view){const active=$$('.view.active')[0]?.id;if(view==='focus'&&active&&active!=='focus')focus.previousView=active;document.body.classList.toggle('focus-mode',view==='focus');$$('.view').forEach(v=>v.classList.toggle('active',v.id===view));$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===view));const titles={dashboard:'Kontrol Merkezi',today:'Bugünün Sistemi',focus:'Focus Room',roadmap:'Konu Motoru',mock:'Deneme Merkezi',analytics:'Performans',discipline:'Disiplin Merkezi',finance:'Para Motoru',mistakes:'Hata Günlüğü',weekly:'Haftalık Koç',simulator:'Hedef Simülasyonu',settings:'Ayarlar'};$('#pageTitle').textContent=titles[view]||'Kontrol Merkezi';$('#contextLabel').textContent=view==='dashboard'?'HUKUK 50K • COMMAND CENTER':longDate(today()).toUpperCase();window.scrollTo({top:0,behavior:'smooth'});setTimeout(renderNavIcons,0);if(view==='focus'){renderFocusTaskPicker();updateFocusStatus()} }
 function daysToExam(){return daysBetween(today(),state.settings.examDate)}
 function readiness(){
  const ty=latestMocks('TYT'), ay=latestMocks('AYT EA');
@@ -251,6 +252,48 @@ function assistantInsight(){
  const c=coachSnapshot(),score=systemScore(ensureDay()),story=coachNarrative();
  return {h:story.title,p:story.text,a:story.actions,coach:c};
 }
+function targetSimulation(){
+  const ty=clamp(Number($('#simTyt')?.value)||0,0,120);
+  const ay=clamp(Number($('#simAyt')?.value)||0,0,80);
+  const sg=Math.max(0,Number($('#simStudyGrowth')?.value)||0);
+  const qg=Math.max(0,Number($('#simQuestionGrowth')?.value)||0);
+  const tScore=ty/70; const aScore=ay/50;
+  const readiness=Math.min(1,(tScore*.46+aScore*.54));
+  const dataBoost=Math.min(1,(sg/300)*.55+(qg/250)*.45);
+  const alignment=clamp(readiness*.72+dataBoost*.28,0,1);
+  const tyNeed=Math.max(0,55-ty), ayNeed=Math.max(0,38-ay);
+  const priority=ayNeed>=tyNeed?'AYT Matematik + AYT EA':'TYT Matematik + Türkçe';
+  let scenario='Başlangıç çizgisi'; let tone='purple';
+  if(alignment>=.80){scenario='Hedef yönü güçlü'; tone='success';}
+  else if(alignment>=.60){scenario='İyi rota, tempo gerekli'; tone='success';}
+  else if(alignment>=.35){scenario='Temel güçlendirme'; tone='purple';}
+  else scenario='Veri üret + temel kur';
+  return {ty,ay,sg,qg,alignment,tyNeed,ayNeed,priority,scenario,tone};
+}
+function renderSimulation(){
+  const r=targetSimulation();
+  const pct=Math.round(r.alignment*100);
+  if($('#simTytDisplay'))$('#simTytDisplay').textContent=r.ty.toFixed(r.ty%1?'2':'0');
+  if($('#simAytDisplay'))$('#simAytDisplay').textContent=r.ay.toFixed(r.ay%1?'2':'0');
+  if($('#simScore'))$('#simScore').textContent=`${pct}%`;
+  if($('#simScoreBar'))$('#simScoreBar').style.width=`${pct}%`;
+  if($('#simScoreText'))$('#simScoreText').textContent=pct===0?'Gerçek netlerini gir; simülasyon kişiselleşsin.':`${r.scenario} • 30K stretch hedefi için gelişim yönün izleniyor.`;
+  if($('#simGapDisplay')) $('#simGapDisplay').textContent=(r.ty||r.ay)?`TYT +${r.tyNeed.toFixed(0)} • AYT +${r.ayNeed.toFixed(0)}`:'Veri bekleniyor';
+  if($('#simTytNeed'))$('#simTytNeed').textContent=r.ty?`+${r.tyNeed} TYT net`:'TYT verisi bekleniyor';
+  if($('#simAytNeed'))$('#simAytNeed').textContent=r.ay?`+${r.ayNeed} AYT net`:'AYT verisi bekleniyor';
+  if($('#simCoachNeed'))$('#simCoachNeed').textContent=r.priority;
+  if($('#simScenarioBadge')){const b=$('#simScenarioBadge');b.textContent=r.scenario.toUpperCase();b.className='badge '+(r.tone==='success'?'success':'purple')}
+  if($('#simScenario')){
+    const weeks=[]; for(let i=1;i<=4;i++){
+      const tyGain=r.sg>0?Math.min(1.5,r.sg/240)*i:0;
+      const qGain=r.qg>0?Math.min(1.2,r.qg/300)*i:0;
+      const t=Math.min(120,r.ty+tyGain); const a=Math.min(80,r.ay+qGain);
+      const al=clamp((t/70)*.46+(a/50)*.54,0,1);
+      weeks.push(`<div class="sim-week"><span>HAFTA ${i}</span><strong>${Math.round(al*100)}%</strong><small>TYT ${t.toFixed(0)} • AYT ${a.toFixed(0)}</small></div>`);
+    }
+    $('#simScenario').innerHTML=weeks.join('');
+  }
+}
 function renderDashboard(){
  const d=ensureDay(),score=systemScore(d),stats=topicStats(),p=adaptivePlan(),read=readiness(),rd=readinessDisplay();
  $('#scoreBig').textContent=score;$('#scoreBar').style.width=score+'%';$('#studyBig').textContent=studyMinutes(d);$('#studyGoalSmall').textContent=state.settings.studyGoal;$('#streakBig').textContent=streak();$('#countdownBig').textContent=daysToExam();
@@ -369,7 +412,7 @@ async function refreshFriends(){
   const social=ensureSocial(); social.friends??=[]; const idx=social.friends.findIndex(x=>x.code===code); if(idx>=0)social.friends[idx]=p;else social.friends.push(p); save(); renderFriends(); $('#friendCodeInput').value=''; toast(`${p.name||'Arkadaş'} eklendi.`);
 }
 function publishFriendProfile(){window.hukukCloud?.publishFriendProfile?.(sharedStats(), ensureSocial());}
-function renderAll(){applyTheme();ensureDay();renderDashboard();renderToday();renderRoadmap();renderMock();renderMistakes();renderAnalytics();renderDiscipline();renderFinance();renderSettings();renderWeekly();renderFriends();}
+function renderAll(){applyTheme();ensureDay();renderDashboard();renderToday();renderRoadmap();renderMock();renderMistakes();renderAnalytics();renderDiscipline();renderFinance();renderSettings();renderWeekly();renderFriends();renderSimulation();}
 function addTask(){const d=ensureDay(),title=$('#taskTitle').value.trim();if(!title)return;const cat=$('#taskCategory').value;d.tasks.push({id:uid('task'),title,category:cat,minutes:Number($('#taskMinutes').value)||0,kind:['TYT','AYT','Tekrar'].includes(cat)?'study':cat==='EB Digital'?'work':cat==='Spor'?'life':'life',done:false,source:'manual'});save();$('#taskDialog').close();$('#taskForm').reset();renderAll();toast('Görev eklendi.')}
 function addMock(){const type=$('#mockType').value,net=Number($('#mockNet').value);if(!net)return;state.mocks.push({id:uid('mock'),type,net,date:$('#mockDate').value||today(),note:$('#mockNote').value.trim(),duration:Number($('#mockDuration').value)||0,breakdown:{turkce:valOrNull($('#mockTurkce').value),math:valOrNull($('#mockMath').value),social:valOrNull($('#mockSocial').value),science:valOrNull($('#mockScience').value)}});save();$('#mockDialog').close();$('#mockForm').reset();$('#mockDate').value=today();renderAll();toast(`${type} denemesi kaydedildi.`)}
 function valOrNull(v){return v===''?null:Number(v)}
@@ -420,6 +463,7 @@ bind('roadmapStatus','change',renderRoadmap);
 bind('mockFilter','change',renderMock);
 document.addEventListener('change',e=>{const s=e.target.closest('[data-topic]');if(s){e.stopPropagation();const [name,i]=decodeURIComponent(s.dataset.topic).split('|');setTopic(name,Number(i),s.value);renderRoadmap();renderDashboard();toast('Konu durumu güncellendi.')}});
 bind('generateNextWeek','click',generateNextWeekPlan);
+bind('simTyt','input',renderSimulation);bind('simAyt','input',renderSimulation);bind('simStudyGrowth','input',renderSimulation);bind('simQuestionGrowth','input',renderSimulation);bind('resetSimulation','click',()=>{['simTyt','simAyt','simStudyGrowth','simQuestionGrowth'].forEach(id=>{const el=$('#'+id);if(el)el.value=0});renderSimulation();toast('Simülasyon varsayılanlara döndü.')});
 bind('saveSettings','click',()=>{state.settings.studyGoal=clamp(Number($('#setStudy').value)||270,120,720);state.settings.questionGoal=clamp(Number($('#setQuestions').value)||350,50,1200);state.settings.paragraphGoal=clamp(Number($('#setParagraph').value)||20,0,100);state.settings.problemGoal=clamp(Number($('#setProblem').value)||15,0,100);save();renderAll();toast('Günlük hedefler güncellendi.')});
 bind('exportTop','click',exportData);bind('exportSettings','click',exportData);bind('importSettings','change',e=>{const f=e.target.files?.[0];if(f)importData(f)});bind('resetSettings','click',()=>{if(confirm('Tüm takip verileri silinecek. Emin misin?')){state=clone(defaultState);save();renderAll();toast('Veriler sıfırlandı.')}});
 bind('friendShareEnabled','change',e=>{ensureSocial().shareEnabled=!!e.target.checked;save();publishFriendProfile();renderFriends();toast(e.target.checked?'Paylaşım açıldı.':'Paylaşım kapatıldı.')});bind('copyFriendCode','click',async()=>{const code=friendShareCode();try{await navigator.clipboard.writeText(code);toast('Arkadaş kodu kopyalandı.')}catch{toast(`Kod: ${code}`)}});bind('addFriendByCode','click',refreshFriends);bind('refreshFriend','click',renderFriends);document.addEventListener('click',e=>{const b=e.target.closest('[data-remove-friend]');if(b){ensureSocial().friends.splice(Number(b.dataset.removeFriend),1);save();renderFriends();toast('Arkadaş çıkarıldı.')}});// Theme controls — one reliable pointer/click path for desktop + touch devices.

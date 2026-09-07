@@ -39,6 +39,7 @@
       <button class="nav-item" data-view="mock"><span class="ico">◒</span><span>Deneme Merkezi</span></button>
       <button class="nav-item" data-view="mistakes"><span class="ico">!</span><span>Hata Günlüğü</span></button>
       <button class="nav-item" data-view="analytics"><span class="ico">↗</span><span>Performans</span></button>
+      <button class="nav-item" data-view="simulator"><span class="ico">◈</span><span>Hedef Simülasyonu</span></button>
       <button class="nav-item" data-view="weekly"><span class="ico">◷</span><span>Haftalık Koç</span></button>
       <button class="nav-item" data-view="friends"><span class="ico">♧</span><span>Beraber Çalış</span></button>
       <div class="nav-label">LIFE OS</div>
@@ -129,6 +130,24 @@
     <section class="view" id="mock">
       <div class="page-intro"><div><span class="section-kicker">EVIDENCE, NOT EMOTION</span><h2>Deneme Merkezi</h2><p>Her deneme yalnızca bir puan değil; sonraki haftanın kararını üretir.</p></div><div class="page-actions"><button id="addMock" class="primary-btn">+ Deneme gir</button></div></div>
       <div id="mockKpis" class="kpi-row"></div><div class="card"><div class="card-head"><div><span class="section-kicker">HISTORY</span><h3>Deneme geçmişi</h3></div><select id="mockFilter"><option value="ALL">Tümü</option><option value="TYT">TYT</option><option value="AYT">AYT EA</option></select></div><div id="mockTable" class="mock-table"></div></div>
+    </section>
+
+    <section class="view" id="simulator">
+      <div class="page-intro"><div><span class="section-kicker">TARGET INTELLIGENCE</span><h2>Hedef Simülasyonu</h2><p>Sıralama tahmini yapmıyoruz; mevcut netlerinle hedefe giden yolu, gelişim ihtiyacını ve çalışma yönünü simüle ediyoruz.</p></div><div class="page-actions"><button id="resetSimulation" class="ghost-btn">Varsayılanları yükle</button></div></div>
+      <div class="sim-hero-grid">
+        <article class="card sim-target-card"><div class="sim-target-top"><div><span class="section-kicker">MISSION</span><h3>Hukuk • EA</h3><p>Stretch hedef <b>30.000</b> • minimum güvenli hedef <b>50.000</b></p></div><span class="badge purple">SIMULATION</span></div><div class="sim-score"><div><span>HEDEF UYUMU</span><strong id="simScore">0%</strong></div><div class="sim-progress"><i id="simScoreBar"></i></div><small id="simScoreText">Gerçek performans verisi girdikçe hesaplanır.</small></div></article>
+        <article class="card sim-rank-card"><span class="section-kicker">CURRENT SNAPSHOT</span><h3>Mevcut net fotoğrafı</h3><div class="sim-net-grid"><div><span>TYT</span><strong id="simTytDisplay">0</strong><small>/ 120</small></div><div><span>AYT EA</span><strong id="simAytDisplay">0</strong><small>/ 80</small></div></div><div class="sim-gap-row"><span>Hedefe kapanacak net farkı</span><strong id="simGapDisplay">Veri bekleniyor</strong></div></article>
+      </div>
+      <div class="grid-2 main-grid-gap">
+        <article class="card"><div class="card-head"><div><span class="section-kicker">INPUTS</span><h3>Mevcut performans</h3></div><span class="muted">Son gerçek durum</span></div><div class="sim-input-grid"><label>TYT toplam net<input id="simTyt" type="number" min="0" max="120" step="0.25" value="0"></label><label>AYT EA toplam net<input id="simAyt" type="number" min="0" max="80" step="0.25" value="0"></label><label>Haftalık ders artışı (dk)<input id="simStudyGrowth" type="number" min="0" max="1000" step="30" value="0"></label><label>Haftalık soru artışı<input id="simQuestionGrowth" type="number" min="0" max="2000" step="25" value="0"></label></div><div class="sim-helper">Değerleri denemelerinden gir. Bu alan “sıralaman şu” demez; <b>hedefe hazırlık seviyesini</b> gösterir.</div></article>
+        <article class="card"><div class="card-head"><div><span class="section-kicker">NEXT 4 WEEKS</span><h3>Gelişim senaryosu</h3></div><span id="simScenarioBadge" class="badge success">STABIL</span></div><div id="simScenario" class="sim-scenario"></div></article>
+      </div>
+      <div class="grid-3 main-grid-gap">
+        <article class="card sim-callout"><span class="section-kicker">TYT ENGINE</span><strong id="simTytNeed">—</strong><p>TYT tarafında kapanması gereken yön.</p></article>
+        <article class="card sim-callout"><span class="section-kicker">AYT ENGINE</span><strong id="simAytNeed">—</strong><p>AYT EA tarafında kapanması gereken yön.</p></article>
+        <article class="card sim-callout"><span class="section-kicker">COACH PRIORITY</span><strong id="simCoachNeed">—</strong><p>Bu hafta en yüksek getirili aksiyon.</p></article>
+      </div>
+      <article class="card" style="margin-top:12px"><div class="card-head"><div><span class="section-kicker">IMPORTANT</span><h3>Bu simülasyonu nasıl okumalı?</h3></div></div><div class="sim-rules"><div><b>01</b><p><strong>Readiness ile aynı şey değil.</strong> Readiness mevcut verinin kalitesini ölçer; bu panel hedefe hazırlık yönünü gösterir.</p></div><div><b>02</b><p><strong>Sıralama iddiası yok.</strong> Deneme ve resmi yerleştirme verileri olmadan gerçek sıralama tahmini yapmak yanıltıcı olur.</p></div><div><b>03</b><p><strong>Koça veri verir.</strong> Senin gerçek TYT/AYT netlerin yükseldikçe sistem önceliklerini ve çalışma senaryonu değiştirecek.</p></div></div></article>
     </section>
 
     <section class="view" id="analytics">

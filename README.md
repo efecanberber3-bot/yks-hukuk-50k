@@ -1,22 +1,18 @@
-# Hukuk 50K OS V27 — Coach Engine
+# Hukuk 50K OS — V32 Target Intelligence
 
-V27 builds on V26 and adds a data-aware, rule-based coaching layer.
+V32 adds a dedicated **Hedef Simülasyonu** view to the V31 accountability build.
 
-## Coach engine
-- Reads topic completion, confidence, question accuracy, overdue reviews, recent mock trend, study deficit and discipline.
-- Produces a prioritized coaching narrative.
-- Generates an adaptive plan for today or tomorrow and avoids duplicate open tasks.
-- Adds coach-generated tasks directly into the task board.
-- Keeps the existing Supabase/cloud data model compatible.
+## What it does
+- TYT + AYT EA current-net inputs
+- Weekly study-minute and question-growth scenario inputs
+- Target-alignment indicator
+- Four-week scenario projection
+- TYT / AYT gap guidance
+- Coach priority recommendation
+- Explicitly avoids claiming a real ranking prediction without sufficient official/individual data
 
-## Focus Room
-- Keeps the 10–240 minute range in 10-minute increments.
-- Defaults to 10 minutes.
-- Uses a selected task to suggest a suitable duration.
+## Migration
+V32 uses localStorage key `hukuk50k-os-v32` and automatically migrates prior V31 data through the legacy-key migration list.
 
-## Deployment
-Upload all files to the existing GitHub Pages repository. Keep `cloud-config.js` values unchanged. After deploy, hard refresh the page.
-
-
-## V31 • Beraber Çalış
-Run the appended V31 SQL migration in Supabase. Users get an optional share code and can share only selected progress stats; private study details remain in `user_state`.
+## Supabase
+Existing V31 Supabase configuration is preserved. No new secret key is required for this module.
