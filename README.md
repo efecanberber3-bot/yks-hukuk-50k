@@ -16,3 +16,7 @@ V27 builds on V26 and adds a data-aware, rule-based coaching layer.
 
 ## Deployment
 Upload all files to the existing GitHub Pages repository. Keep `cloud-config.js` values unchanged. After deploy, hard refresh the page.
+
+
+## V31 • Beraber Çalış
+Run the appended V31 SQL migration in Supabase. Users get an optional share code and can share only selected progress stats; private study details remain in `user_state`.

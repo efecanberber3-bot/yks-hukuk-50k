@@ -282,5 +282,5 @@
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
-  window.hukukCloud = { openLogin:openGate, push:()=>pushCloud(true), pull:pullCloud, configured };
+  window.hukukCloud = { openLogin:openGate, push:()=>pushCloud(true), pull:pullCloud, configured, publishFriendProfile, getFriendProfile };
 })();

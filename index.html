@@ -40,6 +40,7 @@
       <button class="nav-item" data-view="mistakes"><span class="ico">!</span><span>Hata Günlüğü</span></button>
       <button class="nav-item" data-view="analytics"><span class="ico">↗</span><span>Performans</span></button>
       <button class="nav-item" data-view="weekly"><span class="ico">◷</span><span>Haftalık Koç</span></button>
+      <button class="nav-item" data-view="friends"><span class="ico">♧</span><span>Beraber Çalış</span></button>
       <div class="nav-label">LIFE OS</div>
       <button class="nav-item" data-view="discipline"><span class="ico">✦</span><span>Disiplin</span></button>
       <button class="nav-item" data-view="finance"><span class="ico">₺</span><span>Para Motoru</span></button>
@@ -152,6 +153,22 @@
       <article class="card"><div class="card-head"><div><span class="section-kicker">COACH NOTE</span><h3>Koçun özeti</h3></div></div><div id="weeklyCoachNote" class="coach-note-large"></div></article>
     </section>
 
+    <section class="view" id="friends">
+      <div class="page-intro"><div><span class="section-kicker">SOCIAL / ACCOUNTABILITY</span><h2>Beraber Çalış</h2><p>Arkadaşınla aynı hedefte ilerle. Özel ders verilerin gizli kalır; yalnızca seçtiğin ilerleme istatistikleri paylaşılır.</p></div><div class="page-actions"><button id="refreshFriend" class="secondary-btn">↻ Yenile</button></div></div>
+      <div class="grid-2 main-grid-gap">
+        <article class="card friend-hero"><div class="card-head"><div><span class="section-kicker">YOUR SHARE PROFILE</span><h3>Paylaşım kartın</h3></div><span id="friendShareStatus" class="badge purple">PASİF</span></div>
+          <div class="share-code-box"><div><span class="muted">ARKADAŞ KODU</span><strong id="friendShareCode">••••••</strong><small>Bu kodu sadece güvendiğin arkadaşlarınla paylaş.</small></div><button id="copyFriendCode" class="secondary-btn">Kodu kopyala</button></div>
+          <label class="toggle-line"><input id="friendShareEnabled" type="checkbox"><span><b>İlerlemeni paylaş</b><small>Yalnızca seçili istatistikler paylaşılır. Denemeler, hatalar, konular ve finans verileri paylaşılmaz.</small></span></label>
+          <div class="share-metrics" id="friendShareMetrics"></div>
+        </article>
+        <article class="card"><div class="card-head"><div><span class="section-kicker">ACCOUNTABILITY</span><h3>Arkadaşını ekle</h3></div></div>
+          <p class="muted">Arkadaşının paylaşım kodunu gir. Sonuçları yalnızca onun paylaşım izni açıksa görebilirsin.</p>
+          <div class="friend-add-row"><input id="friendCodeInput" maxlength="8" placeholder="Örn. H7K2P9"><button id="addFriendByCode" class="primary-btn">Görüntüle</button></div>
+          <div id="friendList" class="friend-list"></div>
+        </article>
+      </div>
+      <div class="card"><div class="card-head"><div><span class="section-kicker">SHARED STATS</span><h3>Beraberlik panosu</h3></div><span class="muted">Seçili arkadaşların</span></div><div id="friendLeaderboard" class="friend-board"></div></div>
+    </section>
     <section class="view" id="discipline">
       <div class="page-intro"><div><span class="section-kicker">LIFE OS / DISCIPLINE</span><h2>Disiplin Merkezi</h2><p>Kendine verdiğin küçük sözleri tutmak, büyük hedefin ön koşulu.</p></div></div>
       <div class="card discipline-heat"><div class="card-head"><div><span class="section-kicker">LAST 30 DAYS</span><h3>Uyum ısı haritası</h3></div><span class="muted">%70 altı alarm</span></div><div id="disciplineHeatmap" class="heatmap"></div><div class="heat-legend"><span><i class="h0"></i>0</span><span><i class="h1"></i>40</span><span><i class="h2"></i>70</span><span><i class="h3"></i>85</span><span><i class="h4"></i>100</span></div></div>

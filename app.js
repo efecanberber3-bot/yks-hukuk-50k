@@ -1,5 +1,5 @@
-const KEY='hukuk50k-os-v27';
-const LEGACY_KEYS=['hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
+const KEY='hukuk50k-os-v31';
+const LEGACY_KEYS=['hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
 const START='2026-09-07';
 const DEFAULT_EXAM='2027-06-20';
 const LAW_STRETCH_RANK=30000, LAW_MIN_RANK=50000, BASE_SALARY=15000;
@@ -38,9 +38,9 @@ const baseTasks=()=>[
  {title:'EB Digital Studio • müşteri / portföy',category:'EB Digital',minutes:60,kind:'work'},
  {title:'Antrenman',category:'Spor',minutes:60,kind:'life'}
 ];
-const defaultState={version:27,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
+const defaultState={version:31,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=27;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=31;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -105,6 +105,7 @@ const iconPaths={
  analytics:'<path d="M4 19V5M4 19h16"/><path d="m7 15 3-3 3 2 5-6"/>',
  discipline:'<path d="m12 3 2.1 4.2 4.7.7-3.4 3.3.8 4.7-4.2-2.2-4.2 2.2.8-4.7-3.4-3.3 4.7-.7L12 3Z"/>',
  finance:'<path d="M4 7h16v12H4z"/><path d="M4 10h16"/><path d="M8 15h3"/><path d="M15 14h.01"/>',
+ friends:'<path d="M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M2.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M16 14a5 5 0 0 1 5.5 6"/>',
  settings:'<path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="m19.4 15 .1 1.8-2 1.1-1.5-1a8 8 0 0 1-2.1 1l-.5 1.7h-2.8L10 17.9a8 8 0 0 1-2.1-1l-1.5 1-2-1.1.1-1.8a8 8 0 0 1-1.1-2l-1.6-.5v-2.8l1.6-.5a8 8 0 0 1 1.1-2L4.4 5l2-1.1 1.5 1a8 8 0 0 1 2.1-1l.5-1.7h2.8l.5 1.7a8 8 0 0 1 2.1 1l1.5-1 2 1.1-.1 1.8a8 8 0 0 1 1.1 2l1.6.5v2.8l-1.6.5a8 8 0 0 1-1.1 2Z"/>',
 };
 function renderNavIcons(){
@@ -334,7 +335,41 @@ function renderWeekly(){const s=weekSummary();const hasData=s.days.length>0||s.t
  let note='';if(!hasData)note='İlk hafta hedefimiz mükemmel sonuç değil; veri üretmek, ritim kurmak ve günlük sistemi oturtmak.';else if(score>=85)note='Ritmi yakaladın. Gelecek hafta hacmi değil, kaliteyi artır: zayıf ders + deneme analizi + akıllı tekrar.';else if(score>=70)note='Sistem çalışıyor. En yüksek getiriyi AYT Matematik ve gecikmiş tekrarları istikrarlı kapatarak alırsın.';else note='Önceliğimiz yeniden kusursuz program yazmak değil; her gün minimum çalışma tabanını koruyup zinciri kırmamak.';$('#weeklyCoachNote').innerHTML=`<div class="coach-note-accent">✦</div><div><strong>${hasData?'Koçun kararı':'Başlangıç kararı'}</strong><p>${note}</p></div>`;}
 function generateNextWeekPlan(){const target=addDays(today(),1);const r=generateCoachPlan(target,'tomorrow');toast(r.added?`${r.added} görev gelecek plana eklendi.`:'Yeni görev eklenmedi.');renderWeekly();renderAll();}
 
-function renderAll(){applyTheme();ensureDay();renderDashboard();renderToday();renderRoadmap();renderMock();renderMistakes();renderAnalytics();renderDiscipline();renderFinance();renderSettings();renderWeekly();}
+
+function friendShareCode(){
+  if(state.social?.shareCode) return state.social.shareCode;
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code=''; for(let i=0;i<6;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+  state.social??={}; state.social.shareCode=code; state.social.shareEnabled=false; save(); return code;
+}
+function sharedStats(){const d=ensureDay();const wk=weekSummary();return {studyMinutes:Math.round(wk.totalStudy),weeklyQuestions:wk.questions,weekScore:Math.round(wk.avgScore),streak:streak(),todayScore:systemScore(d),targetRank:Number(state.settings.targetRank)||30000,target:'Hukuk'}}
+function ensureSocial(){state.social??={};state.social.shareCode??='';state.social.shareEnabled??=false;state.social.friends??=[];return state.social}
+function renderFriends(){
+  const social=ensureSocial();
+  const code=friendShareCode();
+  const codeEl=$('#friendShareCode'); if(codeEl) codeEl.textContent=code;
+  const enabled=$('#friendShareEnabled'); if(enabled) enabled.checked=!!social.shareEnabled;
+  const status=$('#friendShareStatus'); if(status){status.textContent=social.shareEnabled?'AKTİF':'PASİF';status.className='badge '+(social.shareEnabled?'success':'purple')}
+  const m=sharedStats();
+  const mm=$('#friendShareMetrics'); if(mm) mm.innerHTML=[['Hafta',`${m.studyMinutes} dk`],['Soru',m.weeklyQuestions],['Streak',`${m.streak} gün`],['Skor',m.weekScore||0]].map(([a,b])=>`<div class="share-metric"><span>${a}</span><strong>${b}</strong></div>`).join('');
+  const fl=$('#friendList'); if(fl){fl.innerHTML=social.friends.length?social.friends.map((f,i)=>`<div class="friend-item"><div class="friend-item-main"><div class="friend-avatar">${esc((f.name||'?')[0].toUpperCase())}</div><div><strong>${esc(f.name||'Arkadaş')}</strong><small>${esc(f.code||'')}</small></div></div><button class="ghost-btn" data-remove-friend="${i}">Kaldır</button></div>`).join(''):'<div class="empty">Henüz arkadaş eklemedin.</div>'}
+  renderFriendBoard();
+}
+function renderFriendBoard(){
+ const box=$('#friendLeaderboard');if(!box)return;
+ const friends=ensureSocial().friends||[];
+ if(!friends.length){box.innerHTML='<div class="empty">Arkadaşının paylaşım kodunu eklediğinde seçili istatistikleri burada göreceksin.</div>';return;}
+ box.innerHTML=friends.map(f=>`<article class="friend-card"><div class="friend-card-head"><div class="friend-avatar">${esc((f.name||'?')[0].toUpperCase())}</div><div><h4>${esc(f.name||'Arkadaş')}</h4><small>Hedef • ${esc(f.target||'Hukuk')}</small></div></div><div class="friend-grid"><div class="friend-stat"><span>Hafta çalışması</span><strong>${Number(f.studyMinutes)||0} dk</strong></div><div class="friend-stat"><span>Hafta sorusu</span><strong>${Number(f.weeklyQuestions)||0}</strong></div><div class="friend-stat"><span>Streak</span><strong>${Number(f.streak)||0} gün</strong></div><div class="friend-stat"><span>Hafta skoru</span><strong>${Number(f.weekScore)||0}</strong></div></div><p class="muted" style="margin:12px 0 0">Son güncelleme: ${esc(f.updatedAt?fmtDate(f.updatedAt.slice(0,10)):'—')}</p></article>`).join('');
+}
+async function refreshFriends(){
+  if(!window.hukukCloud?.getFriendProfile){toast('Önce Supabase hesabının bağlı olduğundan emin ol.');return;}
+  const code=($('#friendCodeInput')?.value||'').trim().toUpperCase(); if(!code){toast('Arkadaş kodunu gir.');return;}
+  const p=await window.hukukCloud.getFriendProfile(code);
+  if(!p){toast('Bu kod bulunamadı veya paylaşım kapalı.');return;}
+  const social=ensureSocial(); social.friends??=[]; const idx=social.friends.findIndex(x=>x.code===code); if(idx>=0)social.friends[idx]=p;else social.friends.push(p); save(); renderFriends(); $('#friendCodeInput').value=''; toast(`${p.name||'Arkadaş'} eklendi.`);
+}
+function publishFriendProfile(){window.hukukCloud?.publishFriendProfile?.(sharedStats(), ensureSocial());}
+function renderAll(){applyTheme();ensureDay();renderDashboard();renderToday();renderRoadmap();renderMock();renderMistakes();renderAnalytics();renderDiscipline();renderFinance();renderSettings();renderWeekly();renderFriends();}
 function addTask(){const d=ensureDay(),title=$('#taskTitle').value.trim();if(!title)return;const cat=$('#taskCategory').value;d.tasks.push({id:uid('task'),title,category:cat,minutes:Number($('#taskMinutes').value)||0,kind:['TYT','AYT','Tekrar'].includes(cat)?'study':cat==='EB Digital'?'work':cat==='Spor'?'life':'life',done:false,source:'manual'});save();$('#taskDialog').close();$('#taskForm').reset();renderAll();toast('Görev eklendi.')}
 function addMock(){const type=$('#mockType').value,net=Number($('#mockNet').value);if(!net)return;state.mocks.push({id:uid('mock'),type,net,date:$('#mockDate').value||today(),note:$('#mockNote').value.trim(),duration:Number($('#mockDuration').value)||0,breakdown:{turkce:valOrNull($('#mockTurkce').value),math:valOrNull($('#mockMath').value),social:valOrNull($('#mockSocial').value),science:valOrNull($('#mockScience').value)}});save();$('#mockDialog').close();$('#mockForm').reset();$('#mockDate').value=today();renderAll();toast(`${type} denemesi kaydedildi.`)}
 function valOrNull(v){return v===''?null:Number(v)}
@@ -387,7 +422,7 @@ document.addEventListener('change',e=>{const s=e.target.closest('[data-topic]');
 bind('generateNextWeek','click',generateNextWeekPlan);
 bind('saveSettings','click',()=>{state.settings.studyGoal=clamp(Number($('#setStudy').value)||270,120,720);state.settings.questionGoal=clamp(Number($('#setQuestions').value)||350,50,1200);state.settings.paragraphGoal=clamp(Number($('#setParagraph').value)||20,0,100);state.settings.problemGoal=clamp(Number($('#setProblem').value)||15,0,100);save();renderAll();toast('Günlük hedefler güncellendi.')});
 bind('exportTop','click',exportData);bind('exportSettings','click',exportData);bind('importSettings','change',e=>{const f=e.target.files?.[0];if(f)importData(f)});bind('resetSettings','click',()=>{if(confirm('Tüm takip verileri silinecek. Emin misin?')){state=clone(defaultState);save();renderAll();toast('Veriler sıfırlandı.')}});
-// Theme controls — one reliable pointer/click path for desktop + touch devices.
+bind('friendShareEnabled','change',e=>{ensureSocial().shareEnabled=!!e.target.checked;save();publishFriendProfile();renderFriends();toast(e.target.checked?'Paylaşım açıldı.':'Paylaşım kapatıldı.')});bind('copyFriendCode','click',async()=>{const code=friendShareCode();try{await navigator.clipboard.writeText(code);toast('Arkadaş kodu kopyalandı.')}catch{toast(`Kod: ${code}`)}});bind('addFriendByCode','click',refreshFriends);bind('refreshFriend','click',renderFriends);document.addEventListener('click',e=>{const b=e.target.closest('[data-remove-friend]');if(b){ensureSocial().friends.splice(Number(b.dataset.removeFriend),1);save();renderFriends();toast('Arkadaş çıkarıldı.')}});// Theme controls — one reliable pointer/click path for desktop + touch devices.
 const initThemeControls=()=>{
  const themeBtn=$('#themeBtn');
  const accentBtn=$('#accentThemeBtn');
@@ -460,3 +495,5 @@ bind('topicSaveSession','click',saveTopicSession);bind('topicAddToToday','click'
 bind('globalSearch','focus',()=>{$('#commandDialog')?.showModal();$('#commandInput')?.focus();commandResults('')});bind('globalSearch','keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#commandDialog')?.showModal();$('#commandInput')?.focus();commandResults('')}});bind('commandInput','input',e=>commandResults(e.target.value));document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('#commandDialog')?.showModal();$('#commandInput')?.focus();commandResults('')}});bind('commandDialog','close',()=>{const x=$('#globalSearch');if(x)x.value=''});
 setFocusTimer(10);ensureDay();renderAll();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+
+document.addEventListener('hukuk50k:changed',()=>{if(ensureSocial().shareEnabled) publishFriendProfile();});
