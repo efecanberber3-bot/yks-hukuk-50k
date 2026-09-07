@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#080b12">
   <meta name="description" content="Hukuk 50K OS — YKS 2027 EA kişisel performans ve çalışma yönetim paneli">
+  <meta name="theme-color" content="#080b12">
+  <meta name="color-scheme" content="dark light">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
   <title>Hukuk 50K OS — Personal Performance System</title>
@@ -25,18 +27,18 @@
     </div>
     <nav class="nav" aria-label="Ana menü">
       <div class="nav-label">WORKSPACE</div>
-      <button class="nav-item active" data-view="dashboard"><span class="ico">⌂</span>Kontrol Merkezi</button>
-      <button class="nav-item" data-view="today"><span class="ico">✓</span>Bugünün Sistemi</button>
-      <button class="nav-item" data-view="focus"><span class="ico">◉</span>Focus Room</button>
+      <button class="nav-item active" data-view="dashboard"><span class="ico">⌂</span><span>Kontrol Merkezi</span></button>
+      <button class="nav-item" data-view="today"><span class="ico">✓</span><span>Bugünün Sistemi</span></button>
+      <button class="nav-item" data-view="focus"><span class="ico">◉</span><span>Focus Room</span></button>
       <div class="nav-label">ACADEMIC</div>
-      <button class="nav-item" data-view="roadmap"><span class="ico">◫</span>Konu Motoru</button>
-      <button class="nav-item" data-view="mock"><span class="ico">◒</span>Deneme Merkezi</button>
-      <button class="nav-item" data-view="mistakes"><span class="ico">!</span>Hata Günlüğü</button>
-      <button class="nav-item" data-view="analytics"><span class="ico">↗</span>Performans</button>
+      <button class="nav-item" data-view="roadmap"><span class="ico">◫</span><span>Konu Motoru</span></button>
+      <button class="nav-item" data-view="mock"><span class="ico">◒</span><span>Deneme Merkezi</span></button>
+      <button class="nav-item" data-view="mistakes"><span class="ico">!</span><span>Hata Günlüğü</span></button>
+      <button class="nav-item" data-view="analytics"><span class="ico">↗</span><span>Performans</span></button>
       <div class="nav-label">LIFE OS</div>
-      <button class="nav-item" data-view="discipline"><span class="ico">✦</span>Disiplin</button>
-      <button class="nav-item" data-view="finance"><span class="ico">₺</span>Para Motoru</button>
-      <button class="nav-item" data-view="settings"><span class="ico">⚙</span>Ayarlar</button>
+      <button class="nav-item" data-view="discipline"><span class="ico">✦</span><span>Disiplin</span></button>
+      <button class="nav-item" data-view="finance"><span class="ico">₺</span><span>Para Motoru</span></button>
+      <button class="nav-item" data-view="settings"><span class="ico">⚙</span><span>Ayarlar</span></button>
     </nav>
     <div class="sidebar-foot">
       <div class="target-mini"><span>MISSION</span><strong>Hukuk • ≤ 30K</strong><small>Minimum hedef: 50K</small></div>
@@ -47,7 +49,7 @@
   <main class="main">
     <header class="topbar">
       <div class="top-left"><button id="mobileMenu" class="icon-btn mobile-only">☰</button><div><div id="contextLabel" class="eyebrow">7 EYLÜL 2026 • BAŞLANGIÇ</div><h1 id="pageTitle">Kontrol Merkezi</h1></div></div>
-      <div class="top-right"><div class="global-search"><span>⌕</span><input id="globalSearch" placeholder="Hızlı ara / komut yaz…" autocomplete="off"><kbd>⌘ K</kbd></div><button id="themeBtn" class="icon-btn" title="Tema">☼</button><button id="exportTop" class="ghost-btn">Yedekle</button></div>
+      <div class="top-right"><div class="top-status"><span class="status-dot"></span><span>PERSONAL OS • ONLINE</span></div><div class="global-search"><span>⌕</span><input id="globalSearch" placeholder="Hızlı ara / komut yaz…" autocomplete="off"><kbd>⌘ K</kbd></div><button id="themeBtn" class="icon-btn" title="Tema">☼</button><button id="exportTop" class="ghost-btn">Yedekle</button></div>
     </header>
 
     <section class="view active" id="dashboard">
@@ -136,6 +138,13 @@
       <div class="grid-2 main-grid-gap"><article class="card settings-card"><div class="card-head"><div><span class="section-kicker">TARGETS</span><h3>Hedefler</h3></div></div><label>Günlük ders hedefi (dk)<input id="setStudy" type="number" min="120" max="720"></label><label>Günlük soru hedefi<input id="setQuestions" type="number" min="50" max="1000"></label><label>Paragraf minimumu<input id="setParagraph" type="number" min="0" max="100"></label><label>Problem minimumu<input id="setProblem" type="number" min="0" max="100"></label><button id="saveSettings" class="primary-btn">Kaydet</button></article><article class="card settings-card"><div class="card-head"><div><span class="section-kicker">DATA</span><h3>Veri yönetimi</h3></div></div><p class="muted">Tarayıcı depolaması kullanılıyor. Düzenli JSON yedeği al; ileride Supabase senkronizasyonuna geçebiliriz.</p><div class="settings-actions"><button id="exportSettings" class="secondary-btn">JSON yedeği indir</button><label class="file-btn">JSON yedeği yükle<input id="importSettings" type="file" accept="application/json" hidden></label><button id="resetSettings" class="danger-btn">Tüm verileri sil</button></div><div class="system-note"><strong>2027 YKS notu</strong><span>2027 sınav takvimi/2027 kılavuzu yayımlandığında sınav tarihi ve sınav parametreleri buradan güncellenecek. Panelin mevcut akademik altyapısı 2026-YKS yapısını başlangıç referansı olarak kullanır.</span></div></article></div>
     </section>
   </main>
+  <nav class="bottom-nav" aria-label="Mobil hızlı menü">
+    <button class="nav-item bottom-nav-item active" data-view="dashboard"><span class="ico">⌂</span><span>Özet</span></button>
+    <button class="nav-item bottom-nav-item" data-view="today"><span class="ico">✓</span><span>Bugün</span></button>
+    <button class="nav-item bottom-nav-item" data-view="focus"><span class="ico">◉</span><span>Focus</span></button>
+    <button class="nav-item bottom-nav-item" data-view="roadmap"><span class="ico">◫</span><span>Konular</span></button>
+    <button class="nav-item bottom-nav-item" data-view="analytics"><span class="ico">↗</span><span>Analiz</span></button>
+  </nav>
 </div>
 
 <dialog id="topicDetailDialog" class="modal topic-dialog">
