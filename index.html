@@ -131,6 +131,35 @@
   </main>
 </div>
 
+<dialog id="topicDetailDialog" class="modal topic-dialog">
+  <form method="dialog" id="topicDetailForm" class="modal-form topic-form">
+    <button class="modal-x" value="cancel">×</button>
+    <div class="topic-detail-head">
+      <div><span id="topicDetailArea" class="section-kicker">ACADEMIC</span><h3 id="topicDetailTitle">Konu</h3><p id="topicDetailSubtitle" class="modal-help">Konu performansını gerçek oturum verisiyle takip et.</p></div>
+      <span id="topicDetailHealth" class="coach-risk">RİSK —</span>
+    </div>
+    <input id="topicDetailKey" type="hidden">
+    <div class="topic-detail-grid">
+      <div class="topic-stat-card"><span>Toplam çalışma</span><strong id="topicDetailStudyTotal">0 dk</strong></div>
+      <div class="topic-stat-card"><span>Toplam soru</span><strong id="topicDetailQuestionsTotal">0</strong></div>
+      <div class="topic-stat-card"><span>Doğruluk</span><strong id="topicDetailAccuracy">—</strong></div>
+      <div class="topic-stat-card"><span>Son çalışma</span><strong id="topicDetailLast">Yok</strong></div>
+    </div>
+    <div class="topic-form-section"><span class="section-kicker">BU OTURUM</span><div class="form-grid">
+      <label>Çalışma süresi (dk)<input id="topicStudyMinutes" type="number" min="0" max="600" value="0"></label>
+      <label>Soru sayısı<input id="topicQuestions" type="number" min="0" max="1000" value="0"></label>
+      <label>Doğru<input id="topicCorrect" type="number" min="0" max="1000" value="0"></label>
+      <label>Yanlış<input id="topicWrong" type="number" min="0" max="1000" value="0"></label>
+    </div></div>
+    <div class="form-grid">
+      <label>Durum<select id="topicDetailStatus"><option value="not_started">Başlamadı</option><option value="learning">Çalışılıyor</option><option value="practice">Soru aşaması</option><option value="review">Tekrar</option><option value="done">Tamamlandı</option></select></label>
+      <label>Güven seviyesi <select id="topicDetailConfidence"><option value="1">1 / 5 • Çok zayıf</option><option value="2">2 / 5 • Zayıf</option><option value="3">3 / 5 • Orta</option><option value="4">4 / 5 • İyi</option><option value="5">5 / 5 • Çok iyi</option></select></label>
+    </div>
+    <label>Çalışma notu / hata günlüğü<textarea id="topicDetailNote" class="note-area" placeholder="Neyi karıştırdım? Hangi soru tipinde zorlandım? Bir sonraki çalışmada ne yapmalıyım?"></textarea></label>
+    <div class="topic-detail-actions"><button id="topicAddToToday" type="button" class="secondary-btn">Bugünün planına ekle</button><button id="topicSaveSession" type="button" class="primary-btn">Oturumu kaydet</button></div>
+  </form>
+</dialog>
+
 <dialog id="focusTaskDialog" class="modal">
   <form method="dialog" class="modal-form">
     <button class="modal-x" value="cancel">×</button>
