@@ -223,3 +223,9 @@ body{letter-spacing:-.006em}
   .bottom-nav .nav-item{min-height:50px;padding:6px 3px;border-radius:15px;display:flex;flex-direction:column;gap:4px;justify-content:center;align-items:center;font-size:8px;color:#758195}.bottom-nav .nav-item .ico{font-size:14px}.bottom-nav .nav-item.active{background:linear-gradient(180deg,rgba(200,255,114,.13),rgba(200,255,114,.035));border-color:rgba(200,255,114,.14);color:#fff}.bottom-nav .nav-item:after{display:none}
 }
 @media(max-width:560px){.hero-metrics{grid-template-columns:1fr}.hero-metric:first-child{grid-column:auto}.top-left{gap:9px}.topbar h1{font-size:20px}.global-search{display:none}.hero-head,.page-intro{align-items:flex-start}.hero-date{width:72px;height:72px}.grid-2,.grid-3{grid-template-columns:1fr}.main-grid-gap{gap:10px;margin-top:10px}.focus-room{min-height:365px;padding:16px}.focus-controls{flex-wrap:wrap;justify-content:center}.primary-btn.large,.secondary-btn.large,.ghost-btn.large{min-width:110px}.modal-form{width:calc(100vw - 24px);max-width:none}}
+
+/* V16 Account-aware profile */
+.profile-card .profile-copy{min-width:0;display:grid;gap:3px}
+.profile-card .profile-copy strong:empty{display:none}
+.profile-card .profile-copy strong[hidden]{display:none}
+.cloud-name-field{margin-bottom:0}

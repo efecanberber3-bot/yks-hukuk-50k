@@ -59,6 +59,7 @@
         <div class="cloud-brand">HUKUK 50K OS • CLOUD</div>
         <h2 id="cloudTitle">Kişisel hesabına giriş</h2>
         <p>Verilerin artık cihazdan bağımsız senkronize edilebilir. Hesap açınca çalışma geçmişin, denemelerin ve hedeflerin bulutta saklanır.</p>
+        <label class="cloud-name-field">Ad / görünen isim <span style="font-weight:500;color:#637087">(isteğe bağlı)</span><input id="cloudDisplayName" type="text" autocomplete="name" maxlength="40" placeholder="Efecan, Bercan…"></label>
         <label>E-posta<input id="cloudEmail" type="email" autocomplete="email" placeholder="ornek@mail.com"></label>
         <label>Şifre<input id="cloudPassword" type="password" autocomplete="current-password" placeholder="En az 6 karakter"></label>
         <div class="cloud-row"><button id="cloudLogin" class="primary-btn">Giriş yap</button><button id="cloudSignup" class="secondary-btn">Hesap oluştur</button></div>
@@ -105,7 +106,7 @@
     const err = $c('#cloudGateError'); err.textContent='';
     if (!email || password.length < 6) { err.textContent='Geçerli bir e-posta ve en az 6 karakterlik şifre gir.'; return; }
     const res = mode==='signup'
-      ? await client.auth.signUp({ email, password, options:{ emailRedirectTo: location.origin + location.pathname } })
+      ? await client.auth.signUp({ email, password, options:{ emailRedirectTo: location.origin + location.pathname, data:{ full_name: (($c('#cloudDisplayName')?.value || '').trim()).slice(0,40) } } })
       : await client.auth.signInWithPassword({ email, password });
     if (res.error) { err.textContent = res.error.message; return; }
     if (mode==='signup' && !res.data?.session) {
@@ -116,6 +117,36 @@
     closeGate();
     await pullCloud();
     refreshCloudUI();
+  }
+
+  function getDisplayName() {
+    const meta = user?.user_metadata || {};
+    const raw = meta.full_name || meta.name || meta.display_name || '';
+    return String(raw).trim().slice(0,40);
+  }
+
+  function renderSidebarProfile() {
+    const nameEl = document.querySelector('#sidebarProfileName');
+    const subEl = document.querySelector('#sidebarProfileSub');
+    const avatarEl = document.querySelector('#sidebarAvatar');
+    const card = document.querySelector('#sidebarProfile');
+    if (!card) return;
+    const name = getDisplayName();
+    if (name) {
+      nameEl.textContent = name;
+      nameEl.hidden = false;
+      avatarEl.textContent = name.charAt(0).toLocaleUpperCase('tr-TR');
+    } else if (user?.email) {
+      // İsim yoksa kişiye özel sabit bir isim göstermiyoruz.
+      nameEl.textContent = '';
+      nameEl.hidden = true;
+      avatarEl.textContent = '•';
+    } else {
+      nameEl.textContent = '';
+      nameEl.hidden = true;
+      avatarEl.textContent = '•';
+    }
+    if (subEl) subEl.textContent = user ? 'Hedef • Hukuk' : 'Hedef • Hukuk';
   }
 
   function profileMarkup() {
@@ -143,6 +174,7 @@
   }
 
   function refreshCloudUI() {
+    renderSidebarProfile();
     profileMarkup();
     const badge=$c('#sidebarCloudBadge');
     if (badge) badge.textContent = user ? 'CLOUD • AKTİF' : configured() ? 'CLOUD • PASİF' : 'LOCAL MODE';
