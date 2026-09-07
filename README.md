@@ -1,15 +1,18 @@
-# Hukuk 50K OS V25 — Immersive Focus Room
+# Hukuk 50K OS V27 — Coach Engine
 
-V25 turns Focus Room into a distraction-free deep-work mode.
+V27 builds on V26 and adds a data-aware, rule-based coaching layer.
 
-## Focus mode
-- Hides dashboard/sidebar/topbar/bottom navigation while active.
-- Shows only task selection, duration, timer, controls, status, and exit.
-- Selecting a task automatically syncs a suggested duration.
-- Start requires an active task.
-- Exiting an active session asks for confirmation and pauses safely.
-- Returns to the screen that opened Focus Room.
+## Coach engine
+- Reads topic completion, confidence, question accuracy, overdue reviews, recent mock trend, study deficit and discipline.
+- Produces a prioritized coaching narrative.
+- Generates an adaptive plan for today or tomorrow and avoids duplicate open tasks.
+- Adds coach-generated tasks directly into the task board.
+- Keeps the existing Supabase/cloud data model compatible.
 
-Keep `cloud-config.js` unchanged when deploying over the existing GitHub Pages project.
+## Focus Room
+- Keeps the 10–240 minute range in 10-minute increments.
+- Defaults to 10 minutes.
+- Uses a selected task to suggest a suitable duration.
 
-Focus Room duration selector: 10–240 minutes in 10-minute increments; default/reset is 10 minutes.
+## Deployment
+Upload all files to the existing GitHub Pages repository. Keep `cloud-config.js` values unchanged. After deploy, hard refresh the page.
