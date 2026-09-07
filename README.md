@@ -11,3 +11,5 @@ V25 turns Focus Room into a distraction-free deep-work mode.
 - Returns to the screen that opened Focus Room.
 
 Keep `cloud-config.js` unchanged when deploying over the existing GitHub Pages project.
+
+Focus Room duration selector: 10–240 minutes in 10-minute increments; default/reset is 10 minutes.
