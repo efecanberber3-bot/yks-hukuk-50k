@@ -17,8 +17,11 @@
 <div class="app">
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <div class="brand-symbol"><span>50</span><b>K</b></div>
-      <div><div class="brand-name">HUKUK 50K</div><div class="brand-sub">PERSONAL OS / EA</div></div>
+      <div class="brand-logo-wrap">
+        <img class="brand-logo" src="https://ebdigitalstudio.com.tr/assets/logo-ocean.svg" alt="EB Digital Studio" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+        <div class="brand-symbol" aria-hidden="true" style="display:none"><span>50</span><b>K</b></div>
+      </div>
+      <div><div class="brand-name">HUKUK 50K</div><div class="brand-sub">PERSONAL OS / EA • BY EB DIGITAL STUDIO</div></div>
     </div>
     <div class="profile-card" id="sidebarProfile" aria-label="Hesap profili">
       <div class="avatar" id="sidebarAvatar">•</div>
@@ -48,8 +51,8 @@
 
   <main class="main">
     <header class="topbar">
-      <div class="top-left"><button id="mobileMenu" class="icon-btn mobile-only">☰</button><div><div id="contextLabel" class="eyebrow">7 EYLÜL 2026 • BAŞLANGIÇ</div><h1 id="pageTitle">Kontrol Merkezi</h1></div></div>
-      <div class="top-right"><div class="top-status"><span class="status-dot"></span><span>PERSONAL OS • ONLINE</span></div><div class="global-search"><span>⌕</span><input id="globalSearch" placeholder="Hızlı ara / komut yaz…" autocomplete="off"><kbd>⌘ K</kbd></div><button id="themeBtn" class="icon-btn" title="Tema">☼</button><button id="exportTop" class="ghost-btn">Yedekle</button></div>
+      <div class="top-left"><button id="mobileMenu" class="icon-btn mobile-only" title="Menüyü aç/kapat" aria-label="Menüyü aç">☰</button><div><div id="contextLabel" class="eyebrow">7 EYLÜL 2026 • BAŞLANGIÇ</div><h1 id="pageTitle">Kontrol Merkezi</h1></div></div>
+      <div class="top-right"><div class="top-status"><span class="status-dot"></span><span>PERSONAL OS • ONLINE</span></div><div class="global-search"><span>⌕</span><input id="globalSearch" placeholder="Hızlı ara / komut yaz…" autocomplete="off"><kbd>⌘ K</kbd></div><button id="themeBtn" class="icon-btn" title="Açık / koyu tema" aria-label="Açık / koyu tema">☼</button><div class="theme-picker-wrap"><button id="accentThemeBtn" class="icon-btn theme-swatch-btn" title="Renk temasını değiştir" aria-label="Renk temasını değiştir"><span class="theme-swatch-dot"></span></button><div id="accentThemeMenu" class="accent-menu" role="menu" aria-label="Renk temaları"><div class="accent-menu-head"><span>RENK TEMASI</span><small>Kendine uygun rengi seç</small></div><div class="accent-options"><button type="button" class="accent-option selected" data-accent="lime" data-label="Neon Lime" role="menuitem"><span class="accent-preview" style="--preview:#b7ff5a"></span><span>Neon Lime</span></button><button type="button" class="accent-option " data-accent="ocean" data-label="Ocean" role="menuitem"><span class="accent-preview" style="--preview:#5ddcff"></span><span>Ocean</span></button><button type="button" class="accent-option " data-accent="violet" data-label="Royal Violet" role="menuitem"><span class="accent-preview" style="--preview:#b49cff"></span><span>Royal Violet</span></button><button type="button" class="accent-option " data-accent="rose" data-label="Rose" role="menuitem"><span class="accent-preview" style="--preview:#ff7aa8"></span><span>Rose</span></button><button type="button" class="accent-option " data-accent="amber" data-label="Amber" role="menuitem"><span class="accent-preview" style="--preview:#ffc857"></span><span>Amber</span></button><button type="button" class="accent-option " data-accent="cyan" data-label="Cyan" role="menuitem"><span class="accent-preview" style="--preview:#4de4ff"></span><span>Cyan</span></button><button type="button" class="accent-option " data-accent="red" data-label="Crimson" role="menuitem"><span class="accent-preview" style="--preview:#ff6b6b"></span><span>Crimson</span></button></div></div></div><button id="exportTop" class="ghost-btn">Yedekle</button></div>
     </header>
 
     <section class="view active" id="dashboard">
@@ -145,6 +148,11 @@
     <button class="nav-item bottom-nav-item" data-view="roadmap"><span class="ico">◫</span><span>Konular</span></button>
     <button class="nav-item bottom-nav-item" data-view="analytics"><span class="ico">↗</span><span>Analiz</span></button>
   </nav>
+  <footer class="site-footer">
+    <img src="https://ebdigitalstudio.com.tr/assets/logo-ocean.svg" alt="EB Digital Studio" class="footer-logo" onerror="this.style.display='none'">
+    <span>Hukuk 50K OS • Personal Performance System</span>
+  </footer>
+  <div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
 </div>
 
 <dialog id="topicDetailDialog" class="modal topic-dialog">

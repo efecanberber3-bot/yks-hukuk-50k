@@ -229,3 +229,46 @@ body{letter-spacing:-.006em}
 .profile-card .profile-copy strong:empty{display:none}
 .profile-card .profile-copy strong[hidden]{display:none}
 .cloud-name-field{margin-bottom:0}
+
+/* V17 brand + mobile sidebar close UX */
+.brand-logo-wrap{width:50px;height:50px;display:grid;place-items:center;flex:0 0 50px}
+.brand-logo{width:50px;height:50px;object-fit:contain;display:block;filter:brightness(1.06) saturate(.95);}
+.site-footer{padding:18px 30px 26px;margin-left:260px;display:flex;align-items:center;justify-content:center;gap:12px;color:#68758a;font-size:9px;letter-spacing:.08em;text-transform:uppercase;border-top:1px solid rgba(255,255,255,.045)}
+.footer-logo{width:118px;height:28px;object-fit:contain;opacity:.8;filter:brightness(1.08)}
+.sidebar-backdrop{display:none}
+@media(max-width:900px){
+  .site-footer{margin-left:0;padding:14px 18px 88px;justify-content:flex-start;gap:10px;font-size:8px}
+  .footer-logo{width:100px;height:24px}
+  .sidebar-backdrop{position:fixed;inset:0;background:rgba(1,3,7,.56);backdrop-filter:blur(5px);z-index:45;display:block;opacity:0;pointer-events:none;transition:opacity .22s ease}
+  .sidebar-backdrop.show{opacity:1;pointer-events:auto}
+  #mobileMenu{position:relative;z-index:70;font-size:19px;font-weight:700;line-height:1}
+  #mobileMenu.is-open{background:rgba(200,255,114,.08);border-color:rgba(200,255,114,.2);color:var(--apex-green)}
+}
+
+/* V18 — Accent theme system */
+:root{--accent:#b7ff5a;--accent2:#63e6be;--theme-glow:rgba(183,255,90,.16)}
+html[data-accent="lime"]{--accent:#b7ff5a;--accent2:#63e6be;--theme-glow:rgba(183,255,90,.16)}
+html[data-accent="ocean"]{--accent:#5ddcff;--accent2:#60a5fa;--theme-glow:rgba(93,220,255,.16)}
+html[data-accent="violet"]{--accent:#b49cff;--accent2:#f0abfc;--theme-glow:rgba(180,156,255,.16)}
+html[data-accent="rose"]{--accent:#ff7aa8;--accent2:#fda4af;--theme-glow:rgba(255,122,168,.16)}
+html[data-accent="amber"]{--accent:#ffc857;--accent2:#fb923c;--theme-glow:rgba(255,200,87,.16)}
+html[data-accent="cyan"]{--accent:#4de4ff;--accent2:#22d3ee;--theme-glow:rgba(77,228,255,.16)}
+html[data-accent="red"]{--accent:#ff6b6b;--accent2:#f97316;--theme-glow:rgba(255,107,107,.16)}
+html[data-accent] .theme-swatch-dot{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 12%,transparent),0 0 20px var(--theme-glow)}
+.theme-picker-wrap{position:relative}
+.theme-swatch-btn{position:relative;overflow:visible}
+.theme-swatch-dot{display:block;width:14px;height:14px;border-radius:50%;margin:auto;transition:.2s}
+.theme-swatch-btn:hover .theme-swatch-dot{transform:scale(1.08)}
+.accent-menu{position:absolute;right:0;top:48px;width:248px;padding:12px;border:1px solid var(--line2);border-radius:18px;background:rgba(10,14,21,.97);backdrop-filter:blur(24px);box-shadow:0 24px 70px rgba(0,0,0,.45);opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none;transition:.18s;z-index:80}
+.accent-menu.open{opacity:1;transform:none;pointer-events:auto}
+.accent-menu-head{padding:4px 5px 10px}.accent-menu-head span{display:block;font-size:9px;letter-spacing:.14em;font-weight:900;color:#dce3ee}.accent-menu-head small{display:block;color:var(--muted2);font-size:9px;margin-top:4px}
+.accent-options{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.accent-option{border:1px solid var(--line);background:rgba(255,255,255,.025);color:#dce3ee;border-radius:12px;padding:9px 10px;display:flex;align-items:center;gap:8px;font-size:10px;text-align:left;transition:.18s}
+.accent-option:hover{background:rgba(255,255,255,.06);transform:translateY(-1px)}
+.accent-option.selected{border-color:color-mix(in srgb,var(--accent) 42%,transparent);background:color-mix(in srgb,var(--accent) 8%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 14%,transparent)}
+.accent-preview{width:18px;height:18px;border-radius:6px;display:block;background:var(--preview);box-shadow:0 0 14px color-mix(in srgb,var(--preview) 30%,transparent);flex:0 0 18px}
+html[data-theme="light"] .accent-menu{background:rgba(248,250,252,.96);color:#152033;box-shadow:0 22px 60px rgba(15,23,42,.18)}
+html[data-theme="light"] .accent-option{color:#233044;background:rgba(15,23,42,.025)}
+html[data-theme="light"] .accent-menu-head span{color:#1f2937}
+@media (max-width:900px){.accent-menu{right:-6px;top:45px;width:230px}.accent-options{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.accent-menu{right:-52px;width:232px}.accent-option{padding:8px}}
