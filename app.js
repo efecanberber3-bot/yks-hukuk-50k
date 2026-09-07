@@ -1,5 +1,5 @@
-const KEY='hukuk50k-os-v36';
-const LEGACY_KEYS=['hukuk50k-os-v35','hukuk50k-os-v34','hukuk50k-os-v33','hukuk50k-os-v32','hukuk50k-os-v31','hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
+const KEY='hukuk50k-os-v37';
+const LEGACY_KEYS=['hukuk50k-os-v36','hukuk50k-os-v35','hukuk50k-os-v34','hukuk50k-os-v33','hukuk50k-os-v32','hukuk50k-os-v31','hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
 const START='2026-09-07';
 const DEFAULT_EXAM='2027-06-20';
 const LAW_STRETCH_RANK=30000, LAW_MIN_RANK=50000, BASE_SALARY=15000;
@@ -38,9 +38,9 @@ const baseTasks=()=>[
  {title:'EB Digital Studio • müşteri / portföy',category:'EB Digital',minutes:60,kind:'work'},
  {title:'Antrenman',category:'Spor',minutes:60,kind:'life'}
 ];
-const defaultState={version:36,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
+const defaultState={version:37,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=36;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=37;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -58,8 +58,8 @@ function normalize(x){return migrate(x)}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));document.dispatchEvent(new CustomEvent('hukuk50k:changed'))}
 function makeBaseTasks(){return baseTasks().map(t=>({...t,id:uid('task'),done:false,source:'base'}))}
 function ensureDay(k=today()){
- if(!state.days[k])state.days[k]={tasks:makeBaseTasks(),habits:Object.fromEntries(habitDefs.map(x=>[x[0],false])),studyMinutes:0,questions:0,note:'',phoneMinutes:0,closed:false,focusMinutes:0,questionBreakdown:{paragraph:0,problem:0}};
- const d=state.days[k];d.habits??={};d.tasks??=[];d.studyMinutes??=0;d.questions??=0;d.note??='';d.phoneMinutes??=0;d.closed??=false;d.focusMinutes??=0;d.questionBreakdown??={paragraph:0,problem:0};
+ if(!state.days[k])state.days[k]={tasks:makeBaseTasks(),habits:Object.fromEntries(habitDefs.map(x=>[x[0],false])),studyMinutes:0,questions:0,note:'',phoneMinutes:0,closed:false,focusMinutes:0,questionBreakdown:{paragraph:0,problem:0},sleepHours:null,energyLevel:null,exerciseMinutes:null,stressLevel:null};
+ const d=state.days[k];d.habits??={};d.tasks??=[];d.studyMinutes??=0;d.questions??=0;d.note??='';d.phoneMinutes??=0;d.closed??=false;d.focusMinutes??=0;d.questionBreakdown??={paragraph:0,problem:0};d.sleepHours??=null;d.energyLevel??=null;d.exerciseMinutes??=null;d.stressLevel??=null;d.sleepHours??=null;d.energyLevel??=null;d.exerciseMinutes??=null;d.stressLevel??=null;
  const hasRealTasks=d.tasks.length>0;
  if(!hasRealTasks && !d.closed) d.tasks=makeBaseTasks();
  else if(hasRealTasks && d.tasks.length<baseTasks().length){
@@ -129,6 +129,7 @@ const iconPaths={
  mock:'<path d="M5 20V9M12 20V4M19 20v-7"/><path d="M3 20h18"/>',
  mistakes:'<path d="M12 3 21 19H3L12 3Z"/><path d="M12 9v4"/><path d="M12 16h.01"/>',
  analytics:'<path d="M4 19V5M4 19h16"/><path d="m7 15 3-3 3 2 5-6"/>',
+ lifeEnergy:'<path d="M12 3c-1.7 2.8-5 5.7-5 9.4A5 5 0 0 0 12 18a5 5 0 0 0 5-5.6C17 8.7 13.7 5.8 12 3Z"/><path d="M9.5 13.5a2.5 2.5 0 0 0 5 0"/>',
  discipline:'<path d="m12 3 2.1 4.2 4.7.7-3.4 3.3.8 4.7-4.2-2.2-4.2 2.2.8-4.7-3.4-3.3 4.7-.7L12 3Z"/>',
  finance:'<path d="M4 7h16v12H4z"/><path d="M4 10h16"/><path d="M8 15h3"/><path d="M15 14h.01"/>',
  simulator:'<path d="M12 3l2.2 5.1L19 10.3l-4.8 2.2L12 18l-2.2-5.5L5 10.3l4.8-2.2L12 3Z"/><path d="M19 4v4M21 6h-4"/>',
@@ -138,7 +139,7 @@ const iconPaths={
 function renderNavIcons(){
  $$('.nav-item[data-view]').forEach(btn=>{const ico=btn.querySelector('.ico');if(!ico)return;const key=btn.dataset.view;if(iconPaths[key])ico.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true">${iconPaths[key]}</svg>`;});
 }
-function navigate(view){const active=$$('.view.active')[0]?.id;if(view==='focus'&&active&&active!=='focus')focus.previousView=active;document.body.classList.toggle('focus-mode',view==='focus');$$('.view').forEach(v=>v.classList.toggle('active',v.id===view));$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===view));const titles={dashboard:'Kontrol Merkezi',today:'Bugünün Sistemi',focus:'Focus Room',roadmap:'Konu Motoru',mock:'Deneme Merkezi',analytics:'Performans',discipline:'Disiplin Merkezi',finance:'Para Motoru',mistakes:'Hata Günlüğü',weekly:'Haftalık Koç',simulator:'Hedef Simülasyonu',settings:'Ayarlar'};$('#pageTitle').textContent=titles[view]||'Kontrol Merkezi';$('#contextLabel').textContent=view==='dashboard'?'HUKUK 50K • COMMAND CENTER':longDate(today()).toUpperCase();window.scrollTo({top:0,behavior:'smooth'});setTimeout(renderNavIcons,0);if(view==='focus'){renderFocusTaskPicker();updateFocusStatus()} }
+function navigate(view){const active=$$('.view.active')[0]?.id;if(view==='focus'&&active&&active!=='focus')focus.previousView=active;document.body.classList.toggle('focus-mode',view==='focus');$$('.view').forEach(v=>v.classList.toggle('active',v.id===view));$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===view));const titles={dashboard:'Kontrol Merkezi',today:'Bugünün Sistemi',focus:'Focus Room',roadmap:'Konu Motoru',mock:'Deneme Merkezi',analytics:'Performans',discipline:'Disiplin Merkezi',lifeEnergy:'Yaşam & Enerji',finance:'Para Motoru',mistakes:'Hata Günlüğü',weekly:'Haftalık Koç',simulator:'Hedef Simülasyonu',settings:'Ayarlar'};$('#pageTitle').textContent=titles[view]||'Kontrol Merkezi';$('#contextLabel').textContent=view==='dashboard'?'HUKUK 50K • COMMAND CENTER':longDate(today()).toUpperCase();window.scrollTo({top:0,behavior:'smooth'});setTimeout(renderNavIcons,0);if(view==='focus'){renderFocusTaskPicker();updateFocusStatus()} }
 function daysToExam(){return daysBetween(today(),state.settings.examDate)}
 function readiness(){
  const ty=latestMocks('TYT'), ay=latestMocks('AYT EA');
@@ -209,8 +210,36 @@ function weakTopicDetails(){
  }));
  return rows.sort((a,b)=>b.score-a.score);
 }
+function energySnapshot(k=today()){
+ const keys=[0,1,2].map(i=>addDays(k,-i));
+ const days=keys.map(x=>state.days[x]).filter(Boolean);
+ const avg=(arr,fb)=>arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:fb;
+ const sleep=avg(days.filter(d=>Number.isFinite(Number(d.sleepHours))).map(d=>Number(d.sleepHours)),7);
+ const energy=avg(days.filter(d=>Number.isFinite(Number(d.energyLevel))).map(d=>Number(d.energyLevel)),3.5);
+ const phone=avg(days.filter(d=>Number.isFinite(Number(d.phoneMinutes))).map(d=>Number(d.phoneMinutes)),0);
+ const exercise=avg(days.filter(d=>Number.isFinite(Number(d.exerciseMinutes))).map(d=>Number(d.exerciseMinutes)),0);
+ const stress=avg(days.filter(d=>Number.isFinite(Number(d.stressLevel))).map(d=>Number(d.stressLevel)),3);
+ const study=avg(days.map(d=>realStudyMinutes(d)),0);
+ const sleepScore=clamp((sleep/8)*100,0,100);
+ const energyScore=clamp((energy/5)*100,0,100);
+ const phoneScore=phone?clamp(100-(Math.max(0,phone-30)/120*100),25,100):100;
+ const exerciseScore=clamp(50+(exercise/60*50),50,100);
+ const stressScore=clamp(100-((stress-1)/4*100),0,100);
+ const capacityScore=clamp(Math.round(sleepScore*.30+energyScore*.27+phoneScore*.14+exerciseScore*.11+stressScore*.08+clamp((study/(state.settings.studyGoal||270))*100,0,100)*.10),25,100);
+ const capacity=Math.round((Number(state.settings.studyGoal)||270)*capacityScore/100);
+ let mode='NORMAL', tone='success', message='Enerjin çalışma için dengeli görünüyor.';
+ if(capacityScore<55){mode='RECOVERY';tone='danger';message='Enerji düşük. Bugün yükü azaltıp kaliteli kısa bloklara odaklan.';}
+ else if(capacityScore<72){mode='CONTROLLED';tone='purple';message='Orta kapasite. Önce en yüksek getirili blokları tamamla, hacmi zorlamaya gerek yok.';}
+ return {sleep,energy,phone,exercise,stress,study,sleepScore,energyScore,phoneScore,exerciseScore,stressScore,capacityScore,capacity,mode,tone,message};
+}
+function applyEnergyToDay(d){
+ if(Number.isFinite(Number(d.sleepHours))) d.habits.sleep=Number(d.sleepHours)>=7;
+ if(Number.isFinite(Number(d.exerciseMinutes))) d.habits.exercise=Number(d.exerciseMinutes)>=20;
+ if(Number.isFinite(Number(d.phoneMinutes))) d.habits.phone=Number(d.phoneMinutes)<=45;
+ if(realStudyMinutes(d)>=state.settings.studyGoal) d.habits.study=true;
+}
 function adaptivePlan(){
- const d=ensureDay(), target=Number(state.settings.studyGoal)||270;
+ const d=ensureDay(); applyEnergyToDay(d); const energy=energySnapshot(); const target=Math.min(Number(state.settings.studyGoal)||270, Math.max(120, energy.capacity));
  const used= d.tasks.filter(t=>t.done&&['study','review'].includes(t.kind)).reduce((a,t)=>a+(Number(t.minutes)||0),0);
  const remaining=Math.max(0,target-used);
  const dueTopics=weakTopicDetails().filter(x=>x.next&&x.next<=today()).slice(0,2);
@@ -225,7 +254,7 @@ function adaptivePlan(){
  weak.filter(x=>x.area==='AYT'&&!['AYT Matematik','AYT Edebiyat'].includes(x.name)).slice(0,1).forEach(x=>add(`${x.topic} • ${x.name.replace('AYT ','')}`,'AYT',35,'AYT yan alan dengesi',x.topic));
  if(rem>0)add('Paragraf + hata analizi','TYT',30,'Günlük taban');
  const recent7=lastStudyDays(7).reduce((a,x)=>a+x.mins,0);
- return {plan,remaining,used,recent7,reviews:dueTopics,weak,capacity:target};
+ return {plan,remaining,used,recent7,reviews:dueTopics,weak,capacity:target,energy};
 }
 function subjectReason(w){
  const reasons=[];
@@ -364,11 +393,18 @@ function renderToday(){
  const d=ensureDay(),p=adaptivePlan();$('#taskCountBadge').textContent=`${d.tasks.filter(t=>t.done).length}/${d.tasks.length}`;$('#taskList').innerHTML=d.tasks.map(t=>`<div class="task-item ${t.done?'done':''}"><button class="task-check ${t.done?'on':''}" data-task="${t.id}">${t.done?'✓':''}</button><div><div class="task-title">${esc(t.title)}</div><div class="task-meta">${esc(t.category)} • ${t.kind==='study'?'Akademik':t.kind==='work'?'Para / iş':'Life'}${t.ai?' • ✦ ASİSTAN':''}${t.reason?` • ${esc(t.reason)}`:''}</div></div><div class="task-min">${t.minutes||0} dk</div></div>`).join('');
  $('#scheduleList').innerHTML=schedule.map(x=>`<div class="schedule-item"><div class="schedule-time">${x[0]}</div><div><strong>${x[2]}</strong><p>${x[3]}</p></div><span>${x[4]}</span></div>`).join('');
  $('#habitScoreBadge').textContent=`${habitScore(d)}/5`;$('#habitList').innerHTML=habitDefs.map(([k,n,sub])=>`<button class="habit-btn ${d.habits[k]?'on':''}" data-habit="${k}"><span class="hc">${d.habits[k]?'✓':''}</span><strong>${n}</strong><small>${sub}</small></button>`).join('');$('#dayNote').value=d.note||'';
- ensureQuickInput();
+ ensureQuickInput(); renderEnergyCard();
 }
 function ensureQuickInput(){
- if($('#dailyQuickCard')){ $('#dailyQuestions').value=ensureDay().questions||0;$('#dailyPhone').value=ensureDay().phoneMinutes||0;return; }
- const wrap=$('#today .grid-2.main-grid-gap');if(!wrap)return;const card=document.createElement('article');card.id='dailyQuickCard';card.className='card';card.innerHTML=`<div class="card-head"><div><span class="section-kicker">DAILY DATA</span><h3>Hızlı veri girişi</h3></div><span class="badge purple">KOÇ MOTORU</span></div><div class="quick-grid"><label>Bugünkü soru<input id="dailyQuestions" type="number" min="0" value="0"></label><label>Telefon süresi (dk)<input id="dailyPhone" type="number" min="0" value="0"></label><button id="saveDailyData" class="primary-btn">Veriyi kaydet</button></div>`;wrap.appendChild(card);$('#saveDailyData').onclick=()=>{const d=ensureDay();d.questions=Number($('#dailyQuestions').value)||0;d.phoneMinutes=Number($('#dailyPhone').value)||0;if(d.questions>=state.settings.questionGoal)d.habits.study=true;save();renderAll();toast('Günlük veri koç motoruna işlendi.')};
+ const wrap=$('#today .grid-2.main-grid-gap');if(!wrap)return;
+ let card=$('#dailyQuickCard');
+ if(!card){card=document.createElement('article');card.id='dailyQuickCard';card.className='card';card.innerHTML=`<div class="card-head"><div><span class="section-kicker">DAILY DATA</span><h3>Hızlı veri girişi</h3></div><span class="badge purple">KOÇ MOTORU</span></div><div class="quick-grid life-quick-grid"><label>Bugünkü soru<input id="dailyQuestions" type="number" min="0" value="0"></label><label>Telefon süresi (dk)<input id="dailyPhone" type="number" min="0" value="0"></label><label>Uyku (saat)<input id="dailySleep" type="number" min="0" max="14" step="0.1" placeholder="örn. 7.5"></label><label>Enerji <span class="field-hint">1 düşük • 5 yüksek</span><select id="dailyEnergy"><option value="">Seç</option><option value="1">1 / 5</option><option value="2">2 / 5</option><option value="3">3 / 5</option><option value="4">4 / 5</option><option value="5">5 / 5</option></select></label><label>Egzersiz (dk)<input id="dailyExercise" type="number" min="0" max="300" value="0"></label><label>Stres <span class="field-hint">1 düşük • 5 yüksek</span><select id="dailyStress"><option value="">Seç</option><option value="1">1 / 5</option><option value="2">2 / 5</option><option value="3">3 / 5</option><option value="4">4 / 5</option><option value="5">5 / 5</option></select></label><button id="saveDailyData" class="primary-btn">Veriyi kaydet</button></div>`;wrap.insertBefore(card,wrap.firstChild);}
+ const d=ensureDay();
+ $('#dailyQuestions').value=d.questions||0;$('#dailyPhone').value=d.phoneMinutes||0;$('#dailySleep').value=d.sleepHours??'';$('#dailyEnergy').value=d.energyLevel??'';$('#dailyExercise').value=d.exerciseMinutes??0;$('#dailyStress').value=d.stressLevel??'';
+ const saveBtn=$('#saveDailyData'); if(saveBtn && !saveBtn.dataset.bound){saveBtn.dataset.bound='1';saveBtn.onclick=()=>{const d=ensureDay();d.questions=Number($('#dailyQuestions').value)||0;d.phoneMinutes=Math.max(0,Number($('#dailyPhone').value)||0);d.sleepHours=$('#dailySleep').value===''?null:clamp(Number($('#dailySleep').value)||0,0,14);d.energyLevel=$('#dailyEnergy').value===''?null:Number($('#dailyEnergy').value);d.exerciseMinutes=Math.max(0,Number($('#dailyExercise').value)||0);d.stressLevel=$('#dailyStress').value===''?null:Number($('#dailyStress').value);if(d.questions>=state.settings.questionGoal)d.habits.study=true;applyEnergyToDay(d);save();renderAll();toast('Günlük yaşam verileri koça işlendi.')};}
+}
+function renderEnergyCard(){
+ const host=$('#energyCoachCard');if(!host)return;const e=energySnapshot();const d=ensureDay();const sleep=Number.isFinite(Number(d.sleepHours))?`${Number(d.sleepHours).toFixed(1)} saat`:'—';const energy=Number.isFinite(Number(d.energyLevel))?`${d.energyLevel}/5`:'—';const ex=Number.isFinite(Number(d.exerciseMinutes))?`${d.exerciseMinutes} dk`:'—';const phone=Number.isFinite(Number(d.phoneMinutes))?`${d.phoneMinutes} dk`:'—';const stress=Number.isFinite(Number(d.stressLevel))?`${d.stressLevel}/5`:'—';host.innerHTML=`<div class="energy-hero"><div><span class="section-kicker">LIFE OS / ENERGY COACH</span><h3>Bugünkü kapasite: <b>${e.capacityScore}/100</b></h3><p>${e.message}</p></div><span class="badge ${e.tone}">${e.mode}</span></div><div class="energy-grid"><div><span>Uyku</span><strong>${sleep}</strong></div><div><span>Enerji</span><strong>${energy}</strong></div><div><span>Telefon</span><strong>${phone}</strong></div><div><span>Egzersiz</span><strong>${ex}</strong></div><div><span>Stres</span><strong>${stress}</strong></div></div><div class="energy-bar"><i style="width:${e.capacityScore}%"></i></div><div class="energy-decision"><span>ÖNERİLEN NET ÇALIŞMA KAPASİTESİ</span><strong>${e.capacity} dk</strong><small>Temel hedefin ${state.settings.studyGoal} dk. Koç, bugünkü yaşam verisine göre hacmi ayarlıyor.</small></div>`;
 }
 function renderRepeatEngine(){
  const el=$('#repeatEngine');if(!el)return;
@@ -431,7 +467,7 @@ function renderAnalytics(){
  const max=Math.max(state.settings.studyGoal,...td.map(x=>x.mins),1);$('#loadChart').innerHTML=td.map(x=>{const n=fmtDate(x.k);return `<div class="bar-col"><div class="bar-track"><i style="height:${clamp(Math.round(x.mins/max*100),2,100)}%"></i></div><span>${n}</span><small>${x.mins}</small></div>`}).join('');
  const w=weaknessDetails()[0];$('#analysisWeak').textContent=w?`${w.label} / ${w.health}/100`:'—';$('#analysisWeakText').textContent=w?`${w.overdue?`${w.overdue} gecikmiş tekrar • `:''}öncelik skoru ${w.urgency}/100.`:'Konu verisi bekleniyor.';const comp=Math.round(td.slice(-7).reduce((s,x)=>s+x.score,0)/7);$('#analysisReliability').textContent=comp+'%';$('#analysisReliabilityText').textContent='Son 7 gün sistem skoru ortalaması.';const active=lastStudyDays(30).filter(x=>x.d&&systemScore(x.d)>=40).length;$('#analysisConsistency').textContent=active+'/30';$('#analysisConsistencyText').textContent='Son 30 günde ≥40 skor alınan gün.';
 }
-function renderDiscipline(){const days=lastStudyDays(30);$('#disciplineHeatmap').innerHTML=days.map(x=>`<div class="heat-cell ${heatClass(x.score)}" title="${fmtDate(x.k)} • ${x.score}"></div>`).join('');$('#disciplineCards').innerHTML=`<article class="card"><span class="section-kicker">CURRENT</span><h3>${systemScore(ensureDay())}/100</h3><p class="muted">Bugünün sistem skoru.</p></article><article class="card"><span class="section-kicker">7 DAY AVG</span><h3>${Math.round(days.slice(-7).reduce((a,x)=>a+x.score,0)/7)}%</h3><p class="muted">Son 7 gün ortalaması.</p></article><article class="card"><span class="section-kicker">STREAK</span><h3>${streak()} gün</h3><p class="muted">70+ skorla kırılmadan devam.</p></article>`}
+function renderDiscipline(){const d0=ensureDay();applyEnergyToDay(d0);const days=lastStudyDays(30);$('#disciplineHeatmap').innerHTML=days.map(x=>`<div class="heat-cell ${heatClass(x.score)}" title="${fmtDate(x.k)} • ${x.score}"></div>`).join('');$('#disciplineCards').innerHTML=`<article class="card"><span class="section-kicker">CURRENT</span><h3>${systemScore(ensureDay())}/100</h3><p class="muted">Bugünün sistem skoru.</p></article><article class="card"><span class="section-kicker">7 DAY AVG</span><h3>${Math.round(days.slice(-7).reduce((a,x)=>a+x.score,0)/7)}%</h3><p class="muted">Son 7 gün ortalaması.</p></article><article class="card"><span class="section-kicker">STREAK</span><h3>${streak()} gün</h3><p class="muted">70+ skorla kırılmadan devam.</p></article>`}
 function heatClass(s){return s>=85?'h4':s>=70?'h3':s>=40?'h2':s>0?'h1':'h0'}
 function renderFinance(){const m=state.money.reduce((a,x)=>{if(x.date.slice(0,7)===today().slice(0,7)){a[x.type==='income'?'inc':'exp']+=Number(x.amount)||0}return a},{inc:0,exp:0});const net=BASE_SALARY+m.inc-m.exp;$('#financeKpis').innerHTML=`${[['Sabit maaş',BASE_SALARY,'TL'],['Ek gelir',m.inc.toLocaleString('tr-TR'),'TL'],['Gider',m.exp.toLocaleString('tr-TR'),'TL'],['Net akış',net.toLocaleString('tr-TR'),'TL']].map(x=>`<div class="kpi"><span>${x[0]}</span><strong>${x[1]}</strong><small>${x[2]}</small></div>`).join('')}`;const rows=[['Maaş',BASE_SALARY],['Ek gelir',m.inc],['Gider',-m.exp],['Net',net]];const max=Math.max(BASE_SALARY,m.inc,m.exp,Math.abs(net),1);$('#cashflowBars').innerHTML=`<div class="finance-stack">${rows.map(r=>`<div class="cash-line"><span>${r[0]}</span><div class="cash-track"><i style="width:${Math.max(3,Math.round(Math.abs(r[1])/max*100))}%"></i></div><strong>${r[1]<0?'-':''}₺${Math.abs(r[1]).toLocaleString('tr-TR')}</strong></div>`).join('')}</div>`;$('#moneyList').innerHTML=state.money.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,20).map(x=>`<div class="money-item"><div><strong>${esc(x.desc)}</strong><small>${fmtDate(x.date)} • ${x.type==='income'?'Gelir':'Gider'}</small></div><strong class="${x.type==='income'?'income':'expense'}">${x.type==='income'?'+':'-'}₺${Number(x.amount).toLocaleString('tr-TR')}</strong></div>`).join('')||'<div class="empty">Henüz para hareketi yok.</div>'}
 function renderSettings(){$('#setStudy').value=state.settings.studyGoal;$('#setQuestions').value=state.settings.questionGoal;$('#setParagraph').value=state.settings.paragraphGoal;$('#setProblem').value=state.settings.problemGoal;ensureSettingsExtra()}
@@ -482,7 +518,10 @@ async function refreshFriends(){
   const social=ensureSocial(); social.friends??=[]; const idx=social.friends.findIndex(x=>x.code===code); if(idx>=0)social.friends[idx]=p;else social.friends.push(p); save(); renderFriends(); $('#friendCodeInput').value=''; toast(`${p.name||'Arkadaş'} eklendi.`);
 }
 function publishFriendProfile(){window.hukukCloud?.publishFriendProfile?.(sharedStats(), ensureSocial());}
-function renderAll(){applyTheme();ensureDay();renderDashboard();renderToday();renderRoadmap();renderMock();renderMistakes();renderAnalytics();renderDiscipline();renderFinance();renderSettings();renderWeekly();renderFriends();renderSimulation();renderTargetCalendar();}
+function renderLifeEnergy(){
+ const el=$('#lifeEnergySummary');if(!el)return;const e=energySnapshot();const action=$('#lifeActionTitle'),text=$('#lifeActionText');if(action&&text){action.textContent=e.capacityScore<55?'Bugün toparlanma öncelikli':e.capacityScore<72?'Bugün kontrollü ilerle':'Bugün tam kapasiteye yakın çalışabilirsin';text.textContent=e.capacityScore<55?'Kısa, kaliteli bloklar seç; gecikmiş tekrarları öne al ve gece uykusunu koru.':e.capacityScore<72?'En yüksek getirili 2–3 akademik bloğu tamamla; kalan işi yarına taşıyabilirsin.':'Hedef ders süreni koru, Focus Room ile ana blokları tamamla.';}const d=ensureDay();const rows=[['Uyku',Number.isFinite(Number(d.sleepHours))?`${Number(d.sleepHours).toFixed(1)} saat`:'Veri gir',e.sleepScore],['Enerji',Number.isFinite(Number(d.energyLevel))?`${d.energyLevel}/5`:'Veri gir',e.energyScore],['Telefon',Number.isFinite(Number(d.phoneMinutes))?`${d.phoneMinutes} dk`:'Veri gir',e.phoneScore],['Egzersiz',Number.isFinite(Number(d.exerciseMinutes))?`${d.exerciseMinutes} dk`:'Veri gir',e.exerciseScore]];el.innerHTML=`<div class="life-score-hero"><div><span class="section-kicker">CAPACITY INDEX</span><h3>${e.capacityScore}/100</h3><p>${e.message}</p></div><span class="badge ${e.tone}">${e.mode}</span></div><div class="life-score-list">${rows.map(r=>`<div class="life-score-row"><div><strong>${r[0]}</strong><span>${r[1]}</span></div><div class="life-mini-bar"><i style="width:${Math.round(r[2])}%"></i></div><b>${Math.round(r[2])}</b></div>`).join('')}</div><div class="life-plan"><span>BUGÜNÜN ÖNERİLEN DERS KAPASİTESİ</span><strong>${e.capacity} dk</strong><p>Hedefin ${state.settings.studyGoal} dk. Enerjin düşükse sistem hacmi azaltır; öncelikleri korur.</p></div>`;
+}
+function renderAll(){applyTheme();ensureDay();renderDashboard();renderToday();renderRoadmap();renderMock();renderMistakes();renderAnalytics();renderDiscipline();renderFinance();renderSettings();renderWeekly();renderFriends();renderSimulation();renderTargetCalendar();renderLifeEnergy();}
 function addTask(){const d=ensureDay(),title=$('#taskTitle').value.trim();if(!title)return;const cat=$('#taskCategory').value;d.tasks.push({id:uid('task'),title,category:cat,minutes:Number($('#taskMinutes').value)||0,kind:['TYT','AYT','Tekrar'].includes(cat)?'study':cat==='EB Digital'?'work':cat==='Spor'?'life':'life',done:false,source:'manual'});save();$('#taskDialog').close();$('#taskForm').reset();renderAll();toast('Görev eklendi.')}
 function addMock(){const type=$('#mockType').value,net=Number($('#mockNet').value);if(!net)return;state.mocks.push({id:uid('mock'),type,net,date:$('#mockDate').value||today(),note:$('#mockNote').value.trim(),duration:Number($('#mockDuration').value)||0,breakdown:{turkce:valOrNull($('#mockTurkce').value),math:valOrNull($('#mockMath').value),social:valOrNull($('#mockSocial').value),science:valOrNull($('#mockScience').value)}});save();$('#mockDialog').close();$('#mockForm').reset();$('#mockDate').value=today();renderAll();toast(`${type} denemesi kaydedildi.`)}
 function valOrNull(v){return v===''?null:Number(v)}
@@ -502,7 +541,7 @@ function startTimer(){if(focus.running)return;if(!focus.taskId){toast('Önce bir
 function completeFocus(){stopTimer();const mins=Math.round(focus.total/60);state.focusSessions++;const d=ensureDay();d.studyMinutes=(Number(d.studyMinutes)||0)+mins;d.focusMinutes=(Number(d.focusMinutes)||0)+mins;if(focus.taskId){const t=d.tasks.find(x=>x.id===focus.taskId);if(t&&!t.done){t.focusLogged=(t.focusLogged||0)+mins;if((t.focusLogged||0)>=Math.max(20,t.minutes||25))t.done=true;}}state.sessions.push({id:uid('session'),date:today(),minutes:mins,taskId:focus.taskId,createdAt:new Date().toISOString()});save();renderAll();toast(`Focus tamamlandı • ${mins} dk gerçek çalışma kaydedildi.`);focus.taskId=null;setFocusTimer(10);const sel=$('#focusDuration');if(sel)sel.value='10'}
 function stopTimer(){focus.running=false;clearInterval(focus.handle);focus.handle=null;renderTimer()}
 function resetTimer(){stopTimer();setFocusTimer(10);const sel=$('#focusDuration');if(sel)sel.value='10'}
-function commandResults(q){const commands=[['Bugünün sistemini aç','today'],['Focus Room','focus'],['Konu motoru','roadmap'],['Deneme merkezi','mock'],['Performans','analytics'],['Disiplin','discipline'],['Para motoru','finance'],['Ayarlar','settings'],['Hata günlüğü','mock']];const f=commands.filter(x=>x[0].toLowerCase().includes(q.toLowerCase()));$('#commandResults').innerHTML=f.map(x=>`<button class="command-item" data-route="${x[1]}"><strong>${x[0]}</strong><span>↵ aç</span></button>`).join('')||'<div class="empty">Komut bulunamadı.</div>'}
+function commandResults(q){const commands=[['Bugünün sistemini aç','today'],['Focus Room','focus'],['Konu motoru','roadmap'],['Deneme merkezi','mock'],['Performans','analytics'],['Disiplin','discipline'],['Yaşam & Enerji','lifeEnergy'],['Para motoru','finance'],['Ayarlar','settings'],['Hata günlüğü','mock']];const f=commands.filter(x=>x[0].toLowerCase().includes(q.toLowerCase()));$('#commandResults').innerHTML=f.map(x=>`<button class="command-item" data-route="${x[1]}"><strong>${x[0]}</strong><span>↵ aç</span></button>`).join('')||'<div class="empty">Komut bulunamadı.</div>'}
 // Events
 const bind=(id,event,handler)=>{const el=$('#'+id);if(el)el.addEventListener(event,handler)};
 $$('.nav-item').forEach(b=>b.addEventListener('click',()=>{navigate(b.dataset.view); closeSidebar()}));

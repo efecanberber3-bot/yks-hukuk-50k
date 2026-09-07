@@ -1,1 +1,3 @@
-Hukuk 50K OS V36 — Hedef Takvimi / Konu Yetiştirme Motoru. Mevcut konu ilerlemesi, son 28 günlük yeni konu kapanışı ve sınava kalan zamana göre haftalık gerekli tempoyu hesaplar; TYT/AYT ayrı durum gösterir ve koç aksiyonu üretir.
+Hukuk 50K OS V37 • Yaşam & Enerji Koçu
+
+Uyku, enerji, telefon, egzersiz, stres ve gerçek çalışma verilerinden günlük çalışma kapasitesi üretir. Kapasiteye göre koç planı otomatik olarak hafifletilir veya genişletilir.
