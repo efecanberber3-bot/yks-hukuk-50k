@@ -357,9 +357,11 @@ document.addEventListener('click',e=>{
  const coachPlan=e.target.closest('[data-coach-plan]');if(coachPlan){const name=decodeURIComponent(coachPlan.dataset.coachPlan);const d=ensureDay(addDays(today(),1));const w=weaknessDetails().find(x=>x.name===name)||weaknessDetails()[0];if(w){const rec=recommendedAction(w);d.tasks.push({id:uid('task'),title:`${w.name} • ${rec.topic}`,category:w.area,minutes:rec.mins,kind:'study',done:false,ai:true,source:'coach-v8',reason:w.keySignals[0]});save();toast(`${w.label}: yarının planına eklendi.`);return}}
  const radar=e.target.closest('[data-radar]');if(radar){navigate('roadmap');$('#roadmapArea').value=areaOf(decodeURIComponent(radar.dataset.radar));$('#roadmapStatus').value='ALL';renderRoadmap();return}
 });
+document.addEventListener('click',e=>{const close=e.target.closest('[data-close-dialog]');if(close){e.preventDefault();e.stopPropagation();const dlg=close.closest('dialog');if(dlg?.open){dlg.close('cancel');}return;}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const open=[...document.querySelectorAll('dialog[open]')].pop();if(open?.open){open.close('cancel');}}});
 bind('addTask','click',()=>$('#taskDialog')?.showModal());bind('taskForm','submit',e=>{e.preventDefault();addTask()});
 bind('addMistake','click',()=>$('#mistakeDialog')?.showModal());bind('mistakeForm','submit',e=>{e.preventDefault();const subject=$('#mistakeSubject').value.trim(),topic=$('#mistakeTopic').value.trim(),type=$('#mistakeType').value,note=$('#mistakeNote').value.trim(),severity=Number($('#mistakeSeverity').value)||3;if(!subject||!note){toast('Ders ve hata açıklaması gerekli.');return}addMistake({subject,topic,type,note,severity,date:today()});$('#mistakeDialog').close();$('#mistakeForm').reset();renderAll();toast('Hata günlüğüne kaydedildi.');});
-bind('addMock','click',()=>{$('#mockDate').value=today();$('#mockDialog')?.showModal()});bind('mockForm','submit',e=>{e.preventDefault();addMock()});
+bind('addMock','click',()=>{$('#mockDate').value=today();$('#mockDialog')?.showModal()});bind('mockForm','submit',e=>{if(e.submitter?.value==='cancel')return;e.preventDefault();addMock()});
 bind('addIncomeQuick','click',()=>addMoney('income'));bind('addExpenseQuick','click',()=>addMoney('expense'));bind('moneyForm','submit',e=>{e.preventDefault();saveMoney()});
 // Safe event binding: optional controls can be absent without killing the entire app.
 bind('finishDay','click',finishDay);
