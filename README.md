@@ -1,11 +1,13 @@
-# Hukuk 50K OS — V13 Ultimate
+# Hukuk 50K OS V25 — Immersive Focus Room
 
-Premium YKS EA / Hukuk takip paneli.
+V25 turns Focus Room into a distraction-free deep-work mode.
 
-Özellikler: Dashboard, adaptif koç, günlük görev motoru, Focus Room, konu motoru, deneme merkezi, hata günlüğü, performans, disiplin, finans, Supabase Auth/senkronizasyonu, JSON yedekleme, PWA/offline cache.
+## Focus mode
+- Hides dashboard/sidebar/topbar/bottom navigation while active.
+- Shows only task selection, duration, timer, controls, status, and exit.
+- Selecting a task automatically syncs a suggested duration.
+- Start requires an active task.
+- Exiting an active session asks for confirmation and pauses safely.
+- Returns to the screen that opened Focus Room.
 
-GitHub Pages: ZIP içindeki tüm dosyaları repository köküne yükleyin. cloud-config.js içindeki secret/service_role key kullanılmaz. Supabase bağlantısı Ayarlar ekranından yapılabilir.
-
-
-## Account-aware profile update
-The sidebar profile now reads the signed-in Supabase user metadata (`full_name`). On signup, an optional display name can be entered. If no name exists, the personal name is hidden instead of hard-coded, so the same build can be shared by multiple users.
+Keep `cloud-config.js` unchanged when deploying over the existing GitHub Pages project.
