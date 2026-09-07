@@ -1,12 +1,7 @@
-# Hukuk 50K OS V9 — Coach Premium Fix
+# Hukuk 50K OS — V13 Ultimate
 
-V8 bug-fix release: restored missing daily base tasks, improved roadmap into a real topic engine, and stopped finish-day from fabricating study completion.
+Premium YKS EA / Hukuk takip paneli.
 
-Upload all files over the existing GitHub Pages repo. Keep `cloud-config.js` unchanged.
+Özellikler: Dashboard, adaptif koç, günlük görev motoru, Focus Room, konu motoru, deneme merkezi, hata günlüğü, performans, disiplin, finans, Supabase Auth/senkronizasyonu, JSON yedekleme, PWA/offline cache.
 
-
-## V11 Focus Fix
-- Fixed a legacy missing-button listener (`planTomorrow`) that stopped all later JavaScript event bindings.
-- Hardened optional UI event bindings.
-- Fixed cloud polling to watch the current local storage key.
-- Bumped service-worker cache to v11.
+GitHub Pages: ZIP içindeki tüm dosyaları repository köküne yükleyin. cloud-config.js içindeki secret/service_role key kullanılmaz. Supabase bağlantısı Ayarlar ekranından yapılabilir.
