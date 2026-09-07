@@ -40,6 +40,7 @@
       <button class="nav-item" data-view="mistakes"><span class="ico">!</span><span>Hata Günlüğü</span></button>
       <button class="nav-item" data-view="analytics"><span class="ico">↗</span><span>Performans</span></button>
       <button class="nav-item" data-view="simulator"><span class="ico">◈</span><span>Hedef Simülasyonu</span></button>
+      <button class="nav-item" data-view="targetCalendar"><span class="ico">◫</span><span>Hedef Takvimi</span></button>
       <button class="nav-item" data-view="weekly"><span class="ico">◷</span><span>Haftalık Koç</span></button>
       <button class="nav-item" data-view="friends"><span class="ico">♧</span><span>Beraber Çalış</span></button>
       <div class="nav-label">LIFE OS</div>
@@ -148,6 +149,17 @@
         <article class="card sim-callout"><span class="section-kicker">COACH PRIORITY</span><strong id="simCoachNeed">—</strong><p>Bu hafta en yüksek getirili aksiyon.</p></article>
       </div>
       <article class="card" style="margin-top:12px"><div class="card-head"><div><span class="section-kicker">IMPORTANT</span><h3>Bu simülasyonu nasıl okumalı?</h3></div></div><div class="sim-rules"><div><b>01</b><p><strong>Readiness ile aynı şey değil.</strong> Readiness mevcut verinin kalitesini ölçer; bu panel hedefe hazırlık yönünü gösterir.</p></div><div><b>02</b><p><strong>Sıralama iddiası yok.</strong> Deneme ve resmi yerleştirme verileri olmadan gerçek sıralama tahmini yapmak yanıltıcı olur.</p></div><div><b>03</b><p><strong>Koça veri verir.</strong> Senin gerçek TYT/AYT netlerin yükseldikçe sistem önceliklerini ve çalışma senaryonu değiştirecek.</p></div></div></article>
+    </section>
+
+    <section class="view" id="targetCalendar">
+      <div class="page-intro"><div><span class="section-kicker">ROADMAP / EXECUTION INTELLIGENCE</span><h2>Hedef Takvimi</h2><p>Hukuk hedefin için kalan konu yükünü ve gereken haftalık tempoyu canlı takip et.</p></div></div>
+      <div id="targetCalendarHero" class="tc-hero card"></div>
+      <div id="targetSummary" class="tc-summary"></div>
+      <div class="grid-2 main-grid-gap">
+        <article class="card"><div class="card-head"><div><span class="section-kicker">12 WEEK WINDOW</span><h3>Önündeki tempo</h3></div><span class="muted">Yeni konu planı</span></div><div id="targetTimeline" class="tc-timeline"></div></article>
+        <article class="card"><div class="card-head"><div><span class="section-kicker">COACH DECISION</span><h3>Koçun kararı</h3></div><span class="badge purple">LIVE</span></div><div id="targetCoach" class="tc-coach"></div></article>
+      </div>
+      <div class="card"><div class="card-head"><div><span class="section-kicker">SUBJECT PACE</span><h3>Ders bazında yetişme durumu</h3></div><span class="muted">Son 28 gün</span></div><div id="targetSubjectGrid" class="tc-subject-grid"></div></div>
     </section>
 
     <section class="view" id="analytics">

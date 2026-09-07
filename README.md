@@ -1,3 +1,1 @@
-# Hukuk 50K OS V33 — Deneme & Yanlış İstihbaratı
-
-Mock exam entries can launch linked mistake records. The Deneme Center surfaces the strongest error topic, recent net trend, and coach action. V32 data migrates automatically.
+Hukuk 50K OS V36 — Hedef Takvimi / Konu Yetiştirme Motoru. Mevcut konu ilerlemesi, son 28 günlük yeni konu kapanışı ve sınava kalan zamana göre haftalık gerekli tempoyu hesaplar; TYT/AYT ayrı durum gösterir ve koç aksiyonu üretir.

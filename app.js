@@ -1,5 +1,5 @@
-const KEY='hukuk50k-os-v35';
-const LEGACY_KEYS=['hukuk50k-os-v34','hukuk50k-os-v33','hukuk50k-os-v32','hukuk50k-os-v31','hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
+const KEY='hukuk50k-os-v36';
+const LEGACY_KEYS=['hukuk50k-os-v35','hukuk50k-os-v34','hukuk50k-os-v33','hukuk50k-os-v32','hukuk50k-os-v31','hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
 const START='2026-09-07';
 const DEFAULT_EXAM='2027-06-20';
 const LAW_STRETCH_RANK=30000, LAW_MIN_RANK=50000, BASE_SALARY=15000;
@@ -38,9 +38,9 @@ const baseTasks=()=>[
  {title:'EB Digital Studio • müşteri / portföy',category:'EB Digital',minutes:60,kind:'work'},
  {title:'Antrenman',category:'Spor',minutes:60,kind:'life'}
 ];
-const defaultState={version:35,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
+const defaultState={version:36,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=35;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=36;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -296,6 +296,32 @@ function targetSimulation(){
   else scenario='Veri üret + temel kur';
   return {ty,ay,sg,qg,alignment,tyNeed,ayNeed,priority,scenario,tone};
 }
+function targetCalendarData(){
+ const exam=state.settings.examDate||DEFAULT_EXAM;
+ const daysLeft=daysBetween(today(),exam);
+ const weeksLeft=Math.max(1,Math.ceil(daysLeft/7));
+ const bufferWeeks=Math.min(6,Math.max(2,Math.ceil(weeksLeft*0.12)));
+ const contentWeeks=Math.max(1,weeksLeft-bufferWeeks);
+ const areas={TYT:{total:0,done:0,subjects:[]},AYT:{total:0,done:0,subjects:[]}};
+ allSubjects().forEach(([name,topics])=>{
+   const area=areaOf(name), done=topics.filter((_,i)=>stateTopic(name,i).status==='done').length;
+   const last4=topics.filter((_,i)=>{const d=stateTopic(name,i);return d.status==='done'&&d.last&&daysBetween(d.last,today())<=28}).length;
+   const item={name,total:topics.length,done,remaining:Math.max(0,topics.length-done),last4};
+   areas[area].total+=topics.length; areas[area].done+=done; areas[area].subjects.push(item);
+ });
+ Object.values(areas).forEach(a=>{a.remaining=Math.max(0,a.total-a.done);a.pct=a.total?Math.round(a.done/a.total*100):0;a.currentWeekly=Math.round((a.subjects.reduce((x,s)=>x+s.last4,0)/4)*10)/10;a.requiredWeekly=Math.ceil(a.remaining/contentWeeks*10)/10;a.requiredDaily=Math.ceil(a.remaining/Math.max(1,contentWeeks*7)*10)/10;a.status=a.remaining===0?'TAMAM':a.currentWeekly>=a.requiredWeekly?'ÖNDE':a.currentWeekly>0?'DENGELİ':'HIZ GEREKİYOR'});
+ const total=areas.TYT.total+areas.AYT.total,totalDone=areas.TYT.done+areas.AYT.done,totalRemain=total-totalDone;
+ const overallPct=total?Math.round(totalDone/total*100):0;
+ return {exam,daysLeft,weeksLeft,bufferWeeks,contentWeeks,areas,total,totalDone,totalRemain,overallPct};
+}
+function renderTargetCalendar(){
+ const r=targetCalendarData();
+ const h=$('#targetCalendarHero');if(h) h.innerHTML=`<div class="tc-hero-main"><span class="section-kicker">ROAD TO LAW / ${r.exam}</span><h3>Hedefe yetişme merkezi</h3><p>Mevcut konu hızını ölçüyor, sınava kadar içerik için gereken haftalık tempoyla karşılaştırıyoruz.</p><div class="tc-hero-row"><div><strong>${r.overallPct}%</strong><span>genel konu ilerlemesi</span></div><div><strong>${r.daysLeft}</strong><span>gün kaldı</span></div><div><strong>${r.contentWeeks}</strong><span>içerik haftası</span></div><div><strong>${r.bufferWeeks}</strong><span>tekrar/tampon hafta</span></div></div></div><div class="tc-hero-ring"><div><strong>${r.totalRemain}</strong><span>kalan konu</span></div></div>`;
+ const summary=$('#targetSummary'); if(summary) summary.innerHTML=Object.entries(r.areas).map(([area,a])=>`<article class="tc-area-card"><div class="tc-area-head"><div><span class="section-kicker">${area}</span><h3>${area==='TYT'?'Temel Yeterlilik':'Alan Yeterlilik'}</h3></div><span class="tc-state ${a.status==='ÖNDE'?'good':a.status==='DENGELİ'?'warn':a.status==='TAMAM'?'good':'danger'}">${a.status}</span></div><div class="tc-progress"><i style="width:${a.pct}%"></i></div><div class="tc-metric-row"><div><span>Tamam</span><strong>${a.done}/${a.total}</strong></div><div><span>Kalan</span><strong>${a.remaining}</strong></div><div><span>Gerekli hız</span><strong>${a.requiredWeekly}/hf</strong></div><div><span>Mevcut</span><strong>${a.currentWeekly}/hf</strong></div></div><p>${a.remaining?`İçeriği ${r.contentWeeks} haftalık blokta bitirmek için haftada yaklaşık <b>${a.requiredWeekly}</b> yeni konu kapatmalısın.`:'Bu alandaki konu yükün tamamlandı; artık tekrar ve deneme kalitesine ağırlık ver.'}</p></article>`).join('');
+ const grid=$('#targetSubjectGrid'); if(grid) grid.innerHTML=allSubjects().map(([name,topics])=>{const a=r.areas[areaOf(name)];const done=topics.filter((_,i)=>stateTopic(name,i).status==='done').length, remain=topics.length-done, last4=topics.filter((_,i)=>{const d=stateTopic(name,i);return d.status==='done'&&d.last&&daysBetween(d.last,today())<=28}).length, need=remain?Math.ceil(remain/r.contentWeeks*10)/10:0, current=Math.round(last4/4*10)/10, ratio=need?current/need:1, cls=ratio>=1?'good':ratio>=.65?'warn':'danger', eta=remain&&current>0?Math.ceil(remain/current):null;return `<article class="tc-subject"><div class="tc-subject-top"><div><span class="section-kicker">${areaOf(name)}</span><h3>${esc(name)}</h3></div><span class="tc-state ${cls}">${ratio>=1?'ÖNDE':ratio>=.65?'DENGELİ':'GERİDE'}</span></div><div class="tc-progress"><i style="width:${Math.round(done/topics.length*100)}%"></i></div><div class="tc-subject-stats"><span><b>${done}</b>/${topics.length} tamam</span><span><b>${remain}</b> kalan</span><span><b>${need}</b>/hf gerekli</span><span><b>${current}</b>/hf mevcut</span></div><small>${eta?`Mevcut hızla yaklaşık ${eta} haftada tamamlanır.`:remain?'Henüz yeterli hız verisi yok. Öncelik belirleyip yeni konu kapanışları üret.':'Konu yükü tamamlandı.'}</small></article>`}).join('');
+ const timeline=$('#targetTimeline'); if(timeline){const weeks=Math.min(12,r.weeksLeft), remain=Math.max(0,r.totalRemain);timeline.innerHTML=Array.from({length:weeks},(_,idx)=>{const w=idx+1, planned=Math.ceil(remain/Math.max(1,r.contentWeeks)), cumulative=Math.min(remain,planned*w), pct=r.total?Math.round((r.totalDone+cumulative)/r.total*100):0; return `<div class="tc-week"><div><span>HAFTA ${w}</span><strong>${Math.max(0,planned)}</strong><small>yeni konu</small></div><div class="tc-mini"><i style="width:${pct}%"></i></div><b>${pct}%</b></div>`}).join('')||'<div class="empty">Takvim için konu verisi bekleniyor.</div>';}
+ const coach=$('#targetCoach'); if(coach){const lag=Object.entries(r.areas).filter(([_,a])=>a.status==='HIZ GEREKİYOR').map(([area])=>area);const lead=Object.entries(r.areas).filter(([_,a])=>a.status==='ÖNDE').map(([area])=>area);let headline='Rota dengede';let text=`Kalan ${r.totalRemain} konuyu içerik bloğunda kapatıp son ${r.bufferWeeks} haftayı tekrar + denemeye ayırıyoruz.`;let action='Haftalık yeni konu kapanışını koru.';if(lag.length){headline=`${lag.join(' + ')} hız istiyor`;text=`Bu alanlarda mevcut yeni konu kapanış hızı hedef için yetersiz görünüyor.`;action=`Koç önerisi: ${lag.join(' + ')} için haftalık ek çalışma bloğu ekle.`}else if(lead.length){headline=`${lead.join(' + ')} önde`;text='Avantajı koru; fazla zamanı gecikmiş tekrarlar ve deneme analizine kaydır.';action='Koç önerisi: önde olduğun alanı büyütmek yerine zayıf alanı dengele.'}coach.innerHTML=`<div class="tc-coach-icon">✦</div><div><span class="section-kicker">COACH DECISION</span><h3>${headline}</h3><p>${text}</p><strong>${action}</strong></div>`;}
+}
 function renderSimulation(){
   const r=targetSimulation();
   const pct=Math.round(r.alignment*100);
@@ -456,7 +482,7 @@ async function refreshFriends(){
   const social=ensureSocial(); social.friends??=[]; const idx=social.friends.findIndex(x=>x.code===code); if(idx>=0)social.friends[idx]=p;else social.friends.push(p); save(); renderFriends(); $('#friendCodeInput').value=''; toast(`${p.name||'Arkadaş'} eklendi.`);
 }
 function publishFriendProfile(){window.hukukCloud?.publishFriendProfile?.(sharedStats(), ensureSocial());}
-function renderAll(){applyTheme();ensureDay();renderDashboard();renderToday();renderRoadmap();renderMock();renderMistakes();renderAnalytics();renderDiscipline();renderFinance();renderSettings();renderWeekly();renderFriends();renderSimulation();}
+function renderAll(){applyTheme();ensureDay();renderDashboard();renderToday();renderRoadmap();renderMock();renderMistakes();renderAnalytics();renderDiscipline();renderFinance();renderSettings();renderWeekly();renderFriends();renderSimulation();renderTargetCalendar();}
 function addTask(){const d=ensureDay(),title=$('#taskTitle').value.trim();if(!title)return;const cat=$('#taskCategory').value;d.tasks.push({id:uid('task'),title,category:cat,minutes:Number($('#taskMinutes').value)||0,kind:['TYT','AYT','Tekrar'].includes(cat)?'study':cat==='EB Digital'?'work':cat==='Spor'?'life':'life',done:false,source:'manual'});save();$('#taskDialog').close();$('#taskForm').reset();renderAll();toast('Görev eklendi.')}
 function addMock(){const type=$('#mockType').value,net=Number($('#mockNet').value);if(!net)return;state.mocks.push({id:uid('mock'),type,net,date:$('#mockDate').value||today(),note:$('#mockNote').value.trim(),duration:Number($('#mockDuration').value)||0,breakdown:{turkce:valOrNull($('#mockTurkce').value),math:valOrNull($('#mockMath').value),social:valOrNull($('#mockSocial').value),science:valOrNull($('#mockScience').value)}});save();$('#mockDialog').close();$('#mockForm').reset();$('#mockDate').value=today();renderAll();toast(`${type} denemesi kaydedildi.`)}
 function valOrNull(v){return v===''?null:Number(v)}
