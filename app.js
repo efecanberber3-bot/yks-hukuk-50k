@@ -38,9 +38,9 @@ const baseTasks=()=>[
  {title:'EB Digital Studio • müşteri / portföy',category:'EB Digital',minutes:60,kind:'work'},
  {title:'Antrenman',category:'Spor',minutes:60,kind:'life'}
 ];
-const defaultState={version:38,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
+const defaultState={version:39,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=38;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=39;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -426,8 +426,46 @@ function renderDashboard(){
  renderDisciplineMini();
 }
 function renderDisciplineMini(){const d=ensureDay(),s=habitScore(d);$('#disciplineMiniScore').textContent=`${s}/5`;$('#disciplineMini').innerHTML=habitDefs.map(([k,n,sub])=>`<div class="discipline-line"><button class="tiny-check ${d.habits[k]?'on':''}" data-habit="${k}">${d.habits[k]?'✓':''}</button><span>${n}<small>${sub}</small></span><small>${d.habits[k]?'Tamam':'Bekliyor'}</small></div>`).join('')}
+
+function dailyAutomation(){
+ const d=ensureDay();
+ const now=new Date();
+ const hour=now.getHours();
+ const p=adaptivePlan();
+ const e=energySnapshot();
+ const open=d.tasks.filter(t=>!t.done);
+ const done=d.tasks.filter(t=>t.done);
+ const target=Math.max(0,p.capacity);
+ const completed=Math.round(realStudyMinutes(d));
+ const remaining=Math.max(0,target-completed);
+ const afterWork=hour>=16;
+ let phase='MORNING',title='Günün çekirdeğini kur';message='Sabah verimli bloklarını koru; bugün en yüksek getirili akademik işi öne al.';
+ if(hour>=12&&hour<16){phase='MIDDAY';title='Öğleden sonra yönünü koru';message='Günün kalan kapasitesini en öncelikli görevlere ayır; 16.00 iş bloğu başlayınca akademik yükü zorlamıyoruz.';}
+ if(hour>=16&&hour<23){phase='WORK';title='İş bloğu başladı';message='Spor salonu işini koru. Müsait olduğunda antrenman yap; yeni ağır akademik blok eklemek yerine mevcut planı tamamla.';}
+ if(hour>=23){phase='EVENING';title='Günü kapat ve yarını hazırla';message='Bugünün gerçek verisini kilitle, açık kalan işleri yarına taşı ve uyku hedefini koru.';}
+ if(e.capacityScore<55){phase='RECOVERY';title='Enerji düşük • kaliteyi koru';message='Bugün kapasiteyi zorlamıyoruz. Gecikmiş tekrarlar ve en yüksek getirili tek blok öncelikli.';}
+ const completion=target?Math.min(100,Math.round(completed/target*100)):0;
+ const openAcademic=open.filter(t=>['study','review'].includes(t.kind));
+ const next=openAcademic[0]||open[0];
+ const eveningReady=phase==='EVENING';
+ return {d,p,e,phase,title,message,target,completed,remaining,completion,next,open,done,eveningReady,afterWork};
+}
+function renderDailyAutomation(){
+ const box=$('#dailyAutomationCard'); if(!box)return;
+ const x=dailyAutomation();
+ const status=x.e.capacityScore<55?'RECOVERY':x.completion>=100?'ON TARGET':x.remaining>0?'IN PROGRESS':'READY';
+ const tone=x.e.capacityScore<55?'danger':x.completion>=100?'success':'purple';
+ const next=x.next;
+ const evening=`<button class="secondary-btn" id="carryOpenTasks">Açıkları yarına aktar</button><button class="ghost-btn" id="dailyClosePrompt">Gün sonu kontrolü</button>`;
+ box.innerHTML=`<div class="daily-auto-head"><div><span class="section-kicker">DAILY AUTOPILOT • ${x.phase}</span><h3>${x.title}</h3><p>${x.message}</p></div><span class="badge ${tone}">${status}</span></div><div class="daily-auto-grid"><div class="daily-auto-stat"><span>Bugünkü kapasite</span><strong>${x.target} dk</strong><small>${x.e.capacityScore}/100 yaşam kapasitesi</small></div><div class="daily-auto-stat"><span>Gerçekleşen</span><strong>${x.completed} dk</strong><small>${x.completion}% hedef tamamlandı</small></div><div class="daily-auto-stat"><span>Kalan</span><strong>${x.remaining} dk</strong><small>${x.open.length} açık görev</small></div><div class="daily-auto-stat"><span>Sonraki hamle</span><strong>${next?x.next.minutes+' dk':'—'}</strong><small>${next?esc(next.title):'Açık görev yok'}</small></div></div><div class="daily-auto-progress"><div><span>GÜNÜN GERÇEKLEŞME ORANI</span><b>${x.completion}%</b></div><div class="daily-auto-bar"><i style="width:${x.completion}%"></i></div></div><div class="daily-auto-actions"><button class="primary-btn" data-coach-generate="today">✦ Koç planını uygula</button><button class="secondary-btn" data-route="focus">Focus Room'a geç →</button>${x.eveningReady?evening:''}</div>`;
+ const carry=$('#carryOpenTasks');
+ if(carry) carry.onclick=()=>{const target=addDays(today(),1),td=ensureDay(target);let added=0;x.open.filter(t=>!t.done).slice(0,6).forEach(t=>{if(!td.tasks.some(y=>y.title===t.title&& !y.done)){td.tasks.push({...t,id:uid('task'),done:false,source:'carry-over',carriedFrom:today()});added++;}});save();renderAll();toast(added?`${added} açık görev yarına aktarıldı.`:'Yarına aktarılacak yeni görev yok.');};
+ const close=$('#dailyClosePrompt');
+ if(close) close.onclick=()=>{const open=x.open.filter(t=>!t.done).length;toast(open?`Kapanış için ${open} açık görev var. Açıkları aktarabilir veya tamamlayabilirsin.`:'Gün kapanış için hazır.');};
+}
 function renderToday(){
- const d=ensureDay(),p=adaptivePlan();$('#taskCountBadge').textContent=`${d.tasks.filter(t=>t.done).length}/${d.tasks.length}`;$('#taskList').innerHTML=d.tasks.map(t=>`<div class="task-item ${t.done?'done':''}"><button class="task-check ${t.done?'on':''}" data-task="${t.id}">${t.done?'✓':''}</button><div><div class="task-title">${esc(t.title)}</div><div class="task-meta">${esc(t.category)} • ${t.kind==='study'?'Akademik':t.kind==='work'?'Para / iş':'Life'}${t.ai?' • ✦ ASİSTAN':''}${t.reason?` • ${esc(t.reason)}`:''}</div></div><div class="task-min">${t.minutes||0} dk</div></div>`).join('');
+ const d=ensureDay(),p=adaptivePlan();
+ renderDailyAutomation();$('#taskCountBadge').textContent=`${d.tasks.filter(t=>t.done).length}/${d.tasks.length}`;$('#taskList').innerHTML=d.tasks.map(t=>`<div class="task-item ${t.done?'done':''}"><button class="task-check ${t.done?'on':''}" data-task="${t.id}">${t.done?'✓':''}</button><div><div class="task-title">${esc(t.title)}</div><div class="task-meta">${esc(t.category)} • ${t.kind==='study'?'Akademik':t.kind==='work'?'Para / iş':'Life'}${t.ai?' • ✦ ASİSTAN':''}${t.reason?` • ${esc(t.reason)}`:''}</div></div><div class="task-min">${t.minutes||0} dk</div></div>`).join('');
  $('#scheduleList').innerHTML=schedule.map(x=>`<div class="schedule-item"><div class="schedule-time">${x[0]}</div><div><strong>${x[2]}</strong><p>${x[3]}</p></div><span>${x[4]}</span></div>`).join('');
  $('#habitScoreBadge').textContent=`${habitScore(d)}/5`;$('#habitList').innerHTML=habitDefs.map(([k,n,sub])=>`<button class="habit-btn ${d.habits[k]?'on':''}" data-habit="${k}"><span class="hc">${d.habits[k]?'✓':''}</span><strong>${n}</strong><small>${sub}</small></button>`).join('');$('#dayNote').value=d.note||'';
  ensureQuickInput(); renderEnergyCard();
