@@ -1,5 +1,5 @@
-const KEY='hukuk50k-os-v15';
-const LEGACY_KEYS=['hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
+const KEY='hukuk50k-os-v20';
+const LEGACY_KEYS=['hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
 const START='2026-09-07';
 const DEFAULT_EXAM='2027-06-20';
 const LAW_STRETCH_RANK=30000, LAW_MIN_RANK=50000, BASE_SALARY=15000;
@@ -38,9 +38,9 @@ const baseTasks=()=>[
  {title:'EB Digital Studio • müşteri / portföy',category:'EB Digital',minutes:60,kind:'work'},
  {title:'Antrenman',category:'Spor',minutes:60,kind:'life'}
 ];
-const defaultState={version:15,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
+const defaultState={version:20,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=15;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=20;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -349,14 +349,42 @@ bind('mockFilter','change',renderMock);
 document.addEventListener('change',e=>{const s=e.target.closest('[data-topic]');if(s){e.stopPropagation();const [name,i]=decodeURIComponent(s.dataset.topic).split('|');setTopic(name,Number(i),s.value);renderRoadmap();renderDashboard();toast('Konu durumu güncellendi.')}});
 bind('saveSettings','click',()=>{state.settings.studyGoal=clamp(Number($('#setStudy').value)||270,120,720);state.settings.questionGoal=clamp(Number($('#setQuestions').value)||350,50,1200);state.settings.paragraphGoal=clamp(Number($('#setParagraph').value)||20,0,100);state.settings.problemGoal=clamp(Number($('#setProblem').value)||15,0,100);save();renderAll();toast('Günlük hedefler güncellendi.')});
 bind('exportTop','click',exportData);bind('exportSettings','click',exportData);bind('importSettings','change',e=>{const f=e.target.files?.[0];if(f)importData(f)});bind('resetSettings','click',()=>{if(confirm('Tüm takip verileri silinecek. Emin misin?')){state=clone(defaultState);save();renderAll();toast('Veriler sıfırlandı.')}});
-bind('themeBtn','click',e=>{e.preventDefault();e.stopPropagation();state.theme=state.theme==='dark'?'light':'dark';save();applyTheme();toast(state.theme==='light'?'Açık tema aktif.':'Koyu tema aktif.')});
-bind('accentThemeBtn','click',e=>{e.preventDefault();e.stopPropagation();const menu=$('#accentThemeMenu');menu?.classList.toggle('open')});
-document.addEventListener('click',e=>{
- const opt=e.target.closest('#accentThemeMenu [data-accent]');
- if(opt){e.preventDefault();e.stopPropagation();state.accentTheme=opt.dataset.accent;save();applyTheme();$('#accentThemeMenu')?.classList.remove('open');toast(`${opt.dataset.label||'Tema'} seçildi.`);return}
- const menu=$('#accentThemeMenu');
- if(menu&&!menu.contains(e.target)&&e.target.id!=='accentThemeBtn') menu.classList.remove('open');
-});
+// Theme controls — one reliable pointer/click path for desktop + touch devices.
+const initThemeControls=()=>{
+ const themeBtn=$('#themeBtn');
+ const accentBtn=$('#accentThemeBtn');
+ const accentMenu=$('#accentThemeMenu');
+ if(!themeBtn || !accentBtn || !accentMenu) return;
+ const toggleTheme=(e)=>{e?.preventDefault();e?.stopPropagation();state.theme=state.theme==='dark'?'light':'dark';save();applyTheme();};
+ const toggleAccent=(e)=>{e?.preventDefault();e?.stopPropagation();accentMenu.classList.toggle('open');accentBtn.setAttribute('aria-expanded',String(accentMenu.classList.contains('open')));};
+ const setAccent=(e)=>{
+   const opt=e.target.closest('[data-accent]');
+   if(!opt) return;
+   e.preventDefault(); e.stopPropagation();
+   const next=opt.dataset.accent;
+   if(!accentThemes[next]) return;
+   state.accentTheme=next; save(); applyTheme(); renderAll();
+   accentMenu.classList.remove('open'); accentBtn.setAttribute('aria-expanded','false');
+   toast(`${opt.dataset.label||'Tema'} aktif.`);
+ };
+ // Direct handlers + touchend fallback; guard against double-firing on touch browsers.
+ let touchThemeAt=0, touchAccentAt=0;
+ themeBtn.onclick=toggleTheme;
+ accentBtn.onclick=toggleAccent;
+ accentMenu.onclick=setAccent;
+ accentBtn.addEventListener('touchend',(e)=>{if(Date.now()-touchAccentAt<350)return; touchAccentAt=Date.now(); toggleAccent(e);},{passive:false});
+ themeBtn.addEventListener('touchend',(e)=>{if(Date.now()-touchThemeAt<350)return; touchThemeAt=Date.now(); toggleTheme(e);},{passive:false});
+ accentBtn.setAttribute('aria-haspopup','menu');
+ accentBtn.setAttribute('aria-expanded','false');
+ document.addEventListener('click',(e)=>{
+   if(accentMenu.classList.contains('open') && !accentMenu.contains(e.target) && e.target!==accentBtn) {
+     accentMenu.classList.remove('open'); accentBtn.setAttribute('aria-expanded','false');
+   }
+ });
+ document.addEventListener('keydown',(e)=>{
+   if(e.key==='Escape'){accentMenu.classList.remove('open');accentBtn.setAttribute('aria-expanded','false');}
+ });
+};
 
 const sidebar=$('#sidebar'), mobileMenu=$('#mobileMenu'), sidebarBackdrop=$('#sidebarBackdrop');
 const syncSidebarUi=()=>{
@@ -382,6 +410,8 @@ bind('mobileMenu','click',toggleSidebar);
 bind('sidebarBackdrop','click',closeSidebar);
 window.addEventListener('resize',()=>{if(window.innerWidth>840) sidebar?.classList.remove('open'); syncSidebarUi();});
 syncSidebarUi();
+initThemeControls();
+applyTheme();
 function renderFocusTaskPicker(){const d=ensureDay(),open=d.tasks.filter(t=>!t.done&&['study','review'].includes(t.kind));const box=$('#focusTaskList');if(!box)return;if(!open.length){box.innerHTML='<div class=\"empty\">Bugün seçilebilir açık akademik görev yok. Önce Bugünün Sistemi bölümünden bir görev ekle.</div>';return}box.innerHTML=open.map(t=>`<button type=\"button\" class=\"focus-task-option ${focus.taskId===t.id?'selected':''}\" data-focus-task=\"${t.id}\"><div><strong>${esc(t.title)}</strong><span>${esc(t.category)} • ${t.minutes||25} dk${t.ai?' • ✦ Asistan':''}</span></div><b>${focus.taskId===t.id?'✓':'→'}</b></button>`).join('')}
 bind('focusTaskSelect','click',()=>{renderFocusTaskPicker();const dlg=$('#focusTaskDialog');if(dlg&&!dlg.open){try{dlg.showModal()}catch{dlg.setAttribute('open','')}}});
 bind('focusTaskList','click',e=>{const btn=e.target.closest('[data-focus-task]');if(!btn)return;const d=ensureDay(),t=d.tasks.find(x=>x.id===btn.dataset.focusTask);if(!t)return;focus.taskId=t.id;$('#focusTargetLabel').textContent=t.title;$('#focusSelected').textContent=`Seçildi • ${t.minutes||25} dk • ${t.category}`;setFocusTimer(Math.min(50,Math.max(25,Math.round((t.minutes||25)/5)*5)));$('#focusTaskDialog')?.close();renderFocusTaskPicker()});

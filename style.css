@@ -286,3 +286,146 @@ html[data-theme="light"] .nav-item{color:#5c687b}html[data-theme="light"] .nav-i
 html[data-theme="light"] .accent-menu{color:var(--text)}
 .sidebar-toggle{flex:0 0 auto}
 @media(min-width:841px){.sidebar-toggle{display:inline-grid;place-items:center}.sidebar{transition:width .22s ease,transform .22s ease}.sidebar.collapsed{width:78px;padding-left:12px;padding-right:12px}.sidebar.collapsed .brand>div:not(.brand-logo-wrap),.sidebar.collapsed .profile-copy,.sidebar.collapsed .live-dot,.sidebar.collapsed .nav-label,.sidebar.collapsed .nav-item>span:not(.ico),.sidebar.collapsed .target-mini,.sidebar.collapsed .sync-line{display:none}.sidebar.collapsed .brand{justify-content:center}.sidebar.collapsed .nav-item{justify-content:center;padding:11px 6px}.sidebar.collapsed+.main{min-width:0}.sidebar.collapsed .brand-logo-wrap{margin:auto}.sidebar.collapsed .profile-card{justify-content:center}.sidebar.collapsed .sidebar-foot{display:none}}
+
+/* V20 — unified touch-safe theme controls */
+.top-right{overflow:visible;position:relative;z-index:30}
+.theme-picker-wrap{z-index:40;flex:0 0 auto}
+#themeBtn,#accentThemeBtn{flex:0 0 38px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.accent-menu{z-index:9999;isolation:isolate}
+.accent-option{cursor:pointer;touch-action:manipulation;min-height:38px}
+
+@media(max-width:840px){
+  .topbar{overflow:visible}
+  .top-right{gap:6px;flex:0 0 auto}
+  #themeBtn,#accentThemeBtn{display:grid!important;place-items:center!important}
+  .theme-picker-wrap{position:relative}
+  .accent-menu{
+    position:fixed;
+    top:72px;
+    right:12px;
+    width:min(252px,calc(100vw - 24px));
+    max-height:calc(100vh - 96px);
+    overflow:auto;
+  }
+}
+@media(max-width:560px){
+  .top-left{min-width:0;flex:1}
+  .top-left>div:last-child{min-width:0}
+  .topbar{gap:8px}
+  #mobileMenu{display:grid!important;place-items:center!important;visibility:visible!important;opacity:1!important;}
+  .top-right{gap:5px}
+  #themeBtn,#accentThemeBtn{width:36px;height:36px}
+  .theme-swatch-dot{width:13px;height:13px}
+}
+
+/* V20 — explicit desktop collapse + mobile drawer trigger */
+.sidebar-toggle{display:grid!important;place-items:center!important;visibility:visible!important;opacity:1!important}
+@media(min-width:841px){
+  .sidebar-toggle{cursor:pointer}
+}
+
+/* V21 — APEX VISUAL THEME ENGINE: strong, unmistakable accent themes */
+:root{
+  --theme-soft:rgba(183,255,90,.14);
+  --theme-soft-2:rgba(183,255,90,.07);
+  --theme-border:rgba(183,255,90,.32);
+  --theme-glow:rgba(183,255,90,.24);
+  --theme-gradient:linear-gradient(135deg,#b7ff5a,#63e6be);
+}
+html[data-accent="lime"]{--theme-soft:rgba(183,255,90,.16);--theme-soft-2:rgba(183,255,90,.07);--theme-border:rgba(183,255,90,.36);--theme-glow:rgba(183,255,90,.28);--theme-gradient:linear-gradient(135deg,#b7ff5a,#63e6be)}
+html[data-accent="ocean"]{--theme-soft:rgba(93,220,255,.17);--theme-soft-2:rgba(93,220,255,.08);--theme-border:rgba(93,220,255,.38);--theme-glow:rgba(93,220,255,.30);--theme-gradient:linear-gradient(135deg,#5ddcff,#60a5fa)}
+html[data-accent="violet"]{--theme-soft:rgba(180,156,255,.18);--theme-soft-2:rgba(180,156,255,.08);--theme-border:rgba(180,156,255,.40);--theme-glow:rgba(180,156,255,.30);--theme-gradient:linear-gradient(135deg,#b49cff,#f0abfc)}
+html[data-accent="rose"]{--theme-soft:rgba(255,122,168,.18);--theme-soft-2:rgba(255,122,168,.08);--theme-border:rgba(255,122,168,.40);--theme-glow:rgba(255,122,168,.30);--theme-gradient:linear-gradient(135deg,#ff7aa8,#fda4af)}
+html[data-accent="amber"]{--theme-soft:rgba(255,200,87,.18);--theme-soft-2:rgba(255,200,87,.08);--theme-border:rgba(255,200,87,.40);--theme-glow:rgba(255,200,87,.30);--theme-gradient:linear-gradient(135deg,#ffc857,#fb923c)}
+html[data-accent="cyan"]{--theme-soft:rgba(77,228,255,.18);--theme-soft-2:rgba(77,228,255,.08);--theme-border:rgba(77,228,255,.40);--theme-glow:rgba(77,228,255,.30);--theme-gradient:linear-gradient(135deg,#4de4ff,#22d3ee)}
+html[data-accent="red"]{--theme-soft:rgba(255,107,107,.18);--theme-soft-2:rgba(255,107,107,.08);--theme-border:rgba(255,107,107,.40);--theme-glow:rgba(255,107,107,.30);--theme-gradient:linear-gradient(135deg,#ff6b6b,#f97316)}
+
+html[data-accent] body{
+  background:
+    radial-gradient(circle at 6% -4%,var(--theme-soft),transparent 25%),
+    radial-gradient(circle at 94% 4%,color-mix(in srgb,var(--accent2) 18%,transparent),transparent 28%),
+    var(--bg);
+}
+html[data-accent] .sidebar{
+  box-shadow:inset -1px 0 0 var(--theme-border), 18px 0 70px color-mix(in srgb,var(--accent) 5%,transparent);
+}
+html[data-accent] .brand-symbol{
+  border-color:var(--theme-border);
+  background:linear-gradient(145deg,var(--theme-soft),rgba(255,255,255,.02));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 14%,transparent),0 0 26px var(--theme-glow);
+}
+html[data-accent] .profile-card,
+html[data-accent] .hero-metric.highlight,
+html[data-accent] .assistant-message,
+html[data-accent] .target-mini{
+  border-color:var(--theme-border);
+  background:linear-gradient(145deg,var(--theme-soft),var(--theme-soft-2));
+}
+html[data-accent] .nav-item.active{
+  border-color:var(--theme-border);
+  background:linear-gradient(90deg,var(--theme-soft),rgba(255,255,255,.02));
+  box-shadow:inset 3px 0 0 var(--accent),0 0 24px color-mix(in srgb,var(--accent) 8%,transparent);
+}
+html[data-accent] .nav-item.active .ico,
+html[data-accent] .section-kicker,
+html[data-accent] .brand-name b,
+html[data-accent] .topic-open-btn:hover strong{
+  color:var(--accent);
+}
+html[data-accent] .primary-btn{
+  background:var(--theme-gradient);
+  border-color:var(--accent);
+  box-shadow:0 8px 24px color-mix(in srgb,var(--accent) 18%,transparent);
+}
+html[data-accent] .focus-ring,
+html[data-accent] .rank-ring{box-shadow:0 0 34px color-mix(in srgb,var(--accent) 18%,transparent)}
+html[data-accent] .score-bar i,
+html[data-accent] .thin-progress i,
+html[data-accent] .bar-track i{background:var(--theme-gradient)}
+html[data-accent] .theme-swatch-btn{
+  border-color:var(--theme-border);
+  background:var(--theme-soft-2);
+  box-shadow:0 0 20px color-mix(in srgb,var(--accent) 14%,transparent);
+}
+html[data-accent] .theme-swatch-dot{box-shadow:0 0 0 5px var(--theme-soft),0 0 28px var(--theme-glow)}
+html[data-accent] .accent-option.selected{
+  border-color:var(--theme-border);
+  background:var(--theme-soft);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 24%,transparent),0 0 20px color-mix(in srgb,var(--accent) 8%,transparent);
+}
+html[data-accent] .topic-card:focus-within,
+html[data-accent] .card:focus-within,
+html[data-accent] input:focus,
+html[data-accent] select:focus,
+html[data-accent] textarea:focus{
+  border-color:var(--theme-border);
+  box-shadow:0 0 0 3px var(--theme-soft);
+  outline:0;
+}
+html[data-accent] .accent-preview{box-shadow:0 0 16px color-mix(in srgb,var(--preview) 55%,transparent)}
+
+/* Make the palette itself feel like a real theme switcher */
+.accent-menu-head{border-bottom:1px solid var(--line);margin-bottom:10px}
+.accent-menu-head span{font-size:10px}
+.accent-menu-head small{font-size:9px}
+.accent-option{min-height:44px;font-weight:700}
+.accent-option span:last-child{font-size:10px}
+.accent-option.selected span:last-child{color:var(--accent)}
+
+/* Light mode keeps strong theme accents without becoming washed out */
+html[data-theme="light"][data-accent] body{background:
+  radial-gradient(circle at 5% -2%,var(--theme-soft),transparent 25%),
+  radial-gradient(circle at 95% 0%,color-mix(in srgb,var(--accent2) 12%,transparent),transparent 26%),
+  var(--bg)}
+html[data-theme="light"][data-accent] .sidebar{box-shadow:inset -1px 0 0 var(--theme-border),10px 0 40px color-mix(in srgb,var(--accent) 8%,transparent)}
+html[data-theme="light"][data-accent] .nav-item.active{color:#132033}
+html[data-theme="light"][data-accent] .primary-btn{color:#0b1220}
+
+/* Mobile: put controls above the menu and make the palette unmistakable */
+@media(max-width:840px){
+  .top-right{z-index:120;overflow:visible}
+  .theme-picker-wrap{z-index:130}
+  .accent-menu{z-index:10000;border-width:1.5px;box-shadow:0 26px 80px rgba(0,0,0,.55),0 0 0 1px var(--theme-border),0 0 38px color-mix(in srgb,var(--accent) 12%,transparent)}
+  html[data-theme="light"] .accent-menu{box-shadow:0 26px 60px rgba(15,23,42,.22),0 0 0 1px var(--theme-border)}
+  #themeBtn,#accentThemeBtn{min-width:36px;min-height:36px}
+}

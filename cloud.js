@@ -245,7 +245,7 @@
       let last='';
       setInterval(()=>{
         try {
-          const raw=localStorage.getItem('hukuk50k-os-v13')||'';
+          const raw=localStorage.getItem('hukuk50k-os-v20')||'';
           if(raw && raw!==last){ last=raw; if(user){ clearTimeout(syncTimer); syncTimer=setTimeout(()=>pushCloud(false),1100); } }
         } catch {}
       },1500);
