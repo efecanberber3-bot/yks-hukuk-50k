@@ -1,5 +1,5 @@
-const KEY='hukuk50k-os-v33';
-const LEGACY_KEYS=['hukuk50k-os-v32','hukuk50k-os-v31','hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
+const KEY='hukuk50k-os-v35';
+const LEGACY_KEYS=['hukuk50k-os-v34','hukuk50k-os-v33','hukuk50k-os-v32','hukuk50k-os-v31','hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
 const START='2026-09-07';
 const DEFAULT_EXAM='2027-06-20';
 const LAW_STRETCH_RANK=30000, LAW_MIN_RANK=50000, BASE_SALARY=15000;
@@ -38,9 +38,9 @@ const baseTasks=()=>[
  {title:'EB Digital Studio • müşteri / portföy',category:'EB Digital',minutes:60,kind:'work'},
  {title:'Antrenman',category:'Spor',minutes:60,kind:'life'}
 ];
-const defaultState={version:33,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
+const defaultState={version:35,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=33;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.version=35;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -66,8 +66,34 @@ function ensureDay(k=today()){
    const titles=new Set(d.tasks.map(t=>t.title));
    baseTasks().forEach(t=>{if(!titles.has(t.title))d.tasks.push({...t,id:uid('task'),done:false,source:'base'})});
  }
+ if(!d.closed) addDueReviewTasks(d,k);
  return d;
 }
+function repeatInterval(confidence,accuracy,repeatCount){
+ const c=Number(confidence)||1,a=accuracy===null?null:Number(accuracy);
+ if(a!==null && a<0.60) return 1;
+ if(c<=2) return 2;
+ if(a!==null && a<0.75) return 3;
+ if(c===3) return 7;
+ if(c===4) return 14;
+ return repeatCount>=3?30:21;
+}
+function addDueReviewTasks(d,k=today()){
+ const openKeys=new Set(d.tasks.filter(t=>!t.done && t.repeatKey).map(t=>t.repeatKey));
+ allSubjects().forEach(([name,topics])=>topics.forEach((topic,i)=>{
+   const s=stateTopic(name,i); if(!s.next || s.next>k) return;
+   const key=`repeat|${name}|${i}|${s.next}`;
+   if(openKeys.has(key)) return;
+   d.tasks.unshift({id:uid('repeat'),title:`Tekrar • ${name} • ${topic}`,category:'Akıllı Tekrar',minutes:name.startsWith('AYT')?35:25,kind:'review',done:false,source:'smart-repeat',ai:true,repeatKey:key,topicKey:`${name}|${i}`,reason:'Akıllı tekrar zamanı geldi'});
+ }));
+}
+function smartRepeatQueue(){
+ const rows=[];
+ allSubjects().forEach(([name,topics])=>topics.forEach((topic,i)=>{const s=stateTopic(name,i);if(s.next)rows.push({name,i,topic,data:s,due:s.next<=today(),days:s.next<today()?daysBetween(s.next,today()):s.next===today()?0:-daysBetween(today(),s.next),accuracy:(Number(s.attempts)||0)?(Number(s.correct)||0)/(Number(s.attempts)||1):null})}));
+ return rows.sort((a,b)=>{if(a.due!==b.due)return a.due?-1:1; if(a.days!==b.days)return b.days-a.days; return (a.data.confidence||1)-(b.data.confidence||1)});
+}
+function repeatRecommendation(s){const acc=(Number(s.attempts)||0)?(Number(s.correct)||0)/(Number(s.attempts)||1):null;const interval=repeatInterval(s.confidence,acc,s.repeatCount||0);return {interval,accuracy:acc,next:addDays(today(),interval)}}
+
 function taskPct(d){return d.tasks.length?Math.round(d.tasks.filter(t=>t.done).length/d.tasks.length*100):0}
 function studyMinutes(d){return d.tasks.filter(t=>t.done&&['study','review'].includes(t.kind)).reduce((a,t)=>a+(Number(t.minutes)||0),0)+Number(d.studyMinutes||0)}
 function realStudyMinutes(d){return Number(d?.studyMinutes||0)+Number(d?.focusMinutes||0)}
@@ -318,6 +344,15 @@ function ensureQuickInput(){
  if($('#dailyQuickCard')){ $('#dailyQuestions').value=ensureDay().questions||0;$('#dailyPhone').value=ensureDay().phoneMinutes||0;return; }
  const wrap=$('#today .grid-2.main-grid-gap');if(!wrap)return;const card=document.createElement('article');card.id='dailyQuickCard';card.className='card';card.innerHTML=`<div class="card-head"><div><span class="section-kicker">DAILY DATA</span><h3>Hızlı veri girişi</h3></div><span class="badge purple">KOÇ MOTORU</span></div><div class="quick-grid"><label>Bugünkü soru<input id="dailyQuestions" type="number" min="0" value="0"></label><label>Telefon süresi (dk)<input id="dailyPhone" type="number" min="0" value="0"></label><button id="saveDailyData" class="primary-btn">Veriyi kaydet</button></div>`;wrap.appendChild(card);$('#saveDailyData').onclick=()=>{const d=ensureDay();d.questions=Number($('#dailyQuestions').value)||0;d.phoneMinutes=Number($('#dailyPhone').value)||0;if(d.questions>=state.settings.questionGoal)d.habits.study=true;save();renderAll();toast('Günlük veri koç motoruna işlendi.')};
 }
+function renderRepeatEngine(){
+ const el=$('#repeatEngine');if(!el)return;
+ const queue=smartRepeatQueue();const due=queue.filter(x=>x.due).slice(0,8);
+ const upcoming=queue.filter(x=>!x.due).slice(0,5);
+ const label=x=>x.due?`Gecikti • ${x.days} gün`:x.data.next===today()?'Bugün':`Yaklaşık ${Math.max(1,Math.abs(x.days))} gün`;
+ el.innerHTML=`<div class=\"repeat-hero\"><div><span class=\"section-kicker\">SPACED REPETITION</span><h3>Akıllı tekrar kuyruğu</h3><p>Güven, soru başarısı ve tekrar geçmişine göre bir sonraki dönüş otomatik planlanır.</p></div><div class=\"repeat-count\"><strong>${due.length}</strong><span>bugün öncelikli</span></div></div>
+ <div class=\"repeat-grid\"><div><div class=\"repeat-head\"><strong>Şimdi tekrar et</strong><span>${due.length} konu</span></div>${due.length?due.map(x=>`<button class=\"repeat-row repeat-due\" data-repeat-open=\"${encodeURIComponent(x.name)}|${x.i}\"><div><strong>${esc(x.topic)}</strong><small>${esc(x.name)} • güven ${x.data.confidence||0}/5 ${x.accuracy===null?'• veri yok':`• %${Math.round(x.accuracy*100)}`}</small></div><b>${label(x)} ↗</b></button>`).join(''):'<div class=\"repeat-empty\">Bugün gecikmiş tekrar yok. Ritim iyi gidiyor.</div>'}</div><div><div class=\"repeat-head\"><strong>Sıradaki dönüşler</strong><span>Önümüzde</span></div>${upcoming.length?upcoming.map(x=>`<button class=\"repeat-row\" data-repeat-open=\"${encodeURIComponent(x.name)}|${x.i}\"><div><strong>${esc(x.topic)}</strong><small>${esc(x.name)} • güven ${x.data.confidence||0}/5</small></div><b>${fmtDate(x.data.next)}</b></button>`).join(''):'<div class=\"repeat-empty\">Henüz planlanmış tekrar yok.</div>'}</div></div>`;
+}
+
 function renderRoadmap(){
  const area=$('#roadmapArea').value,status=$('#roadmapStatus').value;let total=0,done=0,active=0;
  const subjects=allSubjects().filter(([name])=>area==='ALL'||areaOf(name)===area);
@@ -342,7 +377,7 @@ function renderRoadmap(){
 function topicStatusLabel(s){return ({not_started:'Başlamadı',learning:'Çalışılıyor',practice:'Soru aşaması',review:'Tekrar',done:'Tamamlandı'})[s]||'Başlamadı'}
 function topicHealth(name,i){const d=stateTopic(name,i);const attempts=Number(d.attempts)||0;const acc=attempts?((Number(d.correct)||0)/attempts):null;const conf=clamp(Number(d.confidence)||0,0,5)/5;const due=isDue(d)?1:0;const stale=d.last?clamp(daysBetween(d.last,today())/14,0,1):1;let health=Math.round(100*(0.30*conf+0.30*(acc===null?0.55:acc)+0.20*(1-stale)+0.10*(d.status==='done'?1:0)+0.10*(1-due)));return {health:clamp(health,0,100),attempts,acc,due,study:Number(d.studyMinutesTotal)||0}}
 function openTopicDetail(name,i){const d=stateTopic(name,i),t=curriculum[name]?.[i]||'Konu',h=topicHealth(name,i);$('#topicDetailKey').value=`${encodeURIComponent(name)}|${i}`;$('#topicDetailArea').textContent=`${areaOf(name)} • ${name.replace(areaOf(name)+' ','')}`;$('#topicDetailTitle').textContent=t;$('#topicDetailSubtitle').textContent=d.lastNote||'Gerçek oturum verilerini gir. Bu kayıtlar koç ve zayıflık radarında kullanılacak.';$('#topicDetailHealth').textContent=`SAĞLIK ${h.health}`;$('#topicDetailStudyTotal').textContent=`${h.study} dk`;$('#topicDetailQuestionsTotal').textContent=h.attempts;$('#topicDetailAccuracy').textContent=h.acc===null?'—':`%${Math.round(h.acc*100)}`;$('#topicDetailLast').textContent=d.last?fmtDate(d.last):'Yok';$('#topicStudyMinutes').value=0;$('#topicQuestions').value=0;$('#topicCorrect').value=0;$('#topicWrong').value=0;$('#topicDetailStatus').value=d.status||'not_started';$('#topicDetailConfidence').value=String(clamp(Number(d.confidence)||1,1,5));$('#topicDetailNote').value='';$('#topicAddToToday').dataset.topicAdd=`${encodeURIComponent(name)}|${i}`;$('#topicDetailDialog')?.showModal()}
-function saveTopicSession(){const key=$('#topicDetailKey').value;if(!key)return;const [encName,iRaw]=key.split('|');const name=decodeURIComponent(encName),i=Number(iRaw);const prev=stateTopic(name,i);const minutes=Math.max(0,Number($('#topicStudyMinutes').value)||0);const questions=Math.max(0,Number($('#topicQuestions').value)||0);let correct=Math.max(0,Number($('#topicCorrect').value)||0);let wrong=Math.max(0,Number($('#topicWrong').value)||0);if(questions>0){correct=Math.min(correct,questions);wrong=Math.min(wrong,questions-correct);if(correct+wrong<questions)wrong=questions-correct}const status=$('#topicDetailStatus').value,confidence=clamp(Number($('#topicDetailConfidence').value)||1,1,5),note=$('#topicDetailNote').value.trim();let next=prev.next;if(status==='done')next=addDays(today(),confidence>=4?21:confidence===3?14:7);else if(status==='review')next=addDays(today(),7);state.subjects[name]??={};state.subjects[name][i]={...prev,status,confidence,last:today(),next,attempts:(Number(prev.attempts)||0)+questions,correct:(Number(prev.correct)||0)+correct,wrong:(Number(prev.wrong)||0)+wrong,studyMinutesTotal:(Number(prev.studyMinutesTotal)||0)+minutes,sessionCount:(Number(prev.sessionCount)||0)+1,note,lastNote:note,lastScore:questions?Number((correct/questions*100).toFixed(1)):prev.lastScore};if(minutes>0){const d=ensureDay();d.studyMinutes=(Number(d.studyMinutes)||0)+minutes}save();$('#topicDetailDialog')?.close();renderAll();toast(`${name} • ${curriculum[name][i]} oturumu kaydedildi.`)}
+function saveTopicSession(){const key=$('#topicDetailKey').value;if(!key)return;const [encName,iRaw]=key.split('|');const name=decodeURIComponent(encName),i=Number(iRaw);const prev=stateTopic(name,i);const minutes=Math.max(0,Number($('#topicStudyMinutes').value)||0);const questions=Math.max(0,Number($('#topicQuestions').value)||0);let correct=Math.max(0,Number($('#topicCorrect').value)||0);let wrong=Math.max(0,Number($('#topicWrong').value)||0);if(questions>0){correct=Math.min(correct,questions);wrong=Math.min(wrong,questions-correct);if(correct+wrong<questions)wrong=questions-correct}const status=$('#topicDetailStatus').value,confidence=clamp(Number($('#topicDetailConfidence').value)||1,1,5),note=$('#topicDetailNote').value.trim();const attempts=(Number(prev.attempts)||0)+questions, correctTotal=(Number(prev.correct)||0)+correct, wrongTotal=(Number(prev.wrong)||0)+wrong, acc=attempts?correctTotal/attempts:null;let next=prev.next, repeatCount=Number(prev.repeatCount)||0;if(status==='done'||status==='review'||questions>0){const rec=repeatRecommendation({confidence,attempts,correct:correctTotal,repeatCount:repeatCount+(questions>0?1:0)});next=rec.next;repeatCount+=1;}state.subjects[name]??={};state.subjects[name][i]={...prev,status,confidence,last:today(),next,attempts,correct:correctTotal,wrong:wrongTotal,studyMinutesTotal:(Number(prev.studyMinutesTotal)||0)+minutes,sessionCount:(Number(prev.sessionCount)||0)+1,repeatCount,note,lastNote:note,lastScore:questions?Number((correct/questions*100).toFixed(1)):prev.lastScore};if(minutes>0){const d=ensureDay();d.studyMinutes=(Number(d.studyMinutes)||0)+minutes}save();$('#topicDetailDialog')?.close();renderAll();toast(`${name} • ${curriculum[name][i]} oturumu kaydedildi.`)}
 function addTopicToToday(){const key=$('#topicAddToToday').dataset.topicAdd;if(!key)return;const [encName,iRaw]=key.split('|');const name=decodeURIComponent(encName),i=Number(iRaw),topic=curriculum[name]?.[Number(i)];if(!topic)return;const d=ensureDay();const title=`${name} • ${topic}`;if(d.tasks.some(t=>t.title===title&&!t.done)){toast('Bu konu bugün zaten planda.');return}d.tasks.push({id:uid('task'),title,category:areaOf(name),minutes:name.includes('AYT')?60:45,kind:'study',done:false,source:'topic-motor',topicKey:`${name}|${i}`});save();renderAll();toast('Konu bugünün planına eklendi.')}
 
 function mistakeTypeLabel(x){return ({concept:'Konu eksiği',careless:'Dikkat',time:'Zaman',interpretation:'Yorum',formula:'Formül',memory:'Bilgi',strategy:'Strateji'})[x]||'Diğer'}
@@ -452,6 +487,7 @@ document.addEventListener('click',e=>{
  const del=e.target.closest('[data-delmock]');if(del){state.mocks=state.mocks.filter(m=>m.id!==del.dataset.delmock);save();renderAll();toast('Deneme silindi.');return}
  const conf=e.target.closest('[data-confidence]');if(conf){e.stopPropagation();const [name,i,c]=decodeURIComponent(conf.dataset.confidence).split('|');setConfidence(name,Number(i),Number(c));renderRoadmap();renderDashboard();toast(`Güven seviyesi ${c}/5.`);return}
  const topicOpen=e.target.closest('[data-topic-open-btn]');if(topicOpen){e.stopPropagation();const [name,i]=decodeURIComponent(topicOpen.dataset.topicOpenBtn).split('|');openTopicDetail(name,Number(i));return}
+ const repeatOpen=e.target.closest('[data-repeat-open]');if(repeatOpen){const [name,i]=decodeURIComponent(repeatOpen.dataset.repeatOpen).split('|');navigate('roadmap');openTopicDetail(name,Number(i));return}
  const coachGenerate=e.target.closest('[data-coach-generate]');if(coachGenerate){const target=coachGenerate.dataset.coachGenerate==='tomorrow'?addDays(today(),1):today();const result=generateCoachPlan(target,coachGenerate.dataset.coachGenerate);toast(result.added?`${result.added} koç görevi eklendi.`:'Yeni koç görevi eklenmedi.');renderAll();return}
  const coachPlan=e.target.closest('[data-coach-plan]');if(coachPlan){const name=decodeURIComponent(coachPlan.dataset.coachPlan);const d=ensureDay(addDays(today(),1));const w=weaknessDetails().find(x=>x.name===name)||weaknessDetails()[0];if(w){const rec=recommendedAction(w);d.tasks.push({id:uid('task'),title:`${w.name} • ${rec.topic}`,category:w.area,minutes:rec.mins,kind:'study',done:false,ai:true,source:'coach-v8',reason:w.keySignals[0]});save();toast(`${w.label}: yarının planına eklendi.`);return}}
  const radar=e.target.closest('[data-radar]');if(radar){navigate('roadmap');$('#roadmapArea').value=areaOf(decodeURIComponent(radar.dataset.radar));$('#roadmapStatus').value='ALL';renderRoadmap();return}
