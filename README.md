@@ -1,3 +1,3 @@
-NEXORA v49 — Stability, Premium Quick Data & Universal Goal Onboarding
+NEXORA V54 — Brand Logo Integration.
 
-Upload every file to the existing GitHub Pages repository. After deploy, hard refresh the site. V49 isolates render failures, makes quick-data selections reversible and theme-aware, strengthens goal onboarding, and keeps user-specific targets blank until a new user chooses them.
+New local NEXORA logo assets are stored under assets/. The logo is used in the sidebar, Focus Room, onboarding, footer, favicon and PWA manifest.

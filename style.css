@@ -703,3 +703,16 @@ html[data-theme="light"] input,html[data-theme="light"] select,html[data-theme="
 .academy-topic-option span{display:flex;flex-direction:column;gap:5px;min-width:0}.academy-topic-option b{font-size:8px;letter-spacing:.1em;color:var(--accent);text-transform:uppercase}.academy-topic-option strong{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.academy-topic-option small{color:var(--muted);font-size:9px;white-space:nowrap}
 @media(max-width:900px){.academy-topic-picker{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.academy-topic-picker{grid-template-columns:1fr;max-height:420px}.academy-topic-option{min-height:70px}}
+
+/* NEXORA brand assets */
+.brand-logo-wrap{width:148px;height:58px;display:grid;place-items:center;flex:0 0 148px;overflow:hidden}
+.brand-logo{width:148px;height:58px;object-fit:contain;display:block;filter:drop-shadow(0 7px 20px rgba(40,150,255,.12));}
+.brand{gap:8px}
+.brand .brand-name,.brand .brand-sub{display:none}
+.footer-logo{width:142px;height:52px;object-fit:contain;opacity:.92;filter:drop-shadow(0 5px 18px rgba(40,150,255,.12));}
+.focus-nexora-mark{width:42px!important;height:42px!important;border-radius:12px!important;overflow:hidden!important;display:grid!important;place-items:center!important;background:rgba(5,10,20,.7)!important;border:1px solid rgba(93,220,255,.18)!important}
+.focus-nexora-mark img{width:56px;height:50px;object-fit:contain}
+.onboarding-logo img{width:44px;height:44px;object-fit:contain}
+.sidebar.collapsed .brand-logo-wrap{width:48px;height:48px;flex-basis:48px}
+.sidebar.collapsed .brand-logo{width:48px;height:48px;object-fit:cover;object-position:center top}
+@media(max-width:840px){.brand-logo-wrap{width:128px;height:50px;flex-basis:128px}.brand-logo{width:128px;height:50px}.footer-logo{width:128px;height:46px}}

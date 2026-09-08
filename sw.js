@@ -1,5 +1,5 @@
-const CACHE='nexora-v52';
-const ASSETS=['./','./index.html','./style.css','./app.js','./manifest.json','./cloud-config.js','./cloud.js'];
+const CACHE='nexora-v54';
+const ASSETS=['./','./index.html','./style.css','./app.js','./manifest.json','./cloud-config.js','./cloud.js','./assets/nexora-lockup.png','./assets/nexora-mark.png','./assets/nexora-logo-full.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));
 self.addEventListener('fetch',e=>e.respondWith(

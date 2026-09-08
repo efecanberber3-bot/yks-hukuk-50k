@@ -1,1 +1,16 @@
-{"name":"NEXORA","short_name":"NEXORA","start_url":"./","display":"standalone","background_color":"#070a10","theme_color":"#070a10","description":"NEXORA — Personal Study & Performance OS","icons":[]}
+{
+  "name": "NEXORA",
+  "short_name": "NEXORA",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#070a10",
+  "theme_color": "#070a10",
+  "description": "NEXORA — Personal Study & Performance OS",
+  "icons": [
+    {
+      "src": "assets/nexora-mark.png",
+      "sizes": "540x480",
+      "type": "image/png"
+    }
+  ]
+}
