@@ -317,6 +317,23 @@ function addTomorrowPlan(){
  toast(result.added?`Yarın için ${result.added} akıllı blok oluşturuldu.`:'Yarın için yeni koç bloğu eklenmedi.');
  renderDashboard(); renderToday();
 }
+function coachSnapshot(){
+ const d=ensureDay(); const e=energySnapshot(); const cal=targetCalendarData();
+ const ranked=weaknessDetails(); const top=ranked[0]||null; const repeats=smartRepeatQueue().filter(x=>x.due).length;
+ const goal=Number(state.settings.studyGoal)||270; const actual=realStudyMinutes(d); const remaining=Math.max(0,Math.round(goal-actual));
+ const capacity=Math.round(e.capacity||goal); const target=Math.min(goal,capacity);
+ const paceAreas=Object.values(cal?.areas||{}); const behind=paceAreas.filter(x=>x.status==='HIZ GEREKİYOR').length;
+ let mode=e.mode;
+ if(top?.urgency>=85||behind>=2) mode='PRIORITY';
+ return {energy:e,top,repeats,goal,actual,remaining,capacity,target,behind,mode};
+}
+function coachNarrative(){
+ const c=coachSnapshot(); const t=c.top;
+ if(!t){ return {title:'Veri toplama modu',text:'Henüz yeterli performans verisi yok. İlk hafta amacımız seviyeni görmek, çalışma ritmini kurmak ve ilk deneme verisini üretmek.',actions:[['mock','İlk denemeni gir'],['today','Bugünün planı']]}; }
+ if(c.mode==='RECOVERY') return {title:'Bugün kaliteyi koruyoruz',text:`Enerji kapasiten ${c.capacity}/100. Hedefi zorlamak yerine en yüksek getirili bloğu tamamla; ${c.repeats} gecikmiş tekrar varsa önce onları kapat.`,actions:[['lifeEnergy','Enerjiye bak'],['focus','Focus Room']]};
+ if(c.mode==='PRIORITY') return {title:`Bugünün önceliği: ${t.label}`,text:`Risk ${t.urgency}/100. ${(t.keySignals||[]).slice(0,2).join(' • ')||'Bu alan diğerlerinden daha fazla dikkat istiyor.'} Bugünkü kapasiteni öncelikli çalışmaya ayır.`,actions:[['roadmap','Konu motoru'],['focus','Focus Room']]};
+ return {title:'Ritim dengeli',text:`Bugün yaklaşık ${c.target} dk verimli çalışma kapasiten var. Öncelik ${t.label}; gecikmiş tekrarları kapatıp ana bloğu Focus Room'da tamamla.`,actions:[['today','Bugünün planı'],['focus','Focus Room']]};
+}
 function assistantInsight(){
  const c=coachSnapshot(),score=systemScore(ensureDay()),story=coachNarrative();
  return {h:story.title,p:story.text,a:story.actions,coach:c};
@@ -661,7 +678,7 @@ function friendShareCode(){
   let code=''; for(let i=0;i<6;i++) code+=chars[Math.floor(Math.random()*chars.length)];
   state.social??={}; state.social.shareCode=code; state.social.shareEnabled=false; save(); return code;
 }
-function sharedStats(){const d=ensureDay();const wk=weekSummary();return {studyMinutes:Math.round(wk.totalStudy),weeklyQuestions:wk.questions,weekScore:Math.round(wk.avgScore),streak:streak(),todayScore:systemScore(d),targetRank:Number(state.settings.targetRank)||30000,target:'Hukuk'}}
+function sharedStats(){const d=ensureDay();const wk=weekSummary();return {studyMinutes:Math.round(wk.totalStudy),weeklyQuestions:wk.questions,weekScore:Math.round(wk.avgScore),streak:streak(),todayScore:systemScore(d),targetRank:Number(state.settings.targetRank)||30000,target:selectedProgram()||'Hedef'}}
 function ensureSocial(){state.social??={};state.social.shareCode??='';state.social.shareEnabled??=false;state.social.friends??=[];return state.social}
 function renderFriends(){
   const social=ensureSocial();

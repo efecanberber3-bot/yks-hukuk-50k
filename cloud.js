@@ -302,5 +302,23 @@
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+  async function publishFriendProfile(stats, social) {
+    if (!client || !user) return false;
+    const code = social?.shareCode || '';
+    if (!code) return false;
+    try {
+      const payload = {user_id:user.id,share_code:code,display_name:getDisplayName()||'Hukuk 50K öğrencisi',share_enabled:!!social.shareEnabled,study_minutes:Number(stats?.studyMinutes)||0,weekly_questions:Number(stats?.weeklyQuestions)||0,week_score:Number(stats?.weekScore)||0,streak:Number(stats?.streak)||0,target_rank:Number(stats?.targetRank)||30000,target_label:String(stats?.target||'Hedef'),updated_at:new Date().toISOString()};
+      const {error}=await client.from('friend_profiles').upsert(payload,{onConflict:'user_id'});
+      if(error) throw error; return true;
+    } catch(e) { console.error('publishFriendProfile',e); return false; }
+  }
+  async function getFriendProfile(code) {
+    if (!client || !user || !code) return null;
+    try {
+      const {data,error}=await client.from('friend_profiles').select('share_code,display_name,study_minutes,weekly_questions,week_score,streak,target_rank,target_label,updated_at,share_enabled').eq('share_code',String(code).trim().toUpperCase()).eq('share_enabled',true).maybeSingle();
+      if(error) throw error; if(!data) return null;
+      return {code:data.share_code,name:data.display_name,studyMinutes:data.study_minutes,weeklyQuestions:data.weekly_questions,weekScore:data.week_score,streak:data.streak,targetRank:data.target_rank,target:data.target_label,updatedAt:data.updated_at};
+    } catch(e) { console.error('getFriendProfile',e); return null; }
+  }
   window.hukukCloud = { openLogin:openGate, push:()=>pushCloud(true), pull:pullCloud, configured, publishFriendProfile, getFriendProfile, getUserId:()=>user?.id||'' };
 })();
