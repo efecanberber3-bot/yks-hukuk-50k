@@ -4,3 +4,6 @@ Uyku, enerji, telefon, egzersiz, stres ve gerçek çalışma verilerinden günl�
 
 
 V40: Sabah Koç Brifingi + Akşam Kapanış raporu.
+
+
+V44 fix: first-visit onboarding is browser-scoped in local mode and user-scoped in Supabase mode. Supabase project URL and publishable key are preconfigured.

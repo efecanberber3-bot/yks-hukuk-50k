@@ -481,14 +481,18 @@ function saveGoalSetup(){
  state.settings.scoreType=track;state.settings.targetProgram=program;state.settings.customProgram=program==='Diğer / Kendim yazacağım'?custom:'';state.settings.targetRank=clamp(Number($('#goalRank')?.value)||30000,1,999999);state.settings.minRank=Math.max(state.settings.targetRank,Number(state.settings.minRank)||50000);state.settings.onboardingComplete=true;save();$('#goalSetupDialog')?.close();renderAll();toast(`Hedefin kaydedildi: ${selectedProgram()} • ${goalRankLabel()}`);
 }
 function currentCloudUserId(){try{return window.hukukCloud?.getUserId?.()||''}catch{return ''}}
+const ONBOARDING_DISMISSED_KEY='hukuk50k-onboarding-dismissed-v1';
 function shouldShowOnboarding(){
  const uid=currentCloudUserId();
  if(uid) return state.settings.onboardingUserId!==uid;
- return !state.settings.onboardingComplete;
+ // Local/demo mode: decide from a browser-local onboarding flag, not the shared state object.
+ // This prevents an old local profile from suppressing onboarding for a new visitor/device.
+ try { return localStorage.getItem(ONBOARDING_DISMISSED_KEY)!=='1'; } catch { return !state.settings.onboardingComplete; }
 }
 function markOnboardingComplete(){
  state.settings.onboardingComplete=true;
  state.settings.onboardingUserId=currentCloudUserId()||state.settings.onboardingUserId||'local';
+ try { localStorage.setItem(ONBOARDING_DISMISSED_KEY,'1'); } catch {}
  save();
 }
 function maybeOpenOnboarding(){
@@ -815,8 +819,10 @@ bind('focusTaskSelect','click',()=>{renderFocusTaskPicker();const dlg=$('#focusT
 bind('focusTaskList','click',e=>{const btn=e.target.closest('[data-focus-task]');if(!btn)return;const d=ensureDay(),t=d.tasks.find(x=>x.id===btn.dataset.focusTask);if(!t)return;focus.taskId=t.id;$('#focusTargetLabel').textContent=t.title;$('#focusSelected').textContent=t.title;const suggested=clamp(Math.round((t.minutes||25)/10)*10,10,240);const dur=$('#focusDuration');if(dur){const allowed=Array.from({length:24},(_,idx)=>(idx+1)*10);dur.value=String(allowed.includes(suggested)?suggested:30)}setFocusTimer(Number($('#focusDuration')?.value||suggested));$('#focusTaskDialog')?.close();renderFocusTaskPicker();updateFocusStatus()});
 bind('topicSaveSession','click',saveTopicSession);bind('topicAddToToday','click',addTopicToToday);bind('timerStart','click',startTimer);bind('timerPause','click',stopTimer);bind('timerReset','click',resetTimer);
 bind('globalSearch','focus',()=>{$('#commandDialog')?.showModal();$('#commandInput')?.focus();commandResults('')});bind('globalSearch','keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#commandDialog')?.showModal();$('#commandInput')?.focus();commandResults('')}});bind('commandInput','input',e=>commandResults(e.target.value));document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('#commandDialog')?.showModal();$('#commandInput')?.focus();commandResults('')}});bind('commandDialog','close',()=>{const x=$('#globalSearch');if(x)x.value=''});
-setFocusTimer(10);ensureDay();renderAll();setTimeout(maybeOpenOnboarding,350);
-document.addEventListener('hukuk50k:cloud-ready',()=>setTimeout(maybeOpenOnboarding,60));
+setFocusTimer(10);ensureDay();renderAll();
+setTimeout(maybeOpenOnboarding,200);
+setTimeout(maybeOpenOnboarding,1200);
+document.addEventListener('hukuk50k:cloud-ready',()=>{ setTimeout(maybeOpenOnboarding,60); setTimeout(maybeOpenOnboarding,500); });
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 
 document.addEventListener('hukuk50k:changed',()=>{if(ensureSocial().shareEnabled) publishFriendProfile();});

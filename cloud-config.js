@@ -5,6 +5,6 @@
   ASLA service_role / secret key kullanmayın.
 */
 window.HUKUK50K_SUPABASE = window.HUKUK50K_SUPABASE || {
-  url: '',
-  key: ''
+  url: 'https://wicdpbhvumcnsjiexbux.supabase.co',
+  key: 'sb_publishable_9wVWQJqZPhOixYNjDJ9JXQ_LYeornN7'
 };
