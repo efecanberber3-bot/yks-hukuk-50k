@@ -49,7 +49,7 @@ const trackMeta={SAY:{label:'Sayısal',short:'SAY',tone:'ocean'},EA:{label:'Eşi
 const rankPresets=[1000,5000,10000,20000,30000,50000,100000,200000];
 const defaultState={version:51,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000,scoreType:'',targetProgram:'',customProgram:'',onboardingComplete:false,onboardingUserId:''},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.academy??={level:'beginner',duration:60,viewed:[],favorites:[],lastGuide:'',lastSessionDate:''};y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.settings.scoreType??='';y.settings.targetProgram??='';y.settings.customProgram??='';y.settings.onboardingComplete??=false;y.settings.onboardingUserId??='';y.academy??={level:'beginner',duration:60,viewed:[],favorites:[],lastGuide:'',lastSessionDate:''};y.version=52;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';d.briefingDone??=false;d.briefingFocus??='';d.eveningReview??='';d.eveningClosedAt??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.academy??={level:'beginner',duration:60,viewed:[],favorites:[],lastGuide:'',lastSessionDate:'',trackFilter:'ALL',selectedTopicSubject:'',selectedTopicIndex:null};y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.settings.scoreType??='';y.settings.targetProgram??='';y.settings.customProgram??='';y.settings.onboardingComplete??=false;y.settings.onboardingUserId??='';y.academy??={level:'beginner',duration:60,viewed:[],favorites:[],lastGuide:'',lastSessionDate:''};y.version=52;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';d.briefingDone??=false;d.briefingFocus??='';d.eveningReview??='';d.eveningClosedAt??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -794,12 +794,68 @@ const academyGuides={
  'YDT Dil':{track:'DİL',tone:'rose',purpose:'Kelime, okuma, dil bilgisi ve soru stratejisini süre içinde birleştirmek.',method:['Kelimeyi tek başına değil cümle içinde öğren.','Her gün kısa süreli okuma yap.','Soru türlerine göre hata analizi tut.','Haftalık olarak zamanlı mini set çöz.'],session:[[15,'Kelime + örnek cümle'],[30,'Reading + soru'],[15,'Hata analizi']],mistakes:'Kelime bilgisi ile metni anlamama sorununu ayır. Süre hataları için zamanlı mini setler kullan.'},
  'Genel Sınav Çalışması':{track:'ALL',tone:'purple',purpose:'Sıfırdan düzen kurmak, çalışma oturumunu doğru kapatmak ve sürdürülebilir ritim oluşturmak.',method:['Her oturum için tek bir ana hedef belirle.','Oturumun başında ne öğreneceğini, sonunda ne öğrendiğini söyle.','Telefonu odak süresince uzaklaştır.','Oturumu kısa bir değerlendirme ve tekrar kararıyla kapat.'],session:[[10,'Hedef belirleme'],[40,'Tek görev odak'],[10,'Kapanış + plan']],mistakes:'Aynı gün içinde çok fazla ders değiştirerek derinliği kaybetme. Kalite düşüyorsa blokları kısalt.'}
 };
-function ensureAcademy(){state.academy??={level:'beginner',duration:60,viewed:[],favorites:[],lastGuide:'',lastSessionDate:'',trackFilter:'ALL'};state.academy.viewed??=[];state.academy.trackFilter??='ALL';state.academy.favorites??=[];state.academy.level??='beginner';state.academy.duration??=60;return state.academy}
+function academyToneForSubject(subject){
+ const n=(subject||'').toLocaleLowerCase('tr-TR');
+ if(n.includes('edebiyat')) return 'purple';
+ if(n.includes('tarih')) return 'amber';
+ if(n.includes('coğrafya')) return 'cyan';
+ if(n.includes('türkçe')) return 'rose';
+ return 'ocean';
+}
+function academyTrackForSubject(subject){
+ if(!subject)return 'ALL';
+ if(subject.startsWith('AYT ')){
+   if(subject==='AYT Matematik'||subject==='AYT Fen') return subject==='AYT Fen'?'SAY':'SAY';
+   if(['AYT Edebiyat','AYT Tarih-1','AYT Coğrafya-1'].includes(subject)) return 'EA';
+ }
+ if(subject.startsWith('TYT ')) return 'TYT';
+ if(subject==='YDT Dil') return 'DİL';
+ return 'ALL';
+}
+function buildAcademyTopicGuide(subject,topic){
+ const key=`TOPIC::${subject}::${topic}`;
+ const base=academyTopicMethod(subject);
+ academyGuides[key]={
+   track:academyTrackForSubject(subject), tone:academyToneForSubject(subject),
+   purpose:`${topic} konusunu gerçekten öğrenmek, soru tiplerini tanımak ve çalışma sonunda neyi bilip bilmediğini ölçmek.`,
+   method:[`Önce ${topic} için temel kavramları 15–20 dakikada öğren; her ana fikri kendi cümlenle açıklamaya çalış.`,...base,`Kitabı kapatıp 2–3 dakikalık aktif hatırlama yap; sonra eksik kalan noktaları kısa tekrar olarak düzelt.`],
+   session:[[15,'Konu + aktif öğrenme'],[Math.max(15,Math.round((ensureAcademy().duration-30)*.6)),'Kademeli soru çözümü'],[Math.max(5,ensureAcademy().duration-15-Math.max(15,Math.round((ensureAcademy().duration-30)*.6))),'Yanlış analizi + tekrar']],
+   mistakes:`${topic} sorularında yanlışını bilgi, kavram, işlem/dikkat veya soru okuma olarak ayır. Aynı hata tekrar ederse sonraki tekrar aralığını kısalt ve benzer soruyu çözüme bakmadan yeniden dene.`
+ };
+ return key;
+}
+function academyTopicMethod(subject){
+ const n=(subject||'').toLocaleLowerCase('tr-TR');
+ if(n.includes('türkçe')) return ['Önce 5–8 soruluk kısa bir seti süre tutarak çöz.','Yanlışların yanında doğru ama uzun sürdüren soruları da işaretle.'];
+ if(n.includes('matematik')) return ['Önce 2–3 çözümlü örnekle yöntemi kavra.','Kolay → orta → seçici sorularla ilerle; takıldığın soruda çözümü hemen açmadan ikinci denemeyi yap.'];
+ if(n.includes('edebiyat')) return ['Dönem/sanatçı/eser ilişkisini küçük bir tabloyla kur.','Kitabı kapatıp bilgiyi sesli veya yazılı olarak geri çağır.'];
+ if(n.includes('tarih')) return ['Neden → olay → sonuç zincirini kur ve kronolojiyi yerleştir.','Kapalı kitap 5 maddelik geri çağırma yap.'];
+ if(n.includes('coğrafya')) return ['“Nerede ve neden orada?” sorusunu kullan.','Harita, grafik veya tabloyu yorumlayan sorularla bilgiyi uygula.'];
+ if(n.includes('fen')) return ['Önce kavramı ve prensibi kendi cümlenle açıklamayı dene.','Ardından temel ve karışık sorularla uygulamaya geç.'];
+ return ['Konuyu parçalara böl ve tek oturumda tek ana hedef belirle.','Öğrendiğini soru çözerek hemen test et.'];
+}
+function academyTopicList(){
+ const a=ensureAcademy(); const tr=academyTrack(); const selected=[];
+ allSubjects().forEach(([name,topics])=>{
+   const at=academyTrackForSubject(name);
+   const relevant=!tr||tr==='ALL'||at==='ALL'||at===tr;
+   if(relevant) topics.forEach((topic,i)=>selected.push({name,topic,i,status:stateTopic(name,i).status,confidence:stateTopic(name,i).confidence||0}));
+ });
+ return selected;
+}
+function renderAcademyTopicPicker(){
+ const box=$('#academyTopicPicker'); if(!box)return;
+ const items=academyTopicList(); const a=ensureAcademy();
+ const selected=a.selectedTopicSubject&&a.selectedTopicIndex!=null?`${a.selectedTopicSubject}|${a.selectedTopicIndex}`:'';
+ box.innerHTML=items.slice(0,80).map(x=>{const key=`${x.name}|${x.i}`;return `<button type="button" class="academy-topic-option ${selected===key?'active':''}" data-academy-topic="${encodeURIComponent(key)}"><span><b>${esc(x.name.replace(/^AYT |^TYT /,''))}</b><strong>${esc(x.topic)}</strong></span><small>${x.status==='done'?'✓ Bitti':x.status==='review'?'↻ Tekrar':x.confidence?`Güven ${x.confidence}/5`:'Başlamadı'}</small></button>`}).join('')||'<div class="empty">Bu puan türüne uygun konu bulunamadı.</div>';
+}
+function academySelectTopic(key){const [name,idx]=decodeURIComponent(key).split('|');const a=ensureAcademy();a.selectedTopicSubject=name;a.selectedTopicIndex=Number(idx);const topic=curriculum[name]?.[Number(idx)];if(topic){const id=buildAcademyTopicGuide(name,topic);a.lastGuide=id;save();renderAcademyTopicPicker();openAcademyGuide(id);}}
+function ensureAcademy(){state.academy??={level:'beginner',duration:60,viewed:[],favorites:[],lastGuide:'',lastSessionDate:'',trackFilter:'ALL',selectedTopicSubject:'',selectedTopicIndex:null};state.academy.viewed??=[];state.academy.trackFilter??='ALL';state.academy.favorites??=[];state.academy.level??='beginner';state.academy.duration??=60;state.academy.selectedTopicSubject??='';state.academy.selectedTopicIndex??=null;return state.academy}
 function academyTrack(){return ensureAcademy().trackFilter||state.settings.scoreType||'ALL'}
 function academyRelevant(g){const tr=academyTrack();if(g.track==='ALL'||tr==='ALL')return true;if(tr==='SAY')return ['TYT','SAY'].includes(g.track);if(tr==='EA')return ['TYT','EA'].includes(g.track);if(tr==='SÖZ')return ['TYT','SOZ','EA'].includes(g.track);if(tr==='DİL')return ['TYT','DİL'].includes(g.track);if(tr==='TYT')return g.track==='TYT';return true}
 function academySessionFor(id,mins){const g=academyGuides[id];if(!g)return[];const template=g.session||[];let remain=mins,rows=[];template.forEach(([m,label])=>{if(remain<=0)return;const take=Math.min(m,remain);rows.push([take,label]);remain-=take});if(remain>0)rows.push([remain,'Soru + analiz']);return rows}
 function academyCoachSuggestion(){try{const p=adaptivePlan();const first=p?.plan?.[0];if(first)return {title:first.title,reason:first.reason||'Koç önceliğine göre seçildi.',mins:first.minutes||60}}catch{}return null}
-function renderAcademy(){const grid=$('#academyGrid');if(!grid)return;const a=ensureAcademy();const q=($('#academySearch')?.value||'').trim().toLocaleLowerCase('tr-TR');const trackPills=$('#academyTrackPills');const tracks=[['ALL','Tüm'],['TYT','TYT'],['EA','Eşit Ağırlık'],['SAY','Sayısal'],['SÖZ','Sözel'],['DİL','Dil']];if(trackPills&&!trackPills.children.length){trackPills.innerHTML=tracks.map(([v,l])=>`<button type="button" class="academy-track-pill ${academyTrack()===v?'active':''}" data-academy-track="${v}">${l}</button>`).join('')}else if(trackPills){trackPills.querySelectorAll('[data-academy-track]').forEach(b=>b.classList.toggle('active',b.dataset.academyTrack===academyTrack()))}
+function renderAcademy(){const grid=$('#academyGrid');if(!grid)return;const a=ensureAcademy();renderAcademyTopicPicker();const q=($('#academySearch')?.value||'').trim().toLocaleLowerCase('tr-TR');const trackPills=$('#academyTrackPills');const tracks=[['ALL','Tüm'],['TYT','TYT'],['EA','Eşit Ağırlık'],['SAY','Sayısal'],['SÖZ','Sözel'],['DİL','Dil']];if(trackPills&&!trackPills.children.length){trackPills.innerHTML=tracks.map(([v,l])=>`<button type="button" class="academy-track-pill ${academyTrack()===v?'active':''}" data-academy-track="${v}">${l}</button>`).join('')}else if(trackPills){trackPills.querySelectorAll('[data-academy-track]').forEach(b=>b.classList.toggle('active',b.dataset.academyTrack===academyTrack()))}
  const rows=Object.entries(academyGuides).filter(([id,g])=>academyRelevant(g)&&(!q||`${id} ${g.purpose}`.toLocaleLowerCase('tr-TR').includes(q)));
  grid.innerHTML=rows.map(([id,g])=>{const level=a.level==='beginner'?'Temel yaklaşım':a.level==='basic'?'Temel + soru':a.level==='intermediate'?'Soru + analiz':'İleri + zaman';const fav=a.favorites.includes(id);return `<article class="card academy-guide-card"><div class="academy-guide-card-top"><span class="guide-icon ${g.tone}">✦</span><span class="badge ${fav?'success':''}">${g.track==='ALL'?'CORE':g.track}</span></div><span class="section-kicker">${level.toUpperCase()}</span><h3>${esc(id)}</h3><p>${esc(g.purpose)}</p><div class="academy-card-meta"><span>${g.method.length} adımlı yöntem</span><span>${g.session?.reduce((n,x)=>n+x[0],0)||60} dk örnek</span></div><div class="academy-card-actions"><button type="button" class="secondary-btn" data-academy-open="${encodeURIComponent(id)}">Rehberi aç</button><button type="button" class="small-btn" data-academy-start="${encodeURIComponent(id)}">Focus'a başla</button></div></article>`}).join('')||'<div class="empty">Seçtiğin filtreyle eşleşen rehber bulunamadı.</div>';
  const todayCard=$('#academyTodayCard');if(todayCard){const sug=academyCoachSuggestion();todayCard.innerHTML=`<div class="academy-today-inner"><div><span class="section-kicker">KOÇUN ÖNERİSİ</span><h3>${sug?esc(sug.title):'İlk adımını seç'}</h3><p>${sug?esc(sug.reason):'Henüz yeterli performans verin yoksa “Sıfırdan başla” akışından uygun bir ders seç.'}</p></div><div class="academy-today-side"><span>${sug?.mins||a.duration} dk</span><button type="button" class="primary-btn" id="academyTodayStart">Uygula →</button></div></div>`}
