@@ -205,18 +205,21 @@
           toast('Bulut verisi cihaza eşitlendi.');
         }
       } else {
-        const previousUser = localStorage.getItem(CLOUD_USER_KEY) || '';
-        if (previousUser && previousUser !== user.id) {
+        const localOwner = state?.settings?.onboardingUserId || '';
+        const knownUser = localStorage.getItem(CLOUD_USER_KEY) || '';
+        const belongsToCurrent = localOwner === user.id || knownUser === user.id;
+        if (!belongsToCurrent) {
           state = clone(defaultState);
+          state.settings.onboardingComplete = false;
+          state.settings.onboardingUserId = '';
           save();
           try { localStorage.removeItem(CLOUD_META_KEY); } catch {}
           try { localStorage.setItem(CLOUD_USER_KEY, user.id); } catch {}
           if (typeof renderAll==='function') renderAll();
-          await pushCloud(false);
         } else {
-          await pushCloud(false);
           try { localStorage.setItem(CLOUD_USER_KEY, user.id); } catch {}
         }
+        await pushCloud(false);
         document.dispatchEvent(new CustomEvent('hukuk50k:cloud-ready'));
       }
       try { localStorage.setItem(CLOUD_USER_KEY, user.id); } catch {}
@@ -299,5 +302,5 @@
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
-  window.hukukCloud = { openLogin:openGate, push:()=>pushCloud(true), pull:pullCloud, configured, publishFriendProfile, getFriendProfile };
+  window.hukukCloud = { openLogin:openGate, push:()=>pushCloud(true), pull:pullCloud, configured, publishFriendProfile, getFriendProfile, getUserId:()=>user?.id||'' };
 })();

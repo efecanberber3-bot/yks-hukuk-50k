@@ -47,9 +47,9 @@ const goalCatalog={
 };
 const trackMeta={SAY:{label:'Sayısal',short:'SAY',tone:'ocean'},EA:{label:'Eşit Ağırlık',short:'EA',tone:'purple'},'SÖZ':{label:'Sözel',short:'SÖZ',tone:'amber'},'DİL':{label:'Dil',short:'DİL',tone:'rose'},TYT:{label:'TYT / Ön Lisans',short:'TYT',tone:'cyan'}};
 const rankPresets=[1000,5000,10000,20000,30000,50000,100000,200000];
-const defaultState={version:42,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000,scoreType:'EA',targetProgram:'Hukuk',customProgram:'',onboardingComplete:false},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
+const defaultState={version:43,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000,scoreType:'EA',targetProgram:'Hukuk',customProgram:'',onboardingComplete:false,onboardingUserId:''},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.settings.scoreType??='EA';y.settings.targetProgram??='Hukuk';y.settings.customProgram??='';y.settings.onboardingComplete??=false;y.version=42;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';d.briefingDone??=false;d.briefingFocus??='';d.eveningReview??='';d.eveningClosedAt??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.settings.scoreType??='EA';y.settings.targetProgram??='Hukuk';y.settings.customProgram??='';y.settings.onboardingComplete??=false;y.settings.onboardingUserId??='';y.version=43;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';d.briefingDone??=false;d.briefingFocus??='';d.eveningReview??='';d.eveningClosedAt??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -480,7 +480,22 @@ function saveGoalSetup(){
  const track=$('#goalTrack')?.value||'EA', program=$('#goalProgram')?.value||'Hukuk', custom=($('#goalCustomProgram')?.value||'').trim();
  state.settings.scoreType=track;state.settings.targetProgram=program;state.settings.customProgram=program==='Diğer / Kendim yazacağım'?custom:'';state.settings.targetRank=clamp(Number($('#goalRank')?.value)||30000,1,999999);state.settings.minRank=Math.max(state.settings.targetRank,Number(state.settings.minRank)||50000);state.settings.onboardingComplete=true;save();$('#goalSetupDialog')?.close();renderAll();toast(`Hedefin kaydedildi: ${selectedProgram()} • ${goalRankLabel()}`);
 }
-function maybeOpenOnboarding(){if(state.settings.onboardingComplete)return;const dlg=$('#onboardingDialog');if(dlg&&!dlg.open){onboardingRender();dlg.showModal();}}
+function currentCloudUserId(){try{return window.hukukCloud?.getUserId?.()||''}catch{return ''}}
+function shouldShowOnboarding(){
+ const uid=currentCloudUserId();
+ if(uid) return state.settings.onboardingUserId!==uid;
+ return !state.settings.onboardingComplete;
+}
+function markOnboardingComplete(){
+ state.settings.onboardingComplete=true;
+ state.settings.onboardingUserId=currentCloudUserId()||state.settings.onboardingUserId||'local';
+ save();
+}
+function maybeOpenOnboarding(){
+ if(!shouldShowOnboarding())return;
+ const dlg=$('#onboardingDialog');
+ if(dlg&&!dlg.open){onboardingRender();try{dlg.showModal()}catch{dlg.setAttribute('open','')}}
+}
 function onboardingRender(){
  const program=selectedProgram(),track=trackMeta[state.settings.scoreType]||trackMeta.EA;const step=$('#onboardingGoalStep');if(step)step.textContent=`${track.label} • ${program}`;
  const rank=$('#onboardingRank');if(rank)rank.textContent=goalRankLabel();
@@ -726,7 +741,7 @@ bind('mockFilter','change',renderMock);document.addEventListener('click',e=>{con
 document.addEventListener('change',e=>{const s=e.target.closest('[data-topic]');if(s){e.stopPropagation();const [name,i]=decodeURIComponent(s.dataset.topic).split('|');setTopic(name,Number(i),s.value);renderRoadmap();renderDashboard();toast('Konu durumu güncellendi.')}});
 bind('generateNextWeek','click',generateNextWeekPlan);
 bind('simTyt','input',renderSimulation);bind('simAyt','input',renderSimulation);bind('simStudyGrowth','input',renderSimulation);bind('simQuestionGrowth','input',renderSimulation);bind('resetSimulation','click',()=>{['simTyt','simAyt','simStudyGrowth','simQuestionGrowth'].forEach(id=>{const el=$('#'+id);if(el)el.value=0});renderSimulation();toast('Simülasyon varsayılanlara döndü.')});
-bind('openGoalSetup','click',openGoalSetup);bind('goalTrack','change',goalSetupRender);bind('goalProgram','change',goalSetupRender);document.addEventListener('input',e=>{if(e.target?.id==='goalRank')goalSetupRender()});document.addEventListener('click',e=>{const b=e.target.closest('[data-rank-preset]');if(b){const r=$('#goalRank');if(r)r.value=b.dataset.rankPreset;goalSetupRender()}});bind('goalSetupSave','click',saveGoalSetup);bind('onboardingOpenSetup','click',openGoalSetup);bind('onboardingSkip','click',()=>{state.settings.onboardingComplete=true;save();$('#onboardingDialog')?.close();toast('Kurulum şimdilik atlandı. Hedefini Ayarlar’dan seçebilirsin.')});bind('onboardingStart','click',()=>{state.settings.onboardingComplete=true;save();$('#onboardingDialog')?.close();toast('Başlangıç kurulumu tamamlandı. Koçun hazır.');});
+bind('openGoalSetup','click',openGoalSetup);bind('goalTrack','change',goalSetupRender);bind('goalProgram','change',goalSetupRender);document.addEventListener('input',e=>{if(e.target?.id==='goalRank')goalSetupRender()});document.addEventListener('click',e=>{const b=e.target.closest('[data-rank-preset]');if(b){const r=$('#goalRank');if(r)r.value=b.dataset.rankPreset;goalSetupRender()}});bind('goalSetupSave','click',saveGoalSetup);bind('onboardingOpenSetup','click',openGoalSetup);bind('onboardingSkip','click',()=>{markOnboardingComplete();$('#onboardingDialog')?.close();toast('Kurulum şimdilik atlandı. Hedefini Ayarlar’dan seçebilirsin.')});bind('onboardingStart','click',()=>{markOnboardingComplete();$('#onboardingDialog')?.close();toast('Başlangıç kurulumu tamamlandı. Koçun hazır.');});
 bind('saveSettings','click',()=>{state.settings.studyGoal=clamp(Number($('#setStudy').value)||270,120,720);state.settings.questionGoal=clamp(Number($('#setQuestions').value)||350,50,1200);state.settings.paragraphGoal=clamp(Number($('#setParagraph').value)||20,0,100);state.settings.problemGoal=clamp(Number($('#setProblem').value)||15,0,100);save();renderAll();toast('Günlük hedefler güncellendi.')});
 bind('exportTop','click',exportData);bind('exportSettings','click',exportData);bind('importSettings','change',e=>{const f=e.target.files?.[0];if(f)importData(f)});bind('resetSettings','click',()=>{if(confirm('Tüm takip verileri silinecek. Emin misin?')){state=clone(defaultState);save();renderAll();toast('Veriler sıfırlandı.')}});
 bind('friendShareEnabled','change',e=>{ensureSocial().shareEnabled=!!e.target.checked;save();publishFriendProfile();renderFriends();toast(e.target.checked?'Paylaşım açıldı.':'Paylaşım kapatıldı.')});bind('copyFriendCode','click',async()=>{const code=friendShareCode();try{await navigator.clipboard.writeText(code);toast('Arkadaş kodu kopyalandı.')}catch{toast(`Kod: ${code}`)}});bind('addFriendByCode','click',refreshFriends);bind('refreshFriend','click',renderFriends);document.addEventListener('click',e=>{const b=e.target.closest('[data-remove-friend]');if(b){ensureSocial().friends.splice(Number(b.dataset.removeFriend),1);save();renderFriends();toast('Arkadaş çıkarıldı.')}});// Theme controls — one reliable pointer/click path for desktop + touch devices.
