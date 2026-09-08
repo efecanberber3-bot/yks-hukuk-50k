@@ -2,6 +2,7 @@
   'use strict';
   const CFG_KEY = 'hukuk50k-supabase-config-v1';
   const CLOUD_META_KEY = 'hukuk50k-cloud-meta-v1';
+  const CLOUD_USER_KEY = 'hukuk50k-cloud-user-v1';
   let client = null;
   let user = null;
   let syncTimer = null;
@@ -91,6 +92,7 @@
       client.auth.onAuthStateChange((_event, session) => {
         user = session?.user || null;
         refreshCloudUI();
+        document.dispatchEvent(new CustomEvent('hukuk50k:cloud-ready'));
         if (user) pullCloud();
       });
       return true;
@@ -117,6 +119,7 @@
     closeGate();
     await pullCloud();
     refreshCloudUI();
+    document.dispatchEvent(new CustomEvent('hukuk50k:cloud-ready'));
   }
 
   function getDisplayName() {
@@ -202,8 +205,22 @@
           toast('Bulut verisi cihaza eşitlendi.');
         }
       } else {
-        await pushCloud(false);
+        const previousUser = localStorage.getItem(CLOUD_USER_KEY) || '';
+        if (previousUser && previousUser !== user.id) {
+          state = clone(defaultState);
+          save();
+          try { localStorage.removeItem(CLOUD_META_KEY); } catch {}
+          try { localStorage.setItem(CLOUD_USER_KEY, user.id); } catch {}
+          if (typeof renderAll==='function') renderAll();
+          await pushCloud(false);
+        } else {
+          await pushCloud(false);
+          try { localStorage.setItem(CLOUD_USER_KEY, user.id); } catch {}
+        }
+        document.dispatchEvent(new CustomEvent('hukuk50k:cloud-ready'));
       }
+      try { localStorage.setItem(CLOUD_USER_KEY, user.id); } catch {}
+      document.dispatchEvent(new CustomEvent('hukuk50k:cloud-ready'));
       setCloudStatus('Senkronize edildi','ok');
     } catch(e) {
       setCloudStatus('Senkronizasyon hatası','err');

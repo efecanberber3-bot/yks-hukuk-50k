@@ -248,6 +248,30 @@
   <div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
 </div>
 
+<dialog id="onboardingDialog" class="modal onboarding-dialog">
+  <div class="modal-form onboarding-form">
+    <div class="onboarding-hero"><div class="onboarding-mark">✦</div><div><span class="section-kicker">START HERE</span><h2>Hukuk 50K OS'a hoş geldin</h2><p>Hedefini seç, başlangıç seviyeni oluştur ve sistemin seni tanımasına izin ver.</p></div></div>
+    <div class="onboarding-steps">
+      <div class="onboarding-step"><b>01</b><div><strong>Hedefini belirle</strong><span>Puan türü, bölüm ve hedef sıralamanı kendin seç.</span></div></div>
+      <div class="onboarding-step"><b>02</b><div><strong>Başlangıç fotoğrafını çek</strong><span>İlk denemeni gir; Koç motorunun referans noktası oluşsun.</span></div></div>
+      <div class="onboarding-step"><b>03</b><div><strong>İlk çalışma bloğunu başlat</strong><span>Bugünün görevini oluştur ve Focus Room'a geç.</span></div></div>
+    </div>
+    <div class="onboarding-note"><strong>Nasıl çalışır?</strong><span>Sen veri üretirsin → sistem analiz eder → koç öncelik çıkarır → günlük plan ve tekrarlar buna göre şekillenir.</span></div>
+    <div class="onboarding-actions"><button type="button" class="ghost-btn" id="onboardingSkip">Şimdilik geç</button><button type="button" class="secondary-btn" id="onboardingOpenSetup">Hedefimi belirle</button><button type="button" class="primary-btn" id="onboardingStart">Hazırım, başlayalım</button></div>
+  </div>
+</dialog>
+<dialog id="goalSetupDialog" class="modal goal-setup-dialog">
+  <form class="modal-form" onsubmit="return false">
+    <button type="button" class="modal-x" data-close-dialog aria-label="Kapat">×</button>
+    <span class="section-kicker">MISSION SETUP</span><h3>Hedef profilini oluştur</h3><p class="modal-help">Puan türünü seç, hedef bölümünü belirle ve ulaşmak istediğin sıralamayı kendin yaz.</p>
+    <div class="form-grid"><label>Puan türü<select id="goalTrack"><option value="SAY">Sayısal</option><option value="EA">Eşit Ağırlık</option><option value="SÖZ">Sözel</option><option value="DİL">Dil</option><option value="TYT">TYT / Ön Lisans</option></select></label><label>Hedef bölüm<select id="goalProgram"></select></label></div>
+    <label id="goalCustomWrap">Özel bölüm adı<input id="goalCustomProgram" placeholder="Bölümünü yaz"></label>
+    <label>Hedef sıralama<input id="goalRank" type="number" min="1" max="999999" value="30000"></label>
+    <div id="goalRankPresets" class="rank-chips"></div>
+    <div class="form-actions"><button type="button" class="ghost-btn" data-close-dialog>İptal</button><button type="button" id="goalSetupSave" class="primary-btn">Hedefi kaydet</button></div>
+  </form>
+</dialog>
+
 <dialog id="topicDetailDialog" class="modal topic-dialog">
   <form method="dialog" id="topicDetailForm" class="modal-form topic-form">
     <button type="button" class="modal-x" data-close-dialog aria-label="Kapat">×</button>
