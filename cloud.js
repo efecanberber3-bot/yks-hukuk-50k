@@ -3,6 +3,7 @@
   const CFG_KEY = 'hukuk50k-supabase-config-v1';
   const CLOUD_META_KEY = 'hukuk50k-cloud-meta-v1';
   const CLOUD_USER_KEY = 'hukuk50k-cloud-user-v1';
+  const APP_STATE_KEY = 'nexora-study-os-v51';
   let client = null;
   let user = null;
   let syncTimer = null;
@@ -251,25 +252,12 @@
   }
 
   function hookSave() {
-    const original = window.save;
-    // save() is declared in app.js as a global lexical binding; wrapper via event queue is safer.
+    // app.js emits this event after every synchronous save().
+    // Persist the authenticated user's current state; do not watch an obsolete localStorage key.
     document.addEventListener('hukuk50k:changed', () => {
       clearTimeout(syncTimer);
-      syncTimer=setTimeout(()=>pushCloud(false),900);
+      syncTimer=setTimeout(()=>pushCloud(false),650);
     });
-    const oldLocalStorage = localStorage.setItem.bind(localStorage);
-    // No monkey-patching; app.js emits changes only through this lightweight observer below.
-    const originalSave = eval('save');
-    if (typeof originalSave === 'function') {
-      // Repeated calls remain synchronous in the app; cloud sync is debounced through a polling signature.
-      let last='';
-      setInterval(()=>{
-        try {
-          const raw=localStorage.getItem('hukuk50k-os-v20')||'';
-          if(raw && raw!==last){ last=raw; if(user){ clearTimeout(syncTimer); syncTimer=setTimeout(()=>pushCloud(false),1100); } }
-        } catch {}
-      },1500);
-    }
   }
 
   function injectSettingsCard() {

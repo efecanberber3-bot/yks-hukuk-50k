@@ -1,5 +1,5 @@
-const KEY='nexora-study-os-v49';
-const LEGACY_KEYS=['nexora-study-os-v48','hukuk50k-os-v47','hukuk50k-os-v46','hukuk50k-os-v45','hukuk50k-os-v44','hukuk50k-os-v43','hukuk50k-os-v42','hukuk50k-os-v41','hukuk50k-os-v40','hukuk50k-os-v39','hukuk50k-os-v38','hukuk50k-os-v37','hukuk50k-os-v36','hukuk50k-os-v35','hukuk50k-os-v34','hukuk50k-os-v33','hukuk50k-os-v32','hukuk50k-os-v31','hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
+const KEY='nexora-study-os-v51';
+const LEGACY_KEYS=['nexora-study-os-v50','nexora-study-os-v48','hukuk50k-os-v47','hukuk50k-os-v46','hukuk50k-os-v45','hukuk50k-os-v44','hukuk50k-os-v43','hukuk50k-os-v42','hukuk50k-os-v41','hukuk50k-os-v40','hukuk50k-os-v39','hukuk50k-os-v38','hukuk50k-os-v37','hukuk50k-os-v36','hukuk50k-os-v35','hukuk50k-os-v34','hukuk50k-os-v33','hukuk50k-os-v32','hukuk50k-os-v31','hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
 const START='2026-09-07';
 const DEFAULT_EXAM='2027-06-20';
 const LAW_STRETCH_RANK=30000, LAW_MIN_RANK=50000, BASE_SALARY=15000;
@@ -47,9 +47,9 @@ const goalCatalog={
 };
 const trackMeta={SAY:{label:'Sayısal',short:'SAY',tone:'ocean'},EA:{label:'Eşit Ağırlık',short:'EA',tone:'purple'},'SÖZ':{label:'Sözel',short:'SÖZ',tone:'amber'},'DİL':{label:'Dil',short:'DİL',tone:'rose'},TYT:{label:'TYT / Ön Lisans',short:'TYT',tone:'cyan'}};
 const rankPresets=[1000,5000,10000,20000,30000,50000,100000,200000];
-const defaultState={version:50,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000,scoreType:'EA',targetProgram:'Hukuk',customProgram:'',onboardingComplete:false,onboardingUserId:''},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
+const defaultState={version:51,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000,scoreType:'',targetProgram:'',customProgram:'',onboardingComplete:false,onboardingUserId:''},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.settings.scoreType??='';y.settings.targetProgram??='';y.settings.customProgram??='';y.settings.onboardingComplete??=false;y.settings.onboardingUserId??='';y.version=50;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';d.briefingDone??=false;d.briefingFocus??='';d.eveningReview??='';d.eveningClosedAt??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.settings.scoreType??='';y.settings.targetProgram??='';y.settings.customProgram??='';y.settings.onboardingComplete??=false;y.settings.onboardingUserId??='';y.version=51;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';d.briefingDone??=false;d.briefingFocus??='';d.eveningReview??='';d.eveningClosedAt??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -242,10 +242,9 @@ function energySnapshot(k=today()){
  return {sleep,energy,phone,exercise,stress,study,sleepScore,energyScore,phoneScore,exerciseScore,stressScore,capacityScore,capacity,mode,tone,message};
 }
 function applyEnergyToDay(d){
- if(Number.isFinite(Number(d.sleepHours))) d.habits.sleep=Number(d.sleepHours)>=7;
- if(Number.isFinite(Number(d.exerciseMinutes))) d.habits.exercise=Number(d.exerciseMinutes)>=20;
- if(Number.isFinite(Number(d.phoneMinutes))) d.habits.phone=Number(d.phoneMinutes)<=45;
- if(realStudyMinutes(d)>=state.settings.studyGoal) d.habits.study=true;
+ // Discipline promises are explicit user actions.
+ // Quick-data metrics inform the energy coach but never silently toggle promises.
+ return d;
 }
 function adaptivePlan(){
  const d=ensureDay(); applyEnergyToDay(d); const e=energySnapshot(); const cal=targetCalendarData();
@@ -515,36 +514,35 @@ function saveGoalSetup(){
  state.settings.customProgram=program==='Diğer / Kendim yazacağım'?custom:'';
  state.settings.targetRank=clamp(Number($('#goalRank')?.value)||30000,1,999999);
  state.settings.minRank=Math.max(state.settings.targetRank,Number(state.settings.minRank)||state.settings.targetRank);
- state.settings.onboardingComplete=true;
- state.settings.onboardingUserId=currentCloudUserId()||state.settings.onboardingUserId||'local';
- save();
- try{localStorage.setItem(ONBOARDING_DISMISSED_KEY,'1')}catch{}
+ markOnboardingComplete();
  $('#goalSetupDialog')?.close();
  $('#onboardingDialog')?.close();
  renderAll();
  toast(`Hedefin kaydedildi: ${selectedProgram()} • ${goalRankLabel()}`);
 }
 function currentCloudUserId(){try{return window.hukukCloud?.getUserId?.()||''}catch{return ''}}
-const ONBOARDING_DISMISSED_KEY='hukuk50k-onboarding-dismissed-v1';
+const ONBOARDING_DISMISSED_KEY='nexora-onboarding-dismissed-v3';
+function hasCompleteGoal(){
+ const st=state?.settings||{};
+ return !!(st.onboardingComplete && st.scoreType && st.targetProgram && Number(st.targetRank)>0);
+}
 function shouldShowOnboarding(){
- // A completed target profile permanently dismisses onboarding for this profile.
- // The setup can be reopened explicitly from Settings / Goal Setup.
- if(state?.settings?.onboardingComplete && state?.settings?.targetProgram) return false;
+ if(hasCompleteGoal()) return false;
  const uid=currentCloudUserId();
- if(uid){
-   return !state.settings.onboardingComplete || !state.settings.targetProgram;
- }
- try { return localStorage.getItem(ONBOARDING_DISMISSED_KEY)!=='1' || !state.settings.onboardingComplete || !state.settings.targetProgram; }
- catch { return !state.settings.onboardingComplete || !state.settings.targetProgram; }
+ if(uid && state?.settings?.onboardingUserId && state.settings.onboardingUserId!==uid) return true;
+ try{
+   const dismissed=localStorage.getItem(`${ONBOARDING_DISMISSED_KEY}:${uid||'local'}`)==='1';
+   return !dismissed;
+ }catch{return true}
 }
 function markOnboardingComplete(){
  state.settings.onboardingComplete=true;
  state.settings.onboardingUserId=currentCloudUserId()||state.settings.onboardingUserId||'local';
- try { localStorage.setItem(ONBOARDING_DISMISSED_KEY,'1'); } catch {}
+ try{localStorage.setItem(`${ONBOARDING_DISMISSED_KEY}:${state.settings.onboardingUserId}`,'1');}catch{}
  save();
 }
 function maybeOpenOnboarding(){
- if(!shouldShowOnboarding())return;
+ if(!shouldShowOnboarding()) return;
  const dlg=$('#onboardingDialog');
  if(dlg&&!dlg.open){onboardingRender();try{dlg.showModal()}catch{dlg.setAttribute('open','')}}
 }
@@ -849,7 +847,7 @@ document.addEventListener('input',e=>{if(e.target?.id==='goalRank'){const r=$('#
 document.addEventListener('click',e=>{const b=e.target.closest('[data-rank-preset]');if(b){const r=$('#goalRank');if(r){r.value=b.dataset.rankPreset;r.dispatchEvent(new Event('input',{bubbles:true}))}}});
 bind('goalSetupSave','click',saveGoalSetup);
 bind('onboardingOpenSetup','click',openGoalSetup);
-bind('onboardingSkip','click',()=>{markOnboardingComplete();$('#onboardingDialog')?.close();toast('Kurulum şimdilik atlandı. Hedefini Ayarlar’dan seçebilirsin.')});
+bind('onboardingSkip','click',()=>{$('#onboardingDialog')?.close();toast('Kurulumu şimdilik kapattın. Hedefini Ayarlar’dan belirleyebilirsin.');});
 bind('onboardingStart','click',()=>{openGoalSetup()});
 bind('saveSettings','click',()=>{state.settings.studyGoal=clamp(Number($('#setStudy').value)||270,120,720);state.settings.questionGoal=clamp(Number($('#setQuestions').value)||350,50,1200);state.settings.paragraphGoal=clamp(Number($('#setParagraph').value)||20,0,100);state.settings.problemGoal=clamp(Number($('#setProblem').value)||15,0,100);save();renderAll();toast('Günlük hedefler güncellendi.')});
 bind('exportTop','click',exportData);bind('exportSettings','click',exportData);bind('importSettings','change',e=>{const f=e.target.files?.[0];if(f)importData(f)});bind('resetSettings','click',()=>{if(confirm('Tüm takip verileri silinecek. Emin misin?')){state=clone(defaultState);save();renderAll();toast('Veriler sıfırlandı.')}});
