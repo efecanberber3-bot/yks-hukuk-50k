@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#080b12">
-  <meta name="description" content="Hukuk 50K OS — YKS 2027 EA kişisel performans ve çalışma yönetim paneli">
+  <meta name="description" content="NEXORA — Personal Study & Performance OS">
   <meta name="theme-color" content="#080b12">
   <meta name="color-scheme" content="dark light">
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://ebdigitalstudio.com.tr">
   <link rel="stylesheet" href="style.css">
-  <title>Hukuk 50K OS — Personal Performance System</title>
+  <title>NEXORA — Personal Performance System</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
 <body>
@@ -23,7 +23,7 @@
         <img class="brand-logo" src="https://ebdigitalstudio.com.tr/assets/logo-ocean.svg" alt="EB Digital Studio" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
         <div class="brand-symbol" aria-hidden="true" style="display:none"><span>50</span><b>K</b></div>
       </div>
-      <div><div class="brand-name">HUKUK 50K</div><div class="brand-sub">PERSONAL OS / EA • BY EB DIGITAL STUDIO</div></div>
+      <div><div class="brand-name">NEXORA</div><div class="brand-sub">PERSONAL STUDY OS • BY EB DIGITAL STUDIO</div></div>
     </div>
     <div class="profile-card" id="sidebarProfile" aria-label="Hesap profili">
       <div class="avatar" id="sidebarAvatar">•</div>
@@ -51,7 +51,7 @@
       <button class="nav-item" data-view="settings"><span class="ico">⚙</span><span>Ayarlar</span></button>
     </nav>
     <div class="sidebar-foot">
-      <div class="target-mini"><span>MISSION</span><strong>Hukuk • ≤ 30K</strong><small>Minimum hedef: 50K</small></div>
+      <div class="target-mini"><span>MISSION</span><strong>Hedef • —</strong><small>Puan türü: —</small></div>
       <div class="sync-line"><span class="status-dot"></span>Local sync aktif</div>
     </div>
   </aside>
@@ -63,7 +63,7 @@
     </header>
 
     <section class="view active" id="dashboard">
-      <div class="hero-head"><div><span class="section-kicker">TODAY / COMMAND CENTER</span><h2>Bugün sistem ne söylüyor?</h2><p>Hedefin hukuk. Görevin kusursuz olmak değil, <b>istikrarlı ilerlemek.</b></p></div><div class="hero-date"><div id="heroDay">Pzt</div><strong id="heroDate">07</strong><span>2026</span></div></div>
+      <div class="hero-head"><div><span class="section-kicker">TODAY / COMMAND CENTER</span><h2>Bugün sistem ne söylüyor?</h2><p>Hedefin ne olursa olsun. Görevin kusursuz olmak değil, <b>istikrarlı ilerlemek.</b></p></div><div class="hero-date"><div id="heroDay">Pzt</div><strong id="heroDate">07</strong><span>2026</span></div></div>
       <div class="hero-metrics">
         <article class="hero-metric highlight"><span>Günlük sistem skoru</span><strong id="scoreBig">0</strong><small>/ 100 • görev + alışkanlık + uyum</small><div class="score-bar"><i id="scoreBar"></i></div></article>
         <article class="hero-metric"><span>Net çalışma</span><strong><b id="studyBig">0</b> <em>dk</em></strong><small>Hedef <b id="studyGoalSmall">270</b> dk</small></article>
@@ -87,7 +87,7 @@
 
       <div class="grid-3 main-grid-gap">
         <article class="card chart-card"><div class="card-head"><div><span class="section-kicker">7 DAYS</span><h3>Çalışma ritmi</h3></div><span class="muted" id="weeklyStudyLabel">0 dk</span></div><div id="weeklyChart" class="bar-chart"></div></article>
-        <article class="card"><div class="card-head"><div><span class="section-kicker">TARGET</span><h3>Hedef rotası</h3></div><span class="badge purple">LAW / EA</span></div><div class="target-visual"><div class="rank-ring"><div><strong>≤30K</strong><span>stretch goal</span></div></div><div class="target-copy"><strong>Hukuk</strong><p>Minimum hedef <b>50K</b>. Sistemin güvenli marjı için 30K bandını kovalıyoruz.</p><div class="thin-progress"><i id="subjectProgress"></i></div><small>Konu ilerlemesi <b id="subjectProgressText">0%</b></small></div></div></article>
+        <article class="card"><div class="card-head"><div><span class="section-kicker">TARGET</span><h3>Hedef rotası</h3></div><span class="badge purple" id="targetBadge">GOAL</span></div><div class="target-visual"><div class="rank-ring"><div><strong>≤30K</strong><span>stretch goal</span></div></div><div class="target-copy"><strong>Hedef</strong><p>Hedef profilini seçtiğinde sistem rotanı buna göre kişiselleştirir.</p><div class="thin-progress"><i id="subjectProgress"></i></div><small>Konu ilerlemesi <b id="subjectProgressText">0%</b></small></div></div></article>
         <article class="card"><div class="card-head"><div><span class="section-kicker">RECENT</span><h3>Son performans</h3></div><button class="text-btn" data-route="mock">Denemeler →</button></div><div id="recentPerformance" class="stack-list"></div></article>
       </div>
 
@@ -147,7 +147,7 @@
     <section class="view" id="simulator">
       <div class="page-intro"><div><span class="section-kicker">TARGET INTELLIGENCE</span><h2>Hedef Simülasyonu</h2><p>Sıralama tahmini yapmıyoruz; mevcut netlerinle hedefe giden yolu, gelişim ihtiyacını ve çalışma yönünü simüle ediyoruz.</p></div><div class="page-actions"><button id="resetSimulation" class="ghost-btn">Varsayılanları yükle</button></div></div>
       <div class="sim-hero-grid">
-        <article class="card sim-target-card"><div class="sim-target-top"><div><span class="section-kicker">MISSION</span><h3>Hukuk • EA</h3><p>Stretch hedef <b>30.000</b> • minimum güvenli hedef <b>50.000</b></p></div><span class="badge purple">SIMULATION</span></div><div class="sim-score"><div><span>HEDEF UYUMU</span><strong id="simScore">0%</strong></div><div class="sim-progress"><i id="simScoreBar"></i></div><small id="simScoreText">Gerçek performans verisi girdikçe hesaplanır.</small></div></article>
+        <article class="card sim-target-card"><div class="sim-target-top"><div><span class="section-kicker">MISSION</span><h3 id="simulationTargetTitle">Hedef • —</h3><p id="simulationTargetText">Hedef profilini belirle.</p></div><span class="badge purple">SIMULATION</span></div><div class="sim-score"><div><span>HEDEF UYUMU</span><strong id="simScore">0%</strong></div><div class="sim-progress"><i id="simScoreBar"></i></div><small id="simScoreText">Gerçek performans verisi girdikçe hesaplanır.</small></div></article>
         <article class="card sim-rank-card"><span class="section-kicker">CURRENT SNAPSHOT</span><h3>Mevcut net fotoğrafı</h3><div class="sim-net-grid"><div><span>TYT</span><strong id="simTytDisplay">0</strong><small>/ 120</small></div><div><span>AYT EA</span><strong id="simAytDisplay">0</strong><small>/ 80</small></div></div><div class="sim-gap-row"><span>Hedefe kapanacak net farkı</span><strong id="simGapDisplay">Veri bekleniyor</strong></div></article>
       </div>
       <div class="grid-2 main-grid-gap">
@@ -163,7 +163,7 @@
     </section>
 
     <section class="view" id="targetCalendar">
-      <div class="page-intro"><div><span class="section-kicker">ROADMAP / EXECUTION INTELLIGENCE</span><h2>Hedef Takvimi</h2><p>Hukuk hedefin için kalan konu yükünü ve gereken haftalık tempoyu canlı takip et.</p></div></div>
+      <div class="page-intro"><div><span class="section-kicker">ROADMAP / EXECUTION INTELLIGENCE</span><h2>Hedef Takvimi</h2><p>Seçtiğin bölüm ve hedef sıralama için kalan konu yükünü ve gereken haftalık tempoyu canlı takip et.</p></div></div>
       <div id="targetCalendarHero" class="tc-hero card"></div>
       <div id="targetSummary" class="tc-summary"></div>
       <div id="executionIntelligence" class="card execution-intelligence" aria-live="polite"></div>
@@ -249,20 +249,20 @@
   </nav>
   <footer class="site-footer">
     <img src="https://ebdigitalstudio.com.tr/assets/logo-ocean.svg" alt="EB Digital Studio" class="footer-logo" onerror="this.style.display='none'">
-    <span>Hukuk 50K OS • Personal Performance System</span><span class="footer-divider">/</span><span>by EB Digital Studio</span>
+    <span>NEXORA • Personal Performance System</span><span class="footer-divider">/</span><span>by EB Digital Studio</span>
   </footer>
   <div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
 </div>
 
 <dialog id="onboardingDialog" class="modal onboarding-dialog">
   <div class="modal-form onboarding-form">
-    <div class="onboarding-hero"><div class="onboarding-mark">✦</div><div><span class="section-kicker">START HERE</span><h2>Hukuk 50K OS'a hoş geldin</h2><p>Hedefini seç, başlangıç seviyeni oluştur ve sistemin seni tanımasına izin ver.</p></div></div>
+    <div class="onboarding-hero"><div class="onboarding-mark">✦</div><div><span class="section-kicker">START HERE</span><h2>NEXORA'ya hoş geldin</h2><p>Hedefini seç, başlangıç seviyeni oluştur ve sistemin seni tanımasına izin ver.</p></div></div>
     <div class="onboarding-steps">
       <div class="onboarding-step"><b>01</b><div><strong>Hedefini belirle</strong><span>Puan türü, bölüm ve hedef sıralamanı kendin seç.</span></div></div>
       <div class="onboarding-step"><b>02</b><div><strong>Başlangıç fotoğrafını çek</strong><span>İlk denemeni gir; Koç motorunun referans noktası oluşsun.</span></div></div>
       <div class="onboarding-step"><b>03</b><div><strong>İlk çalışma bloğunu başlat</strong><span>Bugünün görevini oluştur ve Focus Room'a geç.</span></div></div>
     </div>
-    <div class="onboarding-note"><strong>Nasıl çalışır?</strong><span>Sen veri üretirsin → sistem analiz eder → koç öncelik çıkarır → günlük plan ve tekrarlar buna göre şekillenir.</span></div>
+    <div class="onboarding-note"><strong>Nasıl çalışır?</strong><span>Önce hedefini seç. Sonra ilk deneme ve çalışma verilerini gir. Sistem performansını analiz eder, önceliklerini çıkarır ve günlük planını buna göre şekillendirir.</span></div>
     <div class="onboarding-actions"><button type="button" class="ghost-btn" id="onboardingSkip">Şimdilik geç</button><button type="button" class="secondary-btn" id="onboardingOpenSetup">Hedefimi belirle</button><button type="button" class="primary-btn" id="onboardingStart">Hazırım, başlayalım</button></div>
   </div>
 </dialog>
