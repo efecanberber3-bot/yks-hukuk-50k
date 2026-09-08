@@ -36,6 +36,7 @@
       <button class="nav-item" data-view="today"><span class="ico">✓</span><span>Bugünün Sistemi</span></button>
       <button class="nav-item" data-view="focus"><span class="ico">◉</span><span>Focus Room</span></button>
       <div class="nav-label">ACADEMIC</div>
+      <button class="nav-item" data-view="academy"><span class="ico">✦</span><span>NEXORA Academy</span></button>
       <button class="nav-item" data-view="roadmap"><span class="ico">◫</span><span>Konu Motoru</span></button>
       <button class="nav-item" data-view="mock"><span class="ico">◒</span><span>Deneme Merkezi</span></button>
       <button class="nav-item" data-view="mistakes"><span class="ico">!</span><span>Hata Günlüğü</span></button>
@@ -125,6 +126,74 @@
           </div>
         </div>
         <div class="focus-mode-footer"><span>FOCUS ROOM</span><span>Telefonu bırak • Bloğu tamamla • Sonra sisteme dön</span></div>
+      </div>
+    </section>
+
+
+    <section class="view" id="academy">
+      <div class="academy-hero card">
+        <div class="academy-hero-copy">
+          <span class="section-kicker">NEXORA ACADEMY • START SMART</span>
+          <h2>Nasıl çalışacağını bilmiyorsan, doğru yerdesin.</h2>
+          <p>NEXORA Academy; derse oturduğunda ne yapacağını, hangi sırayla ilerleyeceğini ve yanlışlarını nasıl kullanacağını adım adım öğretir. Rehberini seç, oturumunu oluştur ve doğrudan Focus Room'a geç.</p>
+          <div class="academy-hero-actions">
+            <button class="primary-btn" id="academyStarterBtn" type="button">Sıfırdan başla →</button>
+            <button class="secondary-btn" id="academyTodayBtn" type="button">Bugünkü dersimi öğret</button>
+          </div>
+        </div>
+        <div class="academy-hero-orb" aria-hidden="true"><div><span>N</span><b>A</b></div></div>
+      </div>
+
+      <div class="academy-command-grid">
+        <article class="card academy-command-card">
+          <span class="section-kicker">01 • SEVİYE</span>
+          <h3>Nereden başlamalısın?</h3>
+          <div class="academy-levels" id="academyLevelPicker">
+            <button type="button" class="academy-level active" data-academy-level="beginner"><b>01</b><span>Hiç başlamadım</span><small>Sıfırdan sistem kur</small></button>
+            <button type="button" class="academy-level" data-academy-level="basic"><b>02</b><span>Temelim var</span><small>Temeli hızlandır</small></button>
+            <button type="button" class="academy-level" data-academy-level="intermediate"><b>03</b><span>Orta seviyedeyim</span><small>Soru + deneme</small></button>
+            <button type="button" class="academy-level" data-academy-level="advanced"><b>04</b><span>İlerideyim</span><small>Hız ve hata azaltma</small></button>
+          </div>
+        </article>
+        <article class="card academy-command-card academy-session-card">
+          <span class="section-kicker">02 • OTURUM</span>
+          <h3>Çalışma süreni seç</h3>
+          <p>Focus Room'da aynı oturumu doğrudan başlatabilirsin.</p>
+          <div class="academy-duration-pills" id="academyDurationPicker">
+            <button type="button" data-academy-mins="30">30 dk</button><button type="button" class="active" data-academy-mins="60">60 dk</button><button type="button" data-academy-mins="90">90 dk</button><button type="button" data-academy-mins="120">120 dk</button>
+          </div>
+          <small id="academyDurationHint" class="muted">60 dakikalık standart oturum.</small>
+        </article>
+      </div>
+
+      <article class="card academy-today-card" id="academyTodayCard"></article>
+
+      <div class="academy-toolbar">
+        <div><span class="section-kicker">03 • REHBER KÜTÜPHANESİ</span><h3>Ders nasıl çalışılır?</h3></div>
+        <div class="academy-toolbar-actions"><div class="academy-track-pills" id="academyTrackPills"></div><input id="academySearch" class="academy-search" placeholder="Ders veya konu ara…" autocomplete="off"></div>
+      </div>
+
+      <div id="academyGrid" class="academy-grid"></div>
+
+      <div class="grid-2 main-grid-gap academy-bottom-grid">
+        <article class="card academy-principles-card">
+          <div class="card-head"><div><span class="section-kicker">CORE METHOD</span><h3>NEXORA çalışma ilkeleri</h3></div></div>
+          <div class="academy-principles">
+            <div><b>01</b><strong>Öğren</strong><p>Konuyu kısa ve aktif şekilde kavra. Sadece izleyip geçme.</p></div>
+            <div><b>02</b><strong>Uygula</strong><p>Bilgiyi soru çözerek hemen kullan. Zorluk seviyesini kademeli artır.</p></div>
+            <div><b>03</b><strong>Analiz et</strong><p>Yanlışın nedenini bul. Hata türünü kaydet ve aynı hatayı ikinci kez üretme.</p></div>
+            <div><b>04</b><strong>Hatırla</strong><p>Aktif hatırlama ve aralıklı tekrar ile bilgiyi uzun süre koru.</p></div>
+          </div>
+        </article>
+        <article class="card academy-donts-card">
+          <div class="card-head"><div><span class="section-kicker">AVOID</span><h3>Bunları yapma</h3></div></div>
+          <div class="academy-donts">
+            <div><span>×</span><p>Video izlemeyi çalışmanın tamamı sanma.</p></div>
+            <div><span>×</span><p>Her yanlışta sadece doğru cevaba bakıp geçme.</p></div>
+            <div><span>×</span><p>Aynı anda birden fazla konuya dağılma.</p></div>
+            <div><span>×</span><p>Kaynak değiştirmeyi ilerleme zannetme.</p></div>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -279,6 +348,17 @@
     <div id="goalSetupHelper" class="goal-helper">Hedef bilgilerin çalışma sistemini kişiselleştirmek için kullanılacak.</div>
     <div class="goal-preview-card"><div><span class="section-kicker">NEXORA MISSION</span><strong id="goalPreviewProgram">—</strong><span id="goalPreviewTrack">—</span></div><b id="goalPreviewRank">≤—</b></div>
     <div class="form-actions"><button type="button" class="ghost-btn" data-close-dialog>Vazgeç</button><button type="button" id="goalSetupSave" class="primary-btn">Hedefi kaydet →</button></div>
+  </form>
+</dialog>
+
+
+<dialog id="academyGuideDialog" class="modal academy-guide-dialog">
+  <form method="dialog" class="modal-form academy-guide-form">
+    <button type="button" class="modal-x" data-close-dialog aria-label="Kapat">×</button>
+    <div class="academy-guide-head"><div><span id="academyGuideKicker" class="section-kicker">ACADEMY GUIDE</span><h3 id="academyGuideTitle">Ders Rehberi</h3><p id="academyGuideIntro" class="modal-help"></p></div><span id="academyGuideBadge" class="badge success">GUIDE</span></div>
+    <div class="academy-guide-tabs" id="academyGuideTabs"><button type="button" class="active" data-academy-tab="method">Nasıl çalışılır?</button><button type="button" data-academy-tab="session">Oturum şablonu</button><button type="button" data-academy-tab="mistakes">Hatalar &amp; tekrar</button></div>
+    <div id="academyGuideBody" class="academy-guide-body"></div>
+    <div class="academy-guide-actions"><button type="button" class="secondary-btn" id="academyAddGuide">Bugünün planına ekle</button><button type="button" class="primary-btn" id="academyFocusGuide">Focus Room'da başlat</button></div>
   </form>
 </dialog>
 
