@@ -57,7 +57,7 @@
     gate.hidden = true;
     gate.innerHTML = `
       <div class="cloud-card" role="dialog" aria-modal="true" aria-labelledby="cloudTitle">
-        <div class="cloud-brand">HUKUK 50K OS • CLOUD</div>
+        <div class="cloud-brand">NEXORA • CLOUD</div>
         <h2 id="cloudTitle">Kişisel hesabına giriş</h2>
         <p>Verilerin artık cihazdan bağımsız senkronize edilebilir. Hesap açınca çalışma geçmişin, denemelerin ve hedeflerin bulutta saklanır.</p>
         <label class="cloud-name-field">Ad / görünen isim <span style="font-weight:500;color:#637087">(isteğe bağlı)</span><input id="cloudDisplayName" type="text" autocomplete="name" maxlength="40" placeholder="Efecan, Bercan…"></label>
@@ -149,7 +149,7 @@
       nameEl.hidden = true;
       avatarEl.textContent = '•';
     }
-    if (subEl) subEl.textContent = user ? 'Hedef • Hukuk' : 'Hedef • Hukuk';
+    if (subEl) { try { const program=(typeof selectedProgram==='function'?selectedProgram():'Hedef'); subEl.textContent = `Hedef • ${program}`; } catch { subEl.textContent = 'Hedef • Henüz seçilmedi'; } }
   }
 
   function profileMarkup() {

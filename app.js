@@ -1,5 +1,5 @@
-const KEY='hukuk50k-os-v38';
-const LEGACY_KEYS=['hukuk50k-os-v37','hukuk50k-os-v36','hukuk50k-os-v35','hukuk50k-os-v34','hukuk50k-os-v33','hukuk50k-os-v32','hukuk50k-os-v31','hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
+const KEY='nexora-study-os-v49';
+const LEGACY_KEYS=['nexora-study-os-v48','hukuk50k-os-v47','hukuk50k-os-v46','hukuk50k-os-v45','hukuk50k-os-v44','hukuk50k-os-v43','hukuk50k-os-v42','hukuk50k-os-v41','hukuk50k-os-v40','hukuk50k-os-v39','hukuk50k-os-v38','hukuk50k-os-v37','hukuk50k-os-v36','hukuk50k-os-v35','hukuk50k-os-v34','hukuk50k-os-v33','hukuk50k-os-v32','hukuk50k-os-v31','hukuk50k-os-v30','hukuk50k-os-v29','hukuk50k-os-v28','hukuk50k-os-v27','hukuk50k-os-v19','hukuk50k-os-v15','hukuk50k-os-v14','hukuk50k-os-v13','hukuk50k-os-v12','hukuk50k-os-v8','hukuk50k-os-v7','hukuk50k-os-v6','hukuk50k-os-v5','hukuk50k-os-v3'];
 const START='2026-09-07';
 const DEFAULT_EXAM='2027-06-20';
 const LAW_STRETCH_RANK=30000, LAW_MIN_RANK=50000, BASE_SALARY=15000;
@@ -49,7 +49,7 @@ const trackMeta={SAY:{label:'Sayısal',short:'SAY',tone:'ocean'},EA:{label:'Eşi
 const rankPresets=[1000,5000,10000,20000,30000,50000,100000,200000];
 const defaultState={version:48,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000,scoreType:'EA',targetProgram:'Hukuk',customProgram:'',onboardingComplete:false,onboardingUserId:''},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.settings.scoreType??='EA';y.settings.targetProgram??='Hukuk';y.settings.customProgram??='';y.settings.onboardingComplete??=false;y.settings.onboardingUserId??='';y.version=48;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';d.briefingDone??=false;d.briefingFocus??='';d.eveningReview??='';d.eveningClosedAt??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.settings.scoreType??='';y.settings.targetProgram??='';y.settings.customProgram??='';y.settings.onboardingComplete??=false;y.settings.onboardingUserId??='';y.version=48;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';d.briefingDone??=false;d.briefingFocus??='';d.eveningReview??='';d.eveningClosedAt??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -493,6 +493,7 @@ function goalSetupRender(preserveTrack=null,preserveProgram=null){
  const opts=goalCatalog[selectedTrack]||goalCatalog.EA;
  t.value=selectedTrack;
  p.innerHTML=opts.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
+ const helper=$('#goalSetupHelper'); if(helper) helper.textContent=`${trackMeta[selectedTrack]?.label||selectedTrack} için hedef bölümünü seç. Hedef sıralaması tamamen sana ait; sistem çalışma planını bu hedefe göre ayarlar.`;
  const desiredProgram=previousProgram||state.settings.targetProgram||opts[0];
  p.value=opts.includes(desiredProgram)?desiredProgram:opts[0];
  if(custom){custom.value=state.settings.customProgram||'';custom.hidden=p.value!=='Diğer / Kendim yazacağım';custom.required=!custom.hidden}
@@ -501,6 +502,10 @@ function goalSetupRender(preserveTrack=null,preserveProgram=null){
    const currentRank=Number(rank?.value)||Number(state.settings.targetRank)||30000;
    chips.innerHTML=rankPresets.map(n=>`<button type="button" class="rank-chip ${currentRank===n?'active':''}" data-rank-preset="${n}">${n>=1000?(n/1000)+'K':n}</button>`).join('');
  }
+ const rankPreview=$('#goalRankPreview'); if(rankPreview) rankPreview.textContent=(Number(rank?.value)||0)?`${Number(rank.value).toLocaleString('tr-TR')} sıra`:'Hedef belirle';
+ const pv=$('#goalPreviewProgram'); if(pv) pv.textContent=(p.value==='Diğer / Kendim yazacağım'?(custom?.value?.trim()||'Özel hedef'):p.value)||'Henüz seçilmedi';
+ const pt=$('#goalPreviewTrack'); if(pt) pt.textContent=trackMeta[selectedTrack]?.label||'Puan türü seçilmedi';
+ const pr=$('#goalPreviewRank'); if(pr) pr.textContent=(Number(rank?.value)||0)?`≤${Number(rank.value).toLocaleString('tr-TR')}`:'≤—';
 }
 function saveGoalSetup(){
  const track=$('#goalTrack')?.value||'EA', program=$('#goalProgram')?.value||'', custom=($('#goalCustomProgram')?.value||'').trim();
@@ -509,7 +514,7 @@ function saveGoalSetup(){
  state.settings.targetProgram=finalProgram;
  state.settings.customProgram=program==='Diğer / Kendim yazacağım'?custom:'';
  state.settings.targetRank=clamp(Number($('#goalRank')?.value)||30000,1,999999);
- state.settings.minRank=Math.max(state.settings.targetRank,Number(state.settings.minRank)||50000);
+ state.settings.minRank=Math.max(state.settings.targetRank,Number(state.settings.minRank)||state.settings.targetRank);
  state.settings.onboardingComplete=true;
  state.settings.onboardingUserId=currentCloudUserId()||state.settings.onboardingUserId||'local';
  save();
@@ -523,10 +528,11 @@ function currentCloudUserId(){try{return window.hukukCloud?.getUserId?.()||''}ca
 const ONBOARDING_DISMISSED_KEY='hukuk50k-onboarding-dismissed-v1';
 function shouldShowOnboarding(){
  const uid=currentCloudUserId();
- if(uid) return state.settings.onboardingUserId!==uid;
- // Local/demo mode: decide from a browser-local onboarding flag, not the shared state object.
- // This prevents an old local profile from suppressing onboarding for a new visitor/device.
- try { return localStorage.getItem(ONBOARDING_DISMISSED_KEY)!=='1'; } catch { return !state.settings.onboardingComplete; }
+ if(uid){
+   return state.settings.onboardingUserId!==uid || !state.settings.targetProgram;
+ }
+ try { return localStorage.getItem(ONBOARDING_DISMISSED_KEY)!=='1' || !state.settings.onboardingComplete || !state.settings.targetProgram; }
+ catch { return !state.settings.onboardingComplete || !state.settings.targetProgram; }
 }
 function markOnboardingComplete(){
  state.settings.onboardingComplete=true;
@@ -540,8 +546,8 @@ function maybeOpenOnboarding(){
  if(dlg&&!dlg.open){onboardingRender();try{dlg.showModal()}catch{dlg.setAttribute('open','')}}
 }
 function onboardingRender(){
- const program=selectedProgram(),track=trackMeta[state.settings.scoreType]||trackMeta.EA;const step=$('#onboardingGoalStep');if(step)step.textContent=`${track.label} • ${program}`;
- const rank=$('#onboardingRank');if(rank)rank.textContent=goalRankLabel();
+ const hasGoal=!!state.settings.targetProgram; const program=hasGoal?selectedProgram():'Henüz hedef seçilmedi'; const track=trackMeta[state.settings.scoreType]; const step=$('#onboardingGoalStep');if(step)step.textContent=track?`${track.label} • ${program}`:program;
+ const rank=$('#onboardingRank');if(rank)rank.textContent=hasGoal?`Hedef sıra: ${goalRankLabel()}`:'Puan türü, bölüm ve hedef sıralamanı belirle.';
 }
 function renderDashboard(){
  const d=ensureDay(),score=systemScore(d),stats=topicStats(),p=adaptivePlan(),read=readiness(),rd=readinessDisplay();
@@ -601,18 +607,43 @@ function renderToday(){
  const d=ensureDay(),p=adaptivePlan();
  renderDailyAutomation();$('#taskCountBadge').textContent=`${d.tasks.filter(t=>t.done).length}/${d.tasks.length}`;$('#taskList').innerHTML=d.tasks.map(t=>`<div class="task-item ${t.done?'done':''}"><button class="task-check ${t.done?'on':''}" data-task="${t.id}">${t.done?'✓':''}</button><div><div class="task-title">${esc(t.title)}</div><div class="task-meta">${esc(t.category)} • ${t.kind==='study'?'Akademik':t.kind==='work'?'Para / iş':'Life'}${t.ai?' • ✦ ASİSTAN':''}${t.reason?` • ${esc(t.reason)}`:''}</div></div><div class="task-min">${t.minutes||0} dk</div></div>`).join('');
  $('#scheduleList').innerHTML=schedule.map(x=>`<div class="schedule-item"><div class="schedule-time">${x[0]}</div><div><strong>${x[2]}</strong><p>${x[3]}</p></div><span>${x[4]}</span></div>`).join('');
- $('#habitScoreBadge').textContent=`${habitScore(d)}/5`;$('#habitList').innerHTML=habitDefs.map(([k,n,sub])=>`<button class="habit-btn ${d.habits[k]?'on':''}" data-habit="${k}"><span class="hc">${d.habits[k]?'✓':''}</span><strong>${n}</strong><small>${sub}</small></button>`).join('');$('#dayNote').value=d.note||'';
+ $('#habitScoreBadge').textContent=`${habitScore(d)}/5`;$('#habitList').innerHTML=habitDefs.map(([k,n,sub])=>`<button type="button" class="habit-btn ${d.habits[k]?'on':''}" data-habit="${k}" aria-pressed="${!!d.habits[k]}"><span class="hc">${d.habits[k]?'✓':'○'}</span><strong>${n}</strong><small>${d.habits[k]?'Tamamlandı':'Henüz tamamlanmadı'} • ${sub}</small></button>`).join('');$('#dayNote').value=d.note||'';
  ensureQuickInput(); renderEnergyCard();
 }
 function ensureQuickInput(){
- const wrap=$('#today .grid-2.main-grid-gap');if(!wrap)return;
+ const wrap=$('#today .day-layout')?.parentElement || $('#today'); if(!wrap)return;
  let card=$('#dailyQuickCard');
- if(!card){card=document.createElement('article');card.id='dailyQuickCard';card.className='card';card.innerHTML=`<div class="card-head"><div><span class="section-kicker">DAILY DATA</span><h3>Hızlı veri girişi</h3></div><span class="badge purple">KOÇ MOTORU</span></div><div class="quick-grid life-quick-grid"><label>Bugünkü soru<input id="dailyQuestions" type="number" min="0" value="0"></label><label>Telefon süresi (dk)<input id="dailyPhone" type="number" min="0" value="0"></label><label>Uyku (saat)<input id="dailySleep" type="number" min="0" max="14" step="0.1" placeholder="örn. 7.5"></label><label>Enerji <span class="field-hint">1 düşük • 5 yüksek</span><select id="dailyEnergy"><option value="">Seç</option><option value="1">1 / 5</option><option value="2">2 / 5</option><option value="3">3 / 5</option><option value="4">4 / 5</option><option value="5">5 / 5</option></select></label><label>Egzersiz (dk)<input id="dailyExercise" type="number" min="0" max="300" value="0"></label><label>Stres <span class="field-hint">1 düşük • 5 yüksek</span><select id="dailyStress"><option value="">Seç</option><option value="1">1 / 5</option><option value="2">2 / 5</option><option value="3">3 / 5</option><option value="4">4 / 5</option><option value="5">5 / 5</option></select></label><button id="saveDailyData" class="primary-btn">Veriyi kaydet</button></div>`;wrap.insertBefore(card,wrap.firstChild);}
+ if(!card){
+   card=document.createElement('article'); card.id='dailyQuickCard'; card.className='card quick-data-card';
+   card.innerHTML=`<div class="card-head"><div><span class="section-kicker">DAILY DATA</span><h3>Hızlı veri girişi</h3><p class="quick-helper">Bugünün gerçek verilerini gir. Koç yalnızca kaydettiğin veriyi kullanır.</p></div><span class="badge purple">LIVE INPUT</span></div>
+   <div class="quick-grid life-quick-grid">
+     <label>Soru sayısı<input id="dailyQuestions" type="number" min="0" max="3000" inputmode="numeric" value="0"></label>
+     <label>Telefon süresi <span class="field-hint">dakika</span><input id="dailyPhone" type="number" min="0" max="1440" inputmode="numeric" value="0"></label>
+     <label>Uyku <span class="field-hint">saat</span><input id="dailySleep" type="number" min="0" max="14" step="0.1" inputmode="decimal" placeholder="7.5"></label>
+     <div class="quick-choice-field"><div class="quick-label">Enerji <span>1 düşük • 5 yüksek</span></div><div id="dailyEnergyChoices" class="segmented-row" role="group" aria-label="Enerji"></div><input id="dailyEnergy" type="hidden"></div>
+     <label>Egzersiz <span class="field-hint">dakika</span><input id="dailyExercise" type="number" min="0" max="600" inputmode="numeric" value="0"></label>
+     <div class="quick-choice-field"><div class="quick-label">Stres <span>1 düşük • 5 yüksek</span></div><div id="dailyStressChoices" class="segmented-row" role="group" aria-label="Stres"></div><input id="dailyStress" type="hidden"></div>
+     <button id="saveDailyData" type="button" class="primary-btn quick-save">Verileri kaydet</button>
+   </div>`;
+   wrap.insertBefore(card,wrap.firstChild);
+ }
  const d=ensureDay();
- $('#dailyQuestions').value=d.questions||0;$('#dailyPhone').value=d.phoneMinutes||0;$('#dailySleep').value=d.sleepHours??'';$('#dailyEnergy').value=d.energyLevel??'';$('#dailyExercise').value=d.exerciseMinutes??0;$('#dailyStress').value=d.stressLevel??'';
- const saveBtn=$('#saveDailyData'); if(saveBtn && !saveBtn.dataset.bound){saveBtn.dataset.bound='1';saveBtn.onclick=()=>{const d=ensureDay();d.questions=Number($('#dailyQuestions').value)||0;d.phoneMinutes=Math.max(0,Number($('#dailyPhone').value)||0);d.sleepHours=$('#dailySleep').value===''?null:clamp(Number($('#dailySleep').value)||0,0,14);d.energyLevel=$('#dailyEnergy').value===''?null:Number($('#dailyEnergy').value);d.exerciseMinutes=Math.max(0,Number($('#dailyExercise').value)||0);d.stressLevel=$('#dailyStress').value===''?null:Number($('#dailyStress').value);if(d.questions>=state.settings.questionGoal)d.habits.study=true;applyEnergyToDay(d);save();renderAll();toast('Günlük yaşam verileri koça işlendi.')};}
-}
-function renderEnergyCard(){
+ $('#dailyQuestions').value=d.questions||0; $('#dailyPhone').value=d.phoneMinutes||0; $('#dailySleep').value=d.sleepHours??''; $('#dailyExercise').value=d.exerciseMinutes??0;
+ const buildChoices=(hostId,inputId,labelMap)=>{const host=$(`#${hostId}`),input=$(`#${inputId}`);if(!host||!input)return;const current=Number(input.value||'0');host.innerHTML=[1,2,3,4,5].map(v=>`<button type="button" class="seg-btn ${current===v?'active':''}" data-quick-value="${inputId}" data-value="${v}" aria-pressed="${current===v}">${labelMap[v]||v}</button>`).join('');};
+ $('#dailyEnergy').value=d.energyLevel??''; $('#dailyStress').value=d.stressLevel??'';
+ buildChoices('dailyEnergyChoices','dailyEnergy',{1:'1',2:'2',3:'3',4:'4',5:'5'}); buildChoices('dailyStressChoices','dailyStress',{1:'1',2:'2',3:'3',4:'4',5:'5'});
+ if(!card.dataset.bound){
+   card.dataset.bound='1';
+   card.addEventListener('click',e=>{const b=e.target.closest('[data-quick-value]');if(!b)return;const input=$(`#${b.dataset.quickValue}`);if(!input)return;input.value=b.dataset.value;card.querySelectorAll(`[data-quick-value="${b.dataset.quickValue}"]`).forEach(x=>{const active=x===b;x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active));});});
+   $('#saveDailyData').onclick=()=>{
+     const d=ensureDay(); d.questions=Math.max(0,Number($('#dailyQuestions').value)||0); d.phoneMinutes=Math.max(0,Number($('#dailyPhone').value)||0);
+     d.sleepHours=$('#dailySleep').value===''?null:clamp(Number($('#dailySleep').value)||0,0,14);
+     d.energyLevel=$('#dailyEnergy').value===''?null:clamp(Number($('#dailyEnergy').value)||0,1,5);
+     d.exerciseMinutes=Math.max(0,Number($('#dailyExercise').value)||0); d.stressLevel=$('#dailyStress').value===''?null:clamp(Number($('#dailyStress').value)||0,1,5);
+     applyEnergyToDay(d); save(); renderAll(); toast('Günlük veriler kaydedildi ve koça işlendi.');
+   };
+ }
+}function renderEnergyCard(){
  const host=$('#energyCoachCard');if(!host)return;const e=energySnapshot();const d=ensureDay();const sleep=Number.isFinite(Number(d.sleepHours))?`${Number(d.sleepHours).toFixed(1)} saat`:'—';const energy=Number.isFinite(Number(d.energyLevel))?`${d.energyLevel}/5`:'—';const ex=Number.isFinite(Number(d.exerciseMinutes))?`${d.exerciseMinutes} dk`:'—';const phone=Number.isFinite(Number(d.phoneMinutes))?`${d.phoneMinutes} dk`:'—';const stress=Number.isFinite(Number(d.stressLevel))?`${d.stressLevel}/5`:'—';host.innerHTML=`<div class="energy-hero"><div><span class="section-kicker">LIFE OS / ENERGY COACH</span><h3>Bugünkü kapasite: <b>${e.capacityScore}/100</b></h3><p>${e.message}</p></div><span class="badge ${e.tone}">${e.mode}</span></div><div class="energy-grid"><div><span>Uyku</span><strong>${sleep}</strong></div><div><span>Enerji</span><strong>${energy}</strong></div><div><span>Telefon</span><strong>${phone}</strong></div><div><span>Egzersiz</span><strong>${ex}</strong></div><div><span>Stres</span><strong>${stress}</strong></div></div><div class="energy-bar"><i style="width:${e.capacityScore}%"></i></div><div class="energy-decision"><span>ÖNERİLEN NET ÇALIŞMA KAPASİTESİ</span><strong>${e.capacity} dk</strong><small>Temel hedefin ${state.settings.studyGoal} dk. Koç, bugünkü yaşam verisine göre hacmi ayarlıyor.</small></div>`;
 }
 function renderRepeatEngine(){
@@ -748,7 +779,13 @@ function renderMistakes(){
  });
  list.innerHTML=ordered.length?ordered.map(m=>`<div class="money-row"><div class="money-row-main"><strong>${esc(m.subject||'Genel')}</strong><span>${esc(m.topic||'Konu belirtilmedi')} • ${esc(mistakeTypeLabel(m.type))}</span><small>${esc(fmtDate(m.date||today()))}</small></div><div class="money-row-side"><span class="badge ${Number(m.severity)>=4?'danger':Number(m.severity)>=3?'purple':'success'}">Şiddet ${Number(m.severity)||3}</span><span class="money-amount">${esc(m.note||'')}</span>${m.mockId?'<small>Denemeye bağlı</small>':''}</div></div>`).join(''):'<div class="empty">Henüz hata günlüğü yok. Deneme sonuçlarını ve yanlışlarını kaydetmeye başlayınca burada desenleri göreceksin.</div>';
 }
-function renderAll(){applyTheme();ensureDay();renderDashboard();renderToday();renderCoachBriefing();renderEveningClose();renderRoadmap();renderMock();renderMistakes();renderAnalytics();renderDiscipline();renderFinance();renderSettings();renderWeekly();renderFriends();renderSimulation();renderTargetCalendar();renderLifeEnergy();applyGoalProfileUI();}
+function renderAll(){
+ applyTheme(); ensureDay();
+ const jobs=[renderDashboard,renderToday,renderCoachBriefing,renderEveningClose,renderRoadmap,renderMock,renderMistakes,renderAnalytics,renderDiscipline,renderFinance,renderSettings,renderWeekly,renderFriends,renderSimulation,renderTargetCalendar,renderLifeEnergy,applyGoalProfileUI];
+ const failures=[];
+ jobs.forEach(fn=>{try{fn()}catch(err){failures.push(fn.name||'render');console.error(`[NEXORA] ${fn.name||'render'} failed`,err);}});
+ if(failures.length){window.__NEXORA_RENDER_FAILURES=failures;} else {delete window.__NEXORA_RENDER_FAILURES;}
+}
 
 function addTask(){const d=ensureDay(),title=$('#taskTitle').value.trim();if(!title)return;const cat=$('#taskCategory').value;d.tasks.push({id:uid('task'),title,category:cat,minutes:Number($('#taskMinutes').value)||0,kind:['TYT','AYT','Tekrar'].includes(cat)?'study':cat==='EB Digital'?'work':cat==='Spor'?'life':'life',done:false,source:'manual'});save();$('#taskDialog').close();$('#taskForm').reset();renderAll();toast('Görev eklendi.')}
 function addMock(){const type=$('#mockType').value,net=Number($('#mockNet').value);if(!net)return;state.mocks.push({id:uid('mock'),type,net,date:$('#mockDate').value||today(),note:$('#mockNote').value.trim(),duration:Number($('#mockDuration').value)||0,breakdown:{turkce:valOrNull($('#mockTurkce').value),math:valOrNull($('#mockMath').value),social:valOrNull($('#mockSocial').value),science:valOrNull($('#mockScience').value)}});save();$('#mockDialog').close();$('#mockForm').reset();$('#mockDate').value=today();renderAll();toast(`${type} denemesi kaydedildi.`)}
@@ -887,6 +924,12 @@ bind('globalSearch','focus',()=>{$('#commandDialog')?.showModal();$('#commandInp
 setFocusTimer(10);ensureDay();try{renderAll()}catch(err){console.error('Initial render error',err)}finally{setTimeout(maybeOpenOnboarding,50);setTimeout(maybeOpenOnboarding,300);setTimeout(maybeOpenOnboarding,1000)}
 setTimeout(maybeOpenOnboarding,2000);
 document.addEventListener('hukuk50k:cloud-ready',()=>{ setTimeout(maybeOpenOnboarding,60); setTimeout(maybeOpenOnboarding,500); });
+
+window.addEventListener('error',e=>{
+ if(/Script error/.test(e.message||''))return;
+ console.error('[NEXORA] Runtime error',e.error||e.message);
+});
+unhandledrejection = e=>console.error('[NEXORA] Promise rejection',e.reason||e);
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 
 document.addEventListener('hukuk50k:changed',()=>{if(ensureSocial().shareEnabled) publishFriendProfile();});

@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://ebdigitalstudio.com.tr">
   <link rel="stylesheet" href="style.css">
-  <title>NEXORA — Personal Performance System</title>
+  <title>NEXORA — Personal Study OS</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
 <body>
@@ -21,7 +21,7 @@
     <div class="brand">
       <div class="brand-logo-wrap">
         <img class="brand-logo" src="https://ebdigitalstudio.com.tr/assets/logo-ocean.svg" alt="EB Digital Studio" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
-        <div class="brand-symbol" aria-hidden="true" style="display:none"><span>50</span><b>K</b></div>
+        <div class="brand-symbol" aria-hidden="true" style="display:none"><span>NE</span><b>X</b></div>
       </div>
       <div><div class="brand-name">NEXORA</div><div class="brand-sub">PERSONAL STUDY OS • BY EB DIGITAL STUDIO</div></div>
     </div>
@@ -256,25 +256,29 @@
 
 <dialog id="onboardingDialog" class="modal onboarding-dialog">
   <div class="modal-form onboarding-form">
-    <div class="onboarding-hero"><div class="onboarding-mark">✦</div><div><span class="section-kicker">START HERE</span><h2>NEXORA'ya hoş geldin</h2><p>Hedefini seç, başlangıç seviyeni oluştur ve sistemin seni tanımasına izin ver.</p></div></div>
-    <div class="onboarding-steps">
-      <div class="onboarding-step"><b>01</b><div><strong>Hedefini belirle</strong><span>Puan türü, bölüm ve hedef sıralamanı kendin seç.</span></div></div>
-      <div class="onboarding-step"><b>02</b><div><strong>Başlangıç fotoğrafını çek</strong><span>İlk denemeni gir; Koç motorunun referans noktası oluşsun.</span></div></div>
-      <div class="onboarding-step"><b>03</b><div><strong>İlk çalışma bloğunu başlat</strong><span>Bugünün görevini oluştur ve Focus Room'a geç.</span></div></div>
+    <div class="onboarding-hero"><div class="onboarding-mark">✦</div><div><span class="section-kicker">NEXORA / START HERE</span><h2>Kendi çalışma sistemini oluştur.</h2><p>Hedefini sen belirlersin. NEXORA; seçtiğin hedefe, gerçek performansına ve günlük kapasitesine göre çalışma yolunu kişiselleştirir.</p></div></div>
+    <div class="onboarding-value-grid">
+      <article><span>01</span><strong>Hedef</strong><p>Sayısal, EA, Sözel, Dil veya TYT/Ön Lisans seç; bölümünü ve hedef sıralamanı belirle.</p></article>
+      <article><span>02</span><strong>Veri</strong><p>Denemelerini, konu çalışmalarını, yanlışlarını ve günlük verilerini girdikçe sistem seni tanır.</p></article>
+      <article><span>03</span><strong>Koç</strong><p>Öncelik, tekrar, çalışma temposu ve Focus görevleri verilerine göre şekillenir.</p></article>
+      <article><span>04</span><strong>Focus</strong><p>Planı Focus Room'a taşı; dikkat dağıtan her şeyi kapatıp tek göreve odaklan.</p></article>
     </div>
-    <div class="onboarding-note"><strong>Nasıl çalışır?</strong><span>Önce hedefini seç. Sonra ilk deneme ve çalışma verilerini gir. Sistem performansını analiz eder, önceliklerini çıkarır ve günlük planını buna göre şekillendirir.</span></div>
-    <div class="onboarding-actions"><button type="button" class="ghost-btn" id="onboardingSkip">Şimdilik geç</button><button type="button" class="secondary-btn" id="onboardingOpenSetup">Hedefimi belirle</button><button type="button" class="primary-btn" id="onboardingStart">Hazırım, başlayalım</button></div>
+    <div class="onboarding-live-preview"><div><span class="section-kicker">HEDEF PROFİLİ</span><strong id="onboardingGoalStep">Henüz seçilmedi</strong><span id="onboardingRank">Hedef sıralama belirlenmedi</span></div><b>→</b></div>
+    <div class="onboarding-note"><strong>İlk 5 dakika</strong><span>Önce hedefini belirle. Sonra başlangıç seviyeni görmek için ilk TYT denemeni ve ilk çalışma bloğunu kaydet. Sistem zamanla daha doğru öneriler üretir.</span></div>
+    <div class="onboarding-actions"><button type="button" class="ghost-btn" id="onboardingSkip">Şimdilik geç</button><button type="button" class="primary-btn" id="onboardingOpenSetup">Hedefimi oluştur</button></div>
   </div>
 </dialog>
 <dialog id="goalSetupDialog" class="modal goal-setup-dialog">
-  <form class="modal-form" onsubmit="return false">
+  <form class="modal-form goal-premium-form" onsubmit="return false">
     <button type="button" class="modal-x" data-close-dialog aria-label="Kapat">×</button>
-    <span class="section-kicker">MISSION SETUP</span><h3>Hedef profilini oluştur</h3><p class="modal-help">Puan türünü seç, hedef bölümünü belirle ve ulaşmak istediğin sıralamayı kendin yaz.</p>
-    <div class="form-grid"><label>Puan türü<select id="goalTrack"><option value="SAY">Sayısal</option><option value="EA">Eşit Ağırlık</option><option value="SÖZ">Sözel</option><option value="DİL">Dil</option><option value="TYT">TYT / Ön Lisans</option></select></label><label>Hedef bölüm<select id="goalProgram"></select></label></div>
-    <label id="goalCustomWrap">Özel bölüm adı<input id="goalCustomProgram" placeholder="Bölümünü yaz"></label>
-    <label>Hedef sıralama<input id="goalRank" type="number" min="1" max="999999" value="30000"></label>
-    <div id="goalRankPresets" class="rank-chips"></div>
-    <div class="form-actions"><button type="button" class="ghost-btn" data-close-dialog>İptal</button><button type="button" id="goalSetupSave" class="primary-btn">Hedefi kaydet</button></div>
+    <div class="goal-hero"><div><span class="section-kicker">MISSION BUILDER</span><h3>Hedef profilini oluştur</h3><p>Bu bilgiler NEXORA'nın ders motorunu belirler. Puan türü, bölüm ve hedef sıralamanı değiştirebilirsin; sistem buna göre çalışma rotanı günceller.</p></div><span class="goal-orb">✦</span></div>
+    <div class="goal-guide"><div><b>1</b><span>Puan türünü seç</span></div><div><b>2</b><span>Bölümünü seç</span></div><div><b>3</b><span>Hedef sıralamanı belirle</span></div></div>
+    <div class="form-grid"><label>Puan türü<select id="goalTrack"><option value="SAY">Sayısal</option><option value="EA">Eşit Ağırlık</option><option value="SÖZ">Sözel</option><option value="DİL">Dil</option><option value="TYT">TYT / Ön Lisans</option></select><small id="goalTrackHint" class="field-hint">Hedefine uygun akademik motor seçilir.</small></label><label>Hedef bölüm<select id="goalProgram"></select></label></div>
+    <label id="goalCustomWrap">Özel bölüm adı<input id="goalCustomProgram" placeholder="Listede yoksa bölümünü yaz"></label>
+    <div class="goal-rank-section"><div class="goal-rank-head"><label>Hedef sıralama<input id="goalRank" type="number" min="1" max="999999" value="30000"></label><div class="goal-rank-preview"><span>HEDEF</span><strong id="goalRankPreview">30K</strong></div></div><div id="goalRankPresets" class="rank-chips"></div></div>
+    <div id="goalSetupHelper" class="goal-helper">Hedef bilgilerin çalışma sistemini kişiselleştirmek için kullanılacak.</div>
+    <div class="goal-preview-card"><div><span class="section-kicker">NEXORA MISSION</span><strong id="goalPreviewProgram">—</strong><span id="goalPreviewTrack">—</span></div><b id="goalPreviewRank">≤—</b></div>
+    <div class="form-actions"><button type="button" class="ghost-btn" data-close-dialog>Vazgeç</button><button type="button" id="goalSetupSave" class="primary-btn">Hedefi kaydet →</button></div>
   </form>
 </dialog>
 
