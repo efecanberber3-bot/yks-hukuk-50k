@@ -708,6 +708,24 @@ function publishFriendProfile(){window.hukukCloud?.publishFriendProfile?.(shared
 function renderLifeEnergy(){
  const el=$('#lifeEnergySummary');if(!el)return;const e=energySnapshot();const action=$('#lifeActionTitle'),text=$('#lifeActionText');if(action&&text){action.textContent=e.capacityScore<55?'Bugün toparlanma öncelikli':e.capacityScore<72?'Bugün kontrollü ilerle':'Bugün tam kapasiteye yakın çalışabilirsin';text.textContent=e.capacityScore<55?'Kısa, kaliteli bloklar seç; gecikmiş tekrarları öne al ve gece uykusunu koru.':e.capacityScore<72?'En yüksek getirili 2–3 akademik bloğu tamamla; kalan işi yarına taşıyabilirsin.':'Hedef ders süreni koru, Focus Room ile ana blokları tamamla.';}const d=ensureDay();const rows=[['Uyku',Number.isFinite(Number(d.sleepHours))?`${Number(d.sleepHours).toFixed(1)} saat`:'Veri gir',e.sleepScore],['Enerji',Number.isFinite(Number(d.energyLevel))?`${d.energyLevel}/5`:'Veri gir',e.energyScore],['Telefon',Number.isFinite(Number(d.phoneMinutes))?`${d.phoneMinutes} dk`:'Veri gir',e.phoneScore],['Egzersiz',Number.isFinite(Number(d.exerciseMinutes))?`${d.exerciseMinutes} dk`:'Veri gir',e.exerciseScore]];el.innerHTML=`<div class="life-score-hero"><div><span class="section-kicker">CAPACITY INDEX</span><h3>${e.capacityScore}/100</h3><p>${e.message}</p></div><span class="badge ${e.tone}">${e.mode}</span></div><div class="life-score-list">${rows.map(r=>`<div class="life-score-row"><div><strong>${r[0]}</strong><span>${r[1]}</span></div><div class="life-mini-bar"><i style="width:${Math.round(r[2])}%"></i></div><b>${Math.round(r[2])}</b></div>`).join('')}</div><div class="life-plan"><span>BUGÜNÜN ÖNERİLEN DERS KAPASİTESİ</span><strong>${e.capacity} dk</strong><p>Hedefin ${state.settings.studyGoal} dk. Enerjin düşükse sistem hacmi azaltır; öncelikleri korur.</p></div>`;
 }
+function renderMistakes(){
+ const list=$('#mistakeList'), total=$('#mistakeTotal'), todayEl=$('#mistakeToday'), topEl=$('#mistakeTopTopic'), insightEl=$('#mistakeInsight');
+ const ms=Array.isArray(state.mistakes)?state.mistakes:[];
+ const todayKey=today();
+ if(total) total.textContent=ms.length;
+ if(todayEl) todayEl.textContent=ms.filter(m=>m.date===todayKey).length;
+ const stats=mistakeStats();
+ const top=Object.entries(stats.byTopic||{}).sort((a,b)=>b[1]-a[1])[0];
+ if(topEl) topEl.textContent=top?top[0]:'—';
+ if(insightEl) insightEl.textContent=coachMistakeInsight();
+ if(!list) return;
+ const ordered=ms.slice().sort((a,b)=>{
+   const ds=(b.date||'').localeCompare(a.date||'');
+   if(ds!==0)return ds;
+   return (Number(b.severity)||0)-(Number(a.severity)||0);
+ });
+ list.innerHTML=ordered.length?ordered.map(m=>`<div class="money-row"><div class="money-row-main"><strong>${esc(m.subject||'Genel')}</strong><span>${esc(m.topic||'Konu belirtilmedi')} • ${esc(mistakeTypeLabel(m.type))}</span><small>${esc(fmtDate(m.date||today()))}</small></div><div class="money-row-side"><span class="badge ${Number(m.severity)>=4?'danger':Number(m.severity)>=3?'purple':'success'}">Şiddet ${Number(m.severity)||3}</span><span class="money-amount">${esc(m.note||'')}</span>${m.mockId?'<small>Denemeye bağlı</small>':''}</div></div>`).join(''):'<div class="empty">Henüz hata günlüğü yok. Deneme sonuçlarını ve yanlışlarını kaydetmeye başlayınca burada desenleri göreceksin.</div>';
+}
 function renderAll(){applyTheme();ensureDay();renderDashboard();renderToday();renderCoachBriefing();renderEveningClose();renderRoadmap();renderMock();renderMistakes();renderAnalytics();renderDiscipline();renderFinance();renderSettings();renderWeekly();renderFriends();renderSimulation();renderTargetCalendar();renderLifeEnergy();applyGoalProfileUI();}
 
 function addTask(){const d=ensureDay(),title=$('#taskTitle').value.trim();if(!title)return;const cat=$('#taskCategory').value;d.tasks.push({id:uid('task'),title,category:cat,minutes:Number($('#taskMinutes').value)||0,kind:['TYT','AYT','Tekrar'].includes(cat)?'study':cat==='EB Digital'?'work':cat==='Spor'?'life':'life',done:false,source:'manual'});save();$('#taskDialog').close();$('#taskForm').reset();renderAll();toast('Görev eklendi.')}
