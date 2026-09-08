@@ -47,9 +47,9 @@ const goalCatalog={
 };
 const trackMeta={SAY:{label:'Sayısal',short:'SAY',tone:'ocean'},EA:{label:'Eşit Ağırlık',short:'EA',tone:'purple'},'SÖZ':{label:'Sözel',short:'SÖZ',tone:'amber'},'DİL':{label:'Dil',short:'DİL',tone:'rose'},TYT:{label:'TYT / Ön Lisans',short:'TYT',tone:'cyan'}};
 const rankPresets=[1000,5000,10000,20000,30000,50000,100000,200000];
-const defaultState={version:48,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000,scoreType:'EA',targetProgram:'Hukuk',customProgram:'',onboardingComplete:false,onboardingUserId:''},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
+const defaultState={version:50,days:{},subjects:{},mocks:[],mistakes:[],money:[],sessions:[],weekly:[],settings:{studyGoal:270,questionGoal:350,paragraphGoal:20,problemGoal:15,examDate:DEFAULT_EXAM,targetRank:30000,minRank:50000,scoreType:'EA',targetProgram:'Hukuk',customProgram:'',onboardingComplete:false,onboardingUserId:''},theme:'dark',accentTheme:'lime',focusSessions:0,assistant:{lastPlanDate:'',lastPlanSignature:''}};
 let state=load();
-function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.settings.scoreType??='';y.settings.targetProgram??='';y.settings.customProgram??='';y.settings.onboardingComplete??=false;y.settings.onboardingUserId??='';y.version=48;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';d.briefingDone??=false;d.briefingFocus??='';d.eveningReview??='';d.eveningClosedAt??='';}return y}
+function migrate(x){const y=clone(x||{});y.days??={};y.subjects??={};y.mocks??=[];y.mistakes??=[];y.money??=[];y.sessions??=[];y.weekly??=[];y.focusSessions??=0;y.theme??='dark';y.accentTheme??='lime';y.assistant??={lastPlanDate:'',lastPlanSignature:''};y.settings={...defaultState.settings,...(y.settings||{})};y.settings.scoreType??='';y.settings.targetProgram??='';y.settings.customProgram??='';y.settings.onboardingComplete??=false;y.settings.onboardingUserId??='';y.version=50;for(const d of Object.values(y.days)){d.tasks??=[];d.habits??={};d.studyMinutes??=0;d.questions??=0;d.note??='';d.briefingDone??=false;d.briefingFocus??='';d.eveningReview??='';d.eveningClosedAt??='';}return y}
 function load(){
  try{
   const raw=localStorage.getItem(KEY);
@@ -527,9 +527,12 @@ function saveGoalSetup(){
 function currentCloudUserId(){try{return window.hukukCloud?.getUserId?.()||''}catch{return ''}}
 const ONBOARDING_DISMISSED_KEY='hukuk50k-onboarding-dismissed-v1';
 function shouldShowOnboarding(){
+ // A completed target profile permanently dismisses onboarding for this profile.
+ // The setup can be reopened explicitly from Settings / Goal Setup.
+ if(state?.settings?.onboardingComplete && state?.settings?.targetProgram) return false;
  const uid=currentCloudUserId();
  if(uid){
-   return state.settings.onboardingUserId!==uid || !state.settings.targetProgram;
+   return !state.settings.onboardingComplete || !state.settings.targetProgram;
  }
  try { return localStorage.getItem(ONBOARDING_DISMISSED_KEY)!=='1' || !state.settings.onboardingComplete || !state.settings.targetProgram; }
  catch { return !state.settings.onboardingComplete || !state.settings.targetProgram; }
